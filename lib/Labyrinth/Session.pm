@@ -1,0 +1,622 @@
+package Labyrinth::Session;
+
+use warnings;
+use strict;
+
+use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
+$VERSION = '5.00';
+
+=head1 NAME
+
+Labyrinth::Session - simple indentification functions.
+
+=head1 SYNOPSIS
+
+  use Labyrinth::Session;
+  Login($username,$password);
+  my $logged_in = 1 if(my $user =  ValidSession());
+
+=head1 DESCRIPTION
+
+A session management module.
+
+=cut
+
+# -------------------------------------
+# Export Details
+
+require Exporter;
+@ISA       = qw(Exporter);
+%EXPORT_TAGS = (
+    'all' => [ qw(
+        ValidSession VerifyUser Authorised UserAccess
+        ResetLanguage UpdateSession
+    ) ]
+);
+
+@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+@EXPORT    = ( @{ $EXPORT_TAGS{'all'} } );
+
+# -------------------------------------
+# Library Modules
+
+use Digest::MD5 qw(md5_base64);
+
+use Labyrinth::Audit;
+use Labyrinth::Globals;
+use Labyrinth::DTUtils;
+use Labyrinth::CookieLib;
+use Labyrinth::Mailer;
+use Labyrinth::Users;
+use Labyrinth::Variables;
+
+# -------------------------------------
+# Variables
+
+my %USERS;
+
+# -------------------------------------
+# The Functional Interface
+
+=head1 FUNCTIONS
+
+=over 4
+
+=item Login
+
+=item Logout
+
+=cut
+
+sub Login {
+    # forgotten password?
+    return _forgotten()             if($cgiparams{cause} && $cgiparams{forgot});
+
+    # values complete?
+    return SetError('ERROR',1)    unless($cgiparams{cause} && $cgiparams{effect});
+
+    # verify username/password
+    my @rows = CheckUser($cgiparams{cause},$cgiparams{effect});
+    return SetError('BADUSER',1)    unless(@rows);
+
+    $tvars{user} = $rows[0];
+
+    # add entry to session table
+    my $session;
+    (   $session,
+        $tvars{user}{name},
+        $tvars{'loginid'},
+        $tvars{realm},
+        $tvars{langcode}
+    ) = _save_session($rows[0]->{realname},$rows[0]->{userid},$rows[0]->{realm},$rows[0]->{langcode});
+
+    # set template variables
+    $tvars{'loggedin'}   = 1;
+    $tvars{user}{folder} = 1;
+    $tvars{user}{option} = 0;
+    $tvars{user}{userid} = $tvars{'loginid'};
+    $tvars{user}{access} = VerifyUser($tvars{'loginid'});
+
+    $tvars{realm} = $rows[0]->{realm} || 'public';
+
+    if($tvars{realm} ne 'public') {
+        SetCommand('home-' . $tvars{realm});
+    }
+}
+
+sub Logout {
+    my @rows = CheckUser('GUEST','GUEST');
+    unless(@rows) {
+        push @rows, {realname => 'Guest', userid => 0, realm => 'public', langcode => 'en'};
+    }
+
+    my $session;
+    (   $session,
+        $tvars{user}{name},
+        $tvars{'loginid'},
+        $tvars{realm},
+        $tvars{langcode}
+    ) = _save_session($rows[0]->{realname},$rows[0]->{userid},$rows[0]->{realm},$rows[0]->{langcode});
+    $tvars{loggedin}     = 0;
+    $tvars{user}{folder} = 1;
+    $tvars{user}{option} = 0;
+    $tvars{user}{userid} = $tvars{'loginid'};
+    $tvars{user}{access} = VerifyUser($tvars{'loginid'});
+
+    return($session,$tvars{user}{name},$tvars{'loginid'},$tvars{realm});
+}
+
+=item ValidSession
+
+Reloads an existing session, or creates a new one.
+
+=item Store
+
+Stores the current request, while the user logs in. (A simple form of continuations)
+
+=item Retrieve
+
+Retrieves the last request, if the user has logged in. (A simple form of continuations)
+If the user is already login will set according to their realm.
+
+=cut
+
+sub ValidSession {
+    # read cookie
+    my ($userid,$name,$realm,$folder,$langcode,$option) = _get_session();
+    $tvars{'loggedin'}   = ($name && lc $name ne 'guest') ? 1 : 0;
+    $tvars{'loginid'}    = $userid;
+    $tvars{'langcode'}   = $langcode;
+
+    $tvars{user}{name}   = $name;
+    $tvars{user}{userid} = $userid;
+    $tvars{user}{folder} = $folder;
+    $tvars{user}{option} = $option;
+    $tvars{user}{access} = VerifyUser($userid);
+
+    my $user = Labyrinth::Session->new($userid,$name,$realm);
+    return $user;
+}
+
+sub Store {
+    # we don't want to continually logout!
+    return  if($cgiparams{act} eq 'user-logout');
+
+    # store ready for continuation after login
+    if (&GetCookies('sessionid')){
+        my $session = $main::Cookies{'sessionid'};
+        if($session && $session ne 'expired') {
+            if(my @rows = $dbi->GetQuery('array','CheckSession',$session)) {
+                my $query;
+                if($cgiparams{lastpage} && $settings{lastpagereturn}) {
+                    $query = $cgiparams{lastpage};
+                    $query =~ y/~/=/;
+                    $query =~ y/ /&/;
+                } elsif($settings{lastpagereturn}) {
+                    $query = join("&",map {"$_=$cgiparams{$_}"} keys %cgiparams);
+                }
+                $dbi->DoQuery('StoreSession',$query,$session);
+            }
+        }
+    }
+}
+
+sub Retrieve {
+    my $act = 'home-' . $tvars{realm};
+LogDebug("Retrieve: 1.=$act");
+
+    if(my @rows = $dbi->GetQuery('hash','GetRealmByName',$tvars{realm})) {
+        $act = $rows[0]->{command};
+    }
+LogDebug("Retrieve: 2.=$act");
+
+    if (&GetCookies('sessionid')){
+        my $session = $main::Cookies{'sessionid'};
+        if($session && $session ne 'expired') {
+            if(my @rows = $dbi->GetQuery('array','RetrieveSession',$session)) {
+LogDebug("Retrieve: 3.=[".($rows[0]->[0]||'')."]");
+                my @parts = $rows[0]->[0] ? split("&",$rows[0]->[0]) : ();
+                for my $part (@parts) {
+                    $cgiparams{$1} = $2     if($part =~ /(.*?)=(.*)/);
+                }
+                $act = $cgiparams{act}  if(@parts);
+                $dbi->DoQuery('StoreSession','',$session);
+LogDebug("Retrieve: 4.=$act");
+            }
+        }
+    }
+
+LogDebug("Retrieve: NEXT=$act");
+    SetCommand($act);
+}
+
+=item Authorised($level[,$userid])
+
+Verifies the user has authorisation to the requested level. If userid is
+omitted, the current user is assumed.
+
+=item UserAccess
+
+Returns the folders the user (and associated groups) has access to.
+
+=item VerifyUser
+
+Looks up the user's authorisation level, based on their user id and any groups
+they belong to.
+
+=item CheckUser
+
+Given a username and password checks the database to ensure that the user
+exists. Note that this uses both SHA1 (new encryption) and OLD_PASSWORD (old
+encyription) to find the user. The latter is preserved for older
+implementations.
+
+=cut
+
+sub Authorised  {
+    my $needed = shift;
+    return 0    if($needed && !$tvars{loggedin});
+
+    my $userid = shift || $tvars{'loginid'};
+    my $actual = VerifyUser($userid);
+
+#   LogDebug("Authorised - needed=[$needed], actual=[$actual], result=[".($actual >= $needed ? 1 : 0)."]");
+
+    return $actual >= $needed ? 1 : 0;
+}
+
+sub UserAccess {
+    my $folderid = shift;
+    my $groups = shift;
+
+    my @rows = $dbi->GetQuery('array','FolderAccess',$tvars{loginid},$groups);
+    return 0    unless(@rows);
+    return $rows[0]->[0];
+}
+
+my %folderaccess;
+
+sub VerifyUser {
+    my $userid = shift || 0;
+    my $access = 0;
+LogDebug("VerifyUser($userid)");
+
+    return $access  unless($userid);
+
+    my $folder = $tvars{user}{folder} || 1;
+
+    # return if known
+    return $folderaccess{$userid}{$folder}
+        if($folderaccess{$userid}{$folder});
+
+    # check base access
+    my @rows = $dbi->GetQuery('hash','GetUserByID',$userid);
+    $access = $rows[0]->{accessid};
+    $tvars{user}{$_} = $rows[0]->{$_}   for(qw(realname nickname email));
+
+    #
+    my $folders = ($tvars{user}{folder} ? GetFolderIDs({id => $tvars{user}{folder}}) : 1);
+    my $groups = GetGroupIDs($userid);
+
+    # check folder permissions
+    @rows = $dbi->GetQuery('hash','GetPermission',{folders=>$folders,groups=>$groups,user=>$userid});
+    foreach my $rec (@rows) {
+        $access = $rec->{accessid}  if($access < $rec->{accessid});
+    }
+
+LogDebug("-access=$access");
+
+    $folderaccess{$userid}{$folder} = $access;
+    return $access;
+}
+
+sub CheckUser {
+    my ($user,$pass) = @_;
+
+    return @{$USERS{$user}} if($USERS{$user});
+
+    # SHA1 encryption
+    my @rows = $dbi->GetQuery('hash','CheckUser',$user,$pass);
+    if(@rows) {
+        $USERS{$user} = \@rows;
+        return @rows;
+    }
+
+    # OLD PASSWORD encryption
+    @rows = $dbi->GetQuery('hash','CheckUserOld',$user,$pass);
+    if(@rows) {
+        $USERS{$user} = \@rows;
+        return @rows;
+    }
+
+    # user not found
+    return;
+}
+
+=item GetFolderIDs
+
+=cut
+
+sub GetFolderIDs {
+    my $hash = shift;
+    my $ref;
+
+    if($hash->{id}) {
+        my @rows = $dbi->GetQuery('array','GetFolderRef',$hash->{id});
+        return ()   unless(@rows);
+        $ref = $rows[0]->[0];
+
+    } elsif($hash->{ref}) {
+        $ref = $hash->{ref};
+
+    } else {
+        return ();
+    }
+
+    my @folders;
+    my $part = '';
+    my @parts = split(/\./,$ref);
+    foreach (@parts) {
+        $part .= '.'    if($part);
+        $part .= $_;
+        push @folders, $part;
+    }
+
+    my $folders = "'" . join("','",@folders) . "'";
+    my @rows = $dbi->GetQuery('array','GetFolderIDs',{folders=>$folders});
+    @folders = (0);
+    foreach (@rows) { push @folders, $rows[0]->[0]; }
+
+    return @folders if(wantarray);
+    return join(",",@folders);
+}
+
+=item GetGroupIDs
+
+=cut
+
+sub GetGroupIDs {
+    my $userid = shift;
+    my %groups;
+
+    $groups{1} = 1; # everyone is public
+
+    # find primary groups for user
+    my @rows = $dbi->GetQuery('array','GetGroupUserMap',$userid);
+
+    while(@rows) {
+        my (@parents);
+        foreach (@rows) {
+            next    if($_->[0] == 0);       # a bad entry
+            next    if($groups{$_->[0]});   # already seen group
+            $groups{$_->[0]} = 1;
+            push @parents, $_->[0];
+        }
+
+        last    unless(@parents);
+
+        # find associated groups for user
+        @rows = $dbi->GetQuery('array','GetGroupParents',{groups=>join(",",@parents)});
+    }
+
+    return keys %groups if(wantarray);
+    return join(",",keys %groups);
+}
+
+=item ResetLanguage
+
+=cut
+
+sub ResetLanguage {
+    my $lang = shift;
+    return  unless($lang);
+
+    my @rows = $dbi->GetQuery('array','GetLang',$lang);
+    return  unless(@rows);
+
+    $dbi->DoQuery('SetLangUser',$lang,$tvars{loginid});
+    $dbi->DoQuery('SetLangSession',$lang,$settings{session});
+    $tvars{langcode} = $lang;
+}
+
+=item UpdateSession
+
+=back
+
+=cut
+
+sub UpdateSession {
+    my %hash = @_;
+    my $session = delete $hash{session};
+    $session ||= $main::Cookies{'sessionid'};
+    for(keys %hash) {
+        next    unless($hash{$_});
+        $dbi->DoQuery('UpdateSession',{field=>$_},$hash{$_},$session);
+    }
+
+    if($hash{optionid}) {
+        $tvars{user}{option} = $hash{optionid};
+    }
+}
+
+# -------------------------------------
+# The Object Interface
+
+=head1 OBJECT METHODS
+
+=over 4
+
+=item new
+
+=item realm
+
+=cut
+
+sub new {
+    my $self = shift;
+
+    my $atts = {
+        'userid'    => $_[0],
+        'name'      => $_[1],
+        'realm'     => $_[2],
+    };
+
+    # create the object
+    bless $atts, $self;
+    return $atts;
+}
+
+sub realm {
+    my $self = shift;
+    return $self->{realm};
+}
+
+sub DESTROY {}
+
+# -------------------------------------
+# Internal Functions
+
+sub _create_session_key {
+    my $key = shift || '';
+    my $string = $key . formatDate(0) . $$;
+    my $md5 = md5_base64($string);
+    $md5 =~ s![+/]!('a'..'z',0..9)[int(rand(36))]!eg;               # cookies can only handle \w characters
+    return $md5;
+}
+
+sub _get_session {
+    # delete timed out sessions, including this one if necessary (self cleaning)
+    my $timeout = $settings{timeout} || 0;
+    my $tsnow = formatDate(0);
+    my $tsthen = $tsnow - $timeout;
+    $dbi->DoQuery('DeleteSessions',$tsthen);
+
+    # default settings
+    my ($userid,$name,$realm,$folder,$langcode,$option) = (0,'guest','public',1,'en',0);
+    my $session;
+
+    # retrieve the cookie
+    if($settings{testing}) {
+        $userid     = $cgiparams{cluserid}      if($cgiparams{cluserid});
+        $name       = $cgiparams{clname}        if($cgiparams{clname});
+        $realm      = $cgiparams{clrealm}       if($cgiparams{clrealm});
+        $folder     = $cgiparams{clfolder}      if($cgiparams{clfolder});
+        $langcode   = $cgiparams{cllangcode}    if($cgiparams{cllangcode});
+#LogDebug("get_session: testing: ($userid,$name,$realm,$folder)");
+    } elsif (&GetCookies('sessionid')){
+        $session = $main::Cookies{'sessionid'};
+        LogDebug("session=$session");
+    } else {
+        LogDebug("session=<no session>");
+    }
+
+    if(!$userid) {
+        my @rows = CheckUser('GUEST','GUEST');
+        $userid = $rows[0]->{userid};
+    }
+
+    $session = undef    if($session && $session eq 'expired');
+
+    # try and time stamp the session
+    if($session) {
+        my @rows = $dbi->GetQuery('array','CheckSession',$session);
+        LogDebug("CheckSession: 1.".(@rows ? 'found' : 'no')." session");
+        if(@rows) {
+            ($userid,$name,$realm,$folder,$langcode,$option) = @{$rows[0]};
+            $option = $cgiparams{option}    if($cgiparams{option});
+            UpdateSession(timeout => $tsnow, optionid => $option, session => $session);
+        } else {
+            $session = undef;
+        }
+    }
+
+    # check we actually updated in time
+    if($session) {
+        my @rows = $dbi->GetQuery('array','CheckSession',$session);
+        LogDebug("CheckSession: 2.".(@rows ? 'found' : 'no')." session");
+        $session = undef    unless(@rows);
+    }
+
+    # create a new session if necessary
+    unless($session) {
+        if($settings{testing}) {
+            ($session) = Logout();
+        } else {
+            ($session,$name,$userid,$realm,$langcode) = Logout();
+        }
+    }
+    $settings{session} = $session;
+
+    LogDebug('GetSession:name=['.($name||'').'], realm=['.($realm||'').']');
+
+    return $userid,$name,$realm,$folder,$langcode,$option;
+}
+
+sub _save_session {
+    my @fields = @_;
+
+    LogDebug('SaveSession:1 fields=['.join('][',map {$_ || ''} @fields).']');
+
+    $fields[0] ||= 'guest';
+    $fields[1] ||= 0;
+    $fields[2] ||= 'public';
+    $fields[3] ||= 'en';
+    $fields[4] ||= 0;
+
+    if($fields[1] == 0) {
+        my @rows = CheckUser('GUEST','GUEST');
+        $fields[1] = $rows[0]->{userid};
+    }
+
+    LogDebug('SaveSession:2 fields=['.join('][',map {$_ || ''} @fields).']');
+
+    my $session = $main::Cookies{'sessionid'}   if (&GetCookies('sessionid'));
+    if($session && $session ne 'expired') {
+        # check the session has been recorded in case it's been reaped, a user
+        # can relogin with the same session key
+        my @rows = $dbi->GetQuery('array','CheckSession',$session);
+        LogDebug("CheckSession: 3.".(@rows ? 'found' : 'no')." session");
+        if(@rows) {
+            $dbi->DoQuery('UpdateSessionX',formatDate(0),@fields,$session);
+        } else {
+            $dbi->DoQuery('CreateSession',formatDate(0),@fields,$session);
+        }
+    } else {
+        # add entry to session table
+        $session = _create_session_key($cgiparams{cause});
+        $dbi->DoQuery('CreateSession',formatDate(0),@fields,$session);
+    }
+
+    SetCookiePath('/');
+    $tvars{cookie} = SetCookie('sessionid',$session);
+    LogDebug('SaveSession:4 fields=['.join('][',map {$_ || ''} @fields).']');
+    return ($session,@fields);
+}
+
+sub _forgotten {
+    my @rows = $dbi->GetQuery('hash','FindUser',$cgiparams{cause});
+    return SetError('BADUSER')    unless(@rows);
+    return SetError('BANUSER')    if($rows[0]->{password} eq '-banned-');
+
+    my $password = FreshPassword();
+    my $name = $rows[0]->{'realname'} || 'User';
+
+    $dbi->DoQuery('ChangePassword',$password,$rows[0]->{userid});
+    MailSend(   template    => 'mailer/forgot.eml',
+                name        => $name,
+                password    => $password,
+                email       => $cgiparams{cause}
+    );
+
+    if(MailSent()) {
+        SetCommand('user-forgot');
+    } else {
+        SetError('BADMAIL');
+    }
+}
+
+1;
+
+__END__
+
+=back
+
+=head1 SEE ALSO
+
+  Digest::MD5
+  Labyrinth
+
+=head1 AUTHOR
+
+Barbie, <barbie@missbarbell.co.uk> for
+Miss Barbell Productions, L<http://www.missbarbell.co.uk/>
+
+=head1 COPYRIGHT & LICENSE
+
+  Copyright (C) 2002-2010 Barbie for Miss Barbell Productions
+  All Rights Reserved.
+
+  This module is free software; you can redistribute it and/or
+  modify it under the same terms as Perl itself.
+
+=cut

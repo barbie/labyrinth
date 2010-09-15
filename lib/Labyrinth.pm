@@ -1,0 +1,238 @@
+package Labyrinth;
+
+use warnings;
+use strict;
+
+=head1 NAME
+
+Labyrinth - An extensible website in a box.
+
+=head1 SYNOPSIS
+
+  use Labyrinth;
+  my $labyrinth = Labyrinth->new();
+  $labyrinth->run();
+
+=cut
+
+our $VERSION = '5.00';
+
+# -------------------------------------
+# Library Modules
+
+use Module::Pluggable   search_path => ['Labyrinth::Plugin'];
+
+# Required Core
+use Labyrinth::Audit;
+use Labyrinth::DTUtils;
+use Labyrinth::Globals  qw(:all);
+use Labyrinth::Mailer;
+use Labyrinth::Plugins;
+use Labyrinth::Request;
+use Labyrinth::Session;
+use Labyrinth::Support;
+use Labyrinth::Writer;
+use Labyrinth::Variables;
+
+# -------------------------------------
+# Variables
+
+my %plugins;
+
+# -------------------------------------
+# The Program
+
+=head1 FUNCTIONS
+
+=head2 Constructor
+
+=over 4
+
+=item new()
+
+=back
+
+=cut
+
+sub new {
+    my $self    = shift;
+
+    # create an attributes hash
+    my $atts = {};
+
+    # create the object
+    bless $atts, $self;
+    return $atts;
+}
+
+=head2 Methods
+
+=over 4
+
+=item run
+
+run provides the interface between the CGI and the modules
+
+=cut
+
+sub run {
+    my ($self,$file,%hash) = @_;
+
+    my $LAYOUT = 'public/layout.html';
+    my $default_realm = 'public';
+    $default_realm = $hash{realm} if(%hash && $hash{realm});
+
+    Labyrinth::Variables::init();   # initial standard variable values
+
+    UnPublish();                    # Start a fresh slate
+    LoadSettings($file);            # Load All Global Settings
+
+    SetLogFile( FILE   => $settings{'logfile'},
+                USER   => 'labyrinth',
+                LEVEL  => ($settings{'loglevel'} || 0),
+                CLEAR  => 1,
+                CALLER => 1);
+
+    MailSet(mailsend => $settings{mailsend}, logdir => $settings{logdir});
+
+    ParseParams();
+    DBConnect();
+
+    ## defaults in the event of errors
+    $tvars{layout} = $LAYOUT;
+    $tvars{content} = '';
+
+    ## session validation & the request
+    my $user    = ValidSession();
+    my $realm   = $user ? $user->realm : $default_realm;
+    my $command = $cgiparams{act};
+    my $request = Labyrinth::Request->new($realm,$command);
+    $tvars{realm} = $realm;
+
+    $self->load;
+
+    ## 1. each request is only the start.
+    ## 2. upon success or failure it is possible other commands will follow.
+    ## 3. the content for each command can be different.
+    ## 4. if errcode is set, we check if a failure command is required first.
+    ## 5. if no more commands we publish.
+
+    do {
+        $tvars{errcode} = undef;
+
+        while(my $action = $request->next_action) {
+LogDebug("run: action=$action");
+            $self->action($action);
+
+            if($tvars{errcode} && $tvars{errcode} eq 'NEXT')    {
+                $tvars{errcode} = undef;
+                $command = $tvars{command};
+                while($request->next_action) {} # ignore remaining actions
+                $request->reset_request($command)   if($command);
+                #if($tvars{redirect}) {
+                #    Publish();
+                #    return;
+                #}
+            }
+
+            $realm        ||= '';
+            $tvars{realm} ||= '';
+
+            if($realm ne $tvars{realm} ) {      # just in case of a login/logout
+                $realm = $tvars{realm};
+                $request->reset_realm($tvars{realm});
+            }
+
+            last if $tvars{errcode};
+        }
+
+LogDebug("run: 1.errcode=".($tvars{errcode} || 'undef'));
+
+        if(!defined $tvars{errcode})        { $command = $request->onsuccess }
+        elsif($tvars{errcode} eq 'NEXT')    { $command = $tvars{command}     }
+        elsif($tvars{errcode} eq 'ERROR')   { $command = $request->onerror   }
+        elsif($tvars{errcode} eq 'FAIL')    { $command = $request->onfailure }
+        elsif($tvars{errcode})              { $command = 'error-' . lc($tvars{errcode}) }
+        else                                { $command = $request->onsuccess }
+
+LogDebug("run: command=".($command || 'undef'));
+
+        if($command)    { $request->reset_request($command) }
+        else            { $command = undef }
+
+        #if($tvars{redirect}) {
+        #    Publish();
+        #    return;
+        #}
+    } while($command);
+
+    # just in case some joker has tried to access the realm directly
+    $request->reset_realm($tvars{realm});
+
+    foreach my $field (qw(layout content)) {
+        my $value = $request->$field();
+        $tvars{$field} = $value if($value);
+    }
+LogDebug("run: layout=$tvars{layout}");
+LogDebug("run: content=$tvars{content}");
+LogDebug("run: loggedin=$tvars{loggedin}");
+
+    Publish();
+}
+
+=item load()
+
+Loads plugins found under the plugins directory.
+
+=item action($action)
+
+Calls the appropriate plugin method.
+
+=back
+
+=cut
+
+sub load {
+    my $self = shift;
+    load_plugins($self->plugins());
+}
+
+sub action {
+    my ($self,$action) = @_;
+    my ($class,$method) = ($action =~ /(.*)::(.*)/);
+    $class = ($class =~ /^Labyrinth/ ? $class : 'Labyrinth::Plugin::' . $class);
+
+    if(my $plugin = get_plugin($class)) {
+        eval { $plugin->$method(); };
+
+        # this may fail at the moment, as not all requests have an onerror entry.
+        # as such a default (badcommand?) may need to be set.
+
+        if($@) {
+            $tvars{errcode} = 'ERROR';
+            LogError("action: class=$class, method=$method, FAULT: $@");
+        }
+    } else {
+        $tvars{errcode} = 'MESSAGE';
+        LogError("action: class=$class, method=$method, FAULT: class not loaded");
+    }
+}
+
+1;
+
+__END__
+
+=head1 AUTHOR
+
+Barbie, <barbie@missbarbell.co.uk> for
+Miss Barbell Productions, L<http://www.missbarbell.co.uk/>
+
+=head1 COPYRIGHT & LICENSE
+
+  Copyright (C) 2002-2010 Barbie for Miss Barbell Productions
+  All Rights Reserved.
+
+  This module is free software; you can redistribute it and/or
+  modify it under the same terms as Perl itself.
+
+=cut
