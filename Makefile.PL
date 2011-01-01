@@ -26,7 +26,7 @@ WriteMakefile(
         'File::Path'            => 0,
         'File::Spec::Functions' => 0,
         'GD'                    => 0,
-        'HTML::TagCloud'        => 0,
+        'HTML::TagCloud'        => 0.34,
         'Image::Magick'         => 0,
         'Image::Size'           => 0,
         'IO::File'              => 0,

@@ -1,7 +1,7 @@
 --- #YAML:1.0
 name:                     Labyrinth
 version:                  5.00
-abstract:                 A Website Management Framework
+abstract:                 Labyrinth Website Management Framework
 author:
   - Barbie <barbie@cpan.org>
 
@@ -32,7 +32,7 @@ requires:
   File::Path:                                 0,
   File::Spec::Functions:                      0,
   GD:                                         0,
-  HTML::TagCloud:                             0,
+  HTML::TagCloud:                             0.34,
   Image::Magick:                              0,
   Image::Size:                                0,
   IO::File:                                   0,

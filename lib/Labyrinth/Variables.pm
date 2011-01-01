@@ -40,7 +40,7 @@ use constant    USER        => 1;
 use constant    EDITOR      => 2;
 use constant    PUBLISHER   => 3;
 use constant    ADMIN       => 4;
-use constant    GOD         => 5;
+use constant    MASTER      => 5;
 
 # -------------------------------------
 # Export Details
@@ -50,14 +50,14 @@ require Exporter;
 
 %EXPORT_TAGS = (
     'vars' => [ qw(
-        PUBLIC USER EDITOR PUBLISHER ADMIN GOD
+        PUBLIC USER EDITOR PUBLISHER ADMIN MASTER
         $dbi %cgiparams %tvars %settings $cgi
     ) ],
     'subs' => [ qw(
         CGIArray ParamsCheck SetError SetCommand
     ) ],
     'all' => [ qw(
-        PUBLIC USER EDITOR PUBLISHER ADMIN GOD
+        PUBLIC USER EDITOR PUBLISHER ADMIN MASTER
         $dbi %cgiparams %tvars %settings $cgi
         CGIArray ParamsCheck SetError SetCommand
     ) ],
@@ -217,7 +217,7 @@ Miss Barbell Productions, L<http://www.missbarbell.co.uk/>
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2002-2010 Barbie for Miss Barbell Productions
+  Copyright (C) 2002-2011 Barbie for Miss Barbell Productions
   All Rights Reserved.
 
   This module is free software; you can redistribute it and/or

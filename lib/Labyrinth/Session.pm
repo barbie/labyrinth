@@ -322,9 +322,9 @@ sub GetFolderIDs {
     my $ref;
 
     if($hash->{id}) {
-        my @rows = $dbi->GetQuery('array','GetFolderRef',$hash->{id});
+        my @rows = $dbi->GetQuery('hash','GetFolderRef',$hash->{id});
         return ()   unless(@rows);
-        $ref = $rows[0]->[0];
+        $ref = $rows[0]->{ref};
 
     } elsif($hash->{ref}) {
         $ref = $hash->{ref};
@@ -465,11 +465,14 @@ sub _create_session_key {
 }
 
 sub _get_session {
-    # delete timed out sessions, including this one if necessary (self cleaning)
-    my $timeout = $settings{timeout} || 0;
     my $tsnow = formatDate(0);
-    my $tsthen = $tsnow - $timeout;
-    $dbi->DoQuery('DeleteSessions',$tsthen);
+
+    if($settings{delete_sessions}) {
+        # delete timed out sessions, including this one if necessary (self cleaning)
+        my $timeout = $settings{timeout} || 0;
+        my $tsthen = $tsnow - $timeout;
+        $dbi->DoQuery('DeleteSessions',$tsthen);
+    }
 
     # default settings
     my ($userid,$name,$realm,$folder,$langcode,$option) = (0,'guest','public',1,'en',0);
@@ -613,7 +616,7 @@ Miss Barbell Productions, L<http://www.missbarbell.co.uk/>
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2002-2010 Barbie for Miss Barbell Productions
+  Copyright (C) 2002-2011 Barbie for Miss Barbell Productions
   All Rights Reserved.
 
   This module is free software; you can redistribute it and/or

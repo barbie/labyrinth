@@ -86,6 +86,7 @@ Values in the hash can be
   dbport
   dbuser
   dbpass
+  autocommit
 
 (*) These entries MUST exist in the hash.
 (+) At least ONE of these must exist in the hash, and depend upon the driver.
@@ -389,13 +390,13 @@ sub _doQuery {
         }
 
     } else {
-        eval { $dbv->{dbh}->do($sql, undef, @args) };
+        eval { $rowid = $dbv->{dbh}->do($sql, undef, @args) };
         if ( $@ ) {
             LogError("err=".$dbv->{dbh}->errstr.", sql=[$sql], args[".join(",",map{$_ || ''} @args)."]");
             return -1;
         }
 
-        $rowid = 1;     # technically this should be the number of succesful rows
+        $rowid ||= 1;     # technically this should be the number of succesful rows
     }
 
 
@@ -525,7 +526,7 @@ Miss Barbell Productions, L<http://www.missbarbell.co.uk/>
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2002-2010 Barbie for Miss Barbell Productions
+  Copyright (C) 2002-2011 Barbie for Miss Barbell Productions
   All Rights Reserved.
 
   This module is free software; you can redistribute it and/or

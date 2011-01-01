@@ -38,6 +38,7 @@ The functions contain herein are specific to the installation.
   RealmName
   RealmID
 
+  FolderName
   FolderSelect
   AreaSelect
 
@@ -56,7 +57,7 @@ require Exporter;
         FieldCheck AuthorCheck AccessUser AccessGroup AccessSelect
         AccessAllFolders AccessAllAreas
         RealmCheck RealmSelect RealmName RealmID
-        FolderSelect AreaSelect
+        FolderName FolderSelect AreaSelect
     ) ]
 );
 
@@ -272,7 +273,8 @@ sub AccessGroup {
 sub AccessSelect {
     my $opt  = shift || 0;
     my $name = shift || 'accessid';
-    my @rows = $dbi->GetQuery('hash','AllAccess');
+    my $max  = Authorised(MASTER) ? MASTER : ADMIN;
+    my @rows = $dbi->GetQuery('hash','AllAccess',$max);
     DropDownRows($opt,$name,'accessid','accessname',@rows);
 }
 
@@ -329,17 +331,28 @@ sub RealmID {
     return $rows[0]->{realmid};
 }
 
+=item FolderName
+
 =item FolderSelect
+
+=cut
+
+sub FolderName {
+    my $opt  = shift || return;
+    my @rows = $dbi->GetQuery('hash','GetFolder',$opt);
+    return @rows ? $rows[0]->{foldername} : undef;
+}
+
+sub FolderSelect {
+    my $opt  = shift || 0;
+    my $name = shift || 'accessid';
+    my @rows = $dbi->GetQuery('hash','AllFolders');
+    DropDownRows($opt,'folderid','folderid','foldername',@rows);
+}
 
 =item AreaSelect
 
 =cut
-
-sub FolderSelect {
-    my $opt = shift || 0;
-    my @rows = ({folderid=>1,foldername=>'Master'});
-    DropDownRows($opt,'folderid','folderid','foldername',@rows);
-}
 
 sub AreaSelect {
     my $opt = shift;
@@ -365,7 +378,7 @@ Miss Barbell Productions, L<http://www.missbarbell.co.uk/>
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2002-2010 Barbie for Miss Barbell Productions
+  Copyright (C) 2002-2011 Barbie for Miss Barbell Productions
   All Rights Reserved.
 
   This module is free software; you can redistribute it and/or

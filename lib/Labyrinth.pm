@@ -13,6 +13,17 @@ Labyrinth - An extensible website in a box.
   my $labyrinth = Labyrinth->new();
   $labyrinth->run();
 
+=head1 DESCRIPTION
+
+Documentation overview for Labyrinth.
+
+Labyrinth began life in 2002, with a small set of plugins to enable various
+features of web site management. The core set of plugins are now available as
+the Labyrinth-Plugin-Core package, with this package providing the core 
+functionality that drives the Labyrinth framework system.
+
+See the individual files for more details on how to use them.
+
 =cut
 
 our $VERSION = '5.00';
@@ -222,6 +233,30 @@ sub action {
 
 __END__
 
+=head1 ADDITIONAL FILES
+
+Additional files are needed to enable Labyrinth and any installed plugins to
+work correctly. These files consist of SQL, HTML template and configuration 
+files, together with some basic CSS and Javascript files.
+
+Please see the Labyrinth-Demo package for a set of these files.
+
+However, these files are only the beginning, and to implement your website,
+you will need to update the appropriate files to use your layout design.
+
+=head1 ADDITION INFORMATION
+
+Although Labyrinth has long been in development, documentation has not been a
+priority. As such much of the documentation you may need to understand how to
+use Labyrinth is the code itself. If you have the inclination, documentation
+patches would be very gratefully received.
+
+The Labyrinth website [1] will eventually feature a documentation site, wiki
+and other features which are intended to provide you with the information to
+use and extend Labyrinth as you wish.
+
+[1] http://labyrinth.missbarbell.co.uk
+
 =head1 AUTHOR
 
 Barbie, <barbie@missbarbell.co.uk> for
@@ -229,7 +264,7 @@ Miss Barbell Productions, L<http://www.missbarbell.co.uk/>
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2002-2010 Barbie for Miss Barbell Productions
+  Copyright (C) 2002-2011 Barbie for Miss Barbell Productions
   All Rights Reserved.
 
   This module is free software; you can redistribute it and/or
