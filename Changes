@@ -1,5 +1,8 @@
 Changes for the Labyrinth Core
 
+5.01	01/01/2011
+	- moved MasterCheck from plugins to core
+
 5.00	01/01/2011
 	- first official open source release.
         - sessions can now be deleted by isolated script not part of logins.

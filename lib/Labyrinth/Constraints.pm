@@ -1,7 +1,10 @@
 package Labyrinth::Constraints;
 
+use warnings;
+use strict;
+
 use vars qw($VERSION $AUTOLOAD @ISA @EXPORT);
-$VERSION = '5.00';
+$VERSION = '5.01';
 
 =head1 NAME
 
@@ -14,7 +17,6 @@ Labyrinth::Constraints
 #----------------------------------------------------------------------------
 # Libraries
 
-use strict;
 use Labyrinth::Variables;
 
 #----------------------------------------------------------------------------

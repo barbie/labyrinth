@@ -3,6 +3,8 @@ package Labyrinth;
 use warnings;
 use strict;
 
+our $VERSION = '5.01';
+
 =head1 NAME
 
 Labyrinth - An extensible website in a box.
@@ -25,8 +27,6 @@ functionality that drives the Labyrinth framework system.
 See the individual files for more details on how to use them.
 
 =cut
-
-our $VERSION = '5.00';
 
 # -------------------------------------
 # Library Modules

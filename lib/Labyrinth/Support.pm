@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.00';
+$VERSION = '5.01';
 
 =head1 NAME
 
@@ -29,6 +29,7 @@ The functions contain herein are specific to the installation.
 
   FieldCheck
   AuthorCheck
+  MasterCheck
   AccessUser
   AccessGroup
   AccessSelect
@@ -54,7 +55,7 @@ require Exporter;
     'all' => [ qw(
         Alignment AlignSelect
         PublishState PublishSelect PublishAction
-        FieldCheck AuthorCheck AccessUser AccessGroup AccessSelect
+        FieldCheck AuthorCheck Master AccessUser AccessGroup AccessSelect
         AccessAllFolders AccessAllAreas
         RealmCheck RealmSelect RealmName RealmID
         FolderName FolderSelect AreaSelect
@@ -186,6 +187,19 @@ sub AuthorCheck {
         return 1    if($rows[0]->{userid} && $rows[0]->{userid} == $tvars{'loginid'});
     }
 
+    $tvars{errcode} = 'BADACCESS';
+    return 0;
+}
+
+=item MasterCheck
+
+Ensure only a Master user can access a Master user details.
+
+=cut
+
+sub MasterCheck {
+    return 1    if( !$cgiparams{userid} || ! Authorised(MASTER,$cgiparams{userid}) );
+    return 1    if( Authorised(MASTER,$cgiparams{userid}) && Authorised(MASTER,$tvars{'loginid'}) );
     $tvars{errcode} = 'BADACCESS';
     return 0;
 }
