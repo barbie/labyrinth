@@ -505,8 +505,9 @@ my $line_breaks = 1;
 #
 
 use vars qw(%html_entities $html_safe_chars %escape_html_map);
-use vars qw(%safe_tags %safe_style %tag_is_empty $convert_nl
-%auto_deinterleave $auto_deinterleave_pattern);
+use vars qw(%safe_tags %safe_style %tag_is_empty %closetag_is_optional
+            %closetag_is_dependent %force_closetag %transpose_tag 
+            $convert_nl %auto_deinterleave $auto_deinterleave_pattern);
 
 # check the validity of a URL.
 
