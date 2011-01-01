@@ -31,6 +31,7 @@ lib/Labyrinth/Support.pm
 lib/Labyrinth/Users.pm
 lib/Labyrinth/Variables.pm
 lib/Labyrinth/Writer.pm
+README
 t/00use.t
 t/90podtest.t
 t/91podcover.t
