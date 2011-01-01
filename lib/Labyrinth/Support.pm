@@ -55,7 +55,8 @@ require Exporter;
     'all' => [ qw(
         Alignment AlignSelect
         PublishState PublishSelect PublishAction
-        FieldCheck AuthorCheck Master AccessUser AccessGroup AccessSelect
+        FieldCheck AuthorCheck MasterCheck
+        AccessUser AccessGroup AccessSelect
         AccessAllFolders AccessAllAreas
         RealmCheck RealmSelect RealmName RealmID
         FolderName FolderSelect AreaSelect
