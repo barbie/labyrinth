@@ -5,7 +5,7 @@ use warnings;
 use utf8;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.01';
+$VERSION = '5.02';
 
 =head1 NAME
 

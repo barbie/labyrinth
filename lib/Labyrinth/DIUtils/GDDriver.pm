@@ -3,7 +3,7 @@ package Labyrinth::DIUtils::GDDriver;
 use warnings;
 use strict;
 
-my $VERSION = '5.01';
+my $VERSION = '5.02';
 
 =head1 NAME
 

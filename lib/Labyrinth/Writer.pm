@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-$VERSION = '5.01';
+$VERSION = '5.02';
 
 =head1 NAME
 
@@ -42,6 +42,7 @@ require Exporter;
 use CGI                 qw(:standard);
 use Template;
 use File::Basename;
+use MIME::Types;
 
 use Labyrinth::Audit;
 use Labyrinth::Globals;
@@ -51,6 +52,8 @@ use Labyrinth::MLUtils;
 # -------------------------------------
 # Variables
 
+my $published;
+
 my %codes = (
     BADLAYOUT       => 'public/badlayout.html',
     BADPAGE         => 'public/badpage.html',
@@ -58,10 +61,18 @@ my %codes = (
     MESSAGE         => 'public/error_message.html',
 );
 
-my $published;
-
 my %binary = (
-    pdf             => 'application/pdf',
+    pdf             => 'application/pdf'
+);
+
+my %knowntypes = (
+    html            => 'text/html',
+    rss             => 'application/xml',
+    xml             => 'application/xml',
+    ics             => 'text/calendar',
+    txt             => 'text/plain',
+    yml             => 'text/yaml',
+    yaml            => 'text/yaml'
 );
 
 # -------------------------------------
@@ -138,14 +149,16 @@ sub Publish {
         EVAL_PERL       => ($content eq $codes{BADPAGE} ? 1 : 0),
     );
 
-    my $contenttype = 'text/html';
-    $contenttype = 'application/xml'    if($layout =~ /\.(rss|xml)$/);
-    $contenttype = 'text/plain'         if($layout =~ /\.txt$/);
-    $contenttype = 'text/calendar'      if($layout =~ /\.ics$/);
+    my ($ext) = $layout =~ m/\.(\w+)$/;
+    $ext ||= 'html';
 
-    my %cgihash = (
-        -type=>$contenttype
-    );
+    my $type = $knowntypes{$ext} || do {
+        my $types = MIME::Types->new;
+        my $mime = $types->mimeTypeOf($ext);
+        $mime->type || 'text/html';
+    };
+
+    my %cgihash = ( -type => $type );
     $cgihash{'-status'}     = '404 Page Not Found'  if($content eq $codes{BADPAGE} || $content eq $codes{BADCMD});
     $cgihash{'-cookie'}     = $vars->{cookie}       if($vars->{cookie});
     $cgihash{'-attachment'} = basename($content)    if($layout =~ /\.ics$/);

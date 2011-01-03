@@ -1,5 +1,8 @@
 Changes for the Labyrinth Core
 
+5.02	03/01/2011
+	- added better handling of MIME Types from CPAN Testers sites.
+
 5.01	01/01/2011
 	- moved MasterCheck from plugins to core
 
