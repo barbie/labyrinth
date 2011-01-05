@@ -5,7 +5,7 @@ use strict;
 use utf8;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.02';
+$VERSION = '5.03';
 
 =head1 NAME
 
@@ -43,7 +43,6 @@ use MIME::Lite;
 use MIME::Lite::TT::HTML;
 use MIME::Types;
 use File::Basename;
-use Text::Format;
 
 use Labyrinth::Audit;
 use Labyrinth::Writer;
@@ -53,7 +52,6 @@ use Labyrinth::Variables;
 # Variables
 
 my $mtypes = MIME::Types->new;
-my $format = Text::Format->new({tabstop => 8});
 
 my %mailer;
 

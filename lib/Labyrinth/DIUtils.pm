@@ -3,7 +3,7 @@ package Labyrinth::DIUtils;
 use warnings;
 use strict;
 
-my $VERSION = '5.02';
+my $VERSION = '5.03';
 
 =head1 NAME
 
