@@ -10,8 +10,7 @@ lib/Labyrinth/Constraints/Emails.pm
 lib/Labyrinth/CookieLib.pm
 lib/Labyrinth/DBUtils.pm
 lib/Labyrinth/DIUtils.pm
-lib/Labyrinth/DIUtils/GDDriver.pm
-lib/Labyrinth/DIUtils/IMDriver.pm
+lib/Labyrinth/DIUtils/Base.pm
 lib/Labyrinth/DTUtils.pm
 lib/Labyrinth/Globals.pm
 lib/Labyrinth/Groups.pm

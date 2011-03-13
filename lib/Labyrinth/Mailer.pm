@@ -5,7 +5,7 @@ use strict;
 use utf8;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.03';
+$VERSION = '5.04';
 
 =head1 NAME
 
@@ -267,6 +267,6 @@ Miss Barbell Productions, L<http://www.missbarbell.co.uk/>
   All Rights Reserved.
 
   This module is free software; you can redistribute it and/or
-  modify it under the same terms as Perl itself.
+  modify it under the Artistic License 2.0.
 
 =cut

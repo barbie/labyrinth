@@ -3,7 +3,7 @@ package Labyrinth::DIUtils;
 use warnings;
 use strict;
 
-my $VERSION = '5.03';
+my $VERSION = '5.04';
 
 =head1 NAME
 
@@ -14,7 +14,7 @@ Labyrinth::DIUtils - Digital Image utilities driver
   use Labyrinth::DIUtils;
 
   Labyrinth::DIUtils::Tool('GD');           # switch to GD
-  Labyrinth::DIUtils::Tool('IM');           # switch to ImageMagick (default)
+  Labyrinth::DIUtils::Tool('ImageMagick');  # switch to ImageMagick
   my $tool = Labyrinth::DIUtils::Tool;      # returns current tool setting
 
   my $hook = Labyrinth::DIUtils->new($file);
@@ -24,7 +24,7 @@ Labyrinth::DIUtils - Digital Image utilities driver
 
 =head1 DESCRIPTION
 
-Handles the driver software for ImageMagick and GD image manipulation;
+Handles the driver software for image manipulation;
 
 =cut
 
@@ -38,7 +38,7 @@ use Labyrinth::Globals;
 #Variables
 #############################################################################
 
-my $tool = 'IM';    # defaults to ImageMagick
+my $tool = 'Base';  # defaults to no processing
 
 #############################################################################
 #Subroutines
@@ -77,14 +77,15 @@ sub new {
         Croak("No image file specified to $self->new().");
     } elsif(!defined $tool) {
         Croak("No image tool specified for $self.");
-    } elsif($tool eq 'IM') {
-        require Labyrinth::DIUtils::IMDriver;
-        $hook = Labyrinth::DIUtils::IMDriver->new($file);
-    } elsif($tool eq 'GD') {
-        require Labyrinth::DIUtils::GDDriver;
-        $hook = Labyrinth::DIUtils::GDDriver->new($file);
     } else {
-        Croak("Invalid image tool specified for $self.");
+        my $class = "Labyrinth::DIUtils::$tool";
+        eval { 
+            require $class;
+            $hook = $class->new($file);
+        };
+        if($@ || !$hook) {
+            Croak("Invalid image tool [$tool] specified for $self.");
+        }
     }
 
     return $hook;   # a cheat, but does the job :)
@@ -109,6 +110,6 @@ Miss Barbell Productions, L<http://www.missbarbell.co.uk/>
   All Rights Reserved.
 
   This module is free software; you can redistribute it and/or
-  modify it under the same terms as Perl itself.
+  modify it under the Artistic License 2.0.
 
 =cut
