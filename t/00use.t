@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 28;
+use Test::More tests => 27;
 
 BEGIN {
 	use_ok('Labyrinth');
@@ -11,8 +11,7 @@ BEGIN {
 	use_ok('Labyrinth::CookieLib');
 	use_ok('Labyrinth::DBUtils');
 	use_ok('Labyrinth::DIUtils');
-	use_ok('Labyrinth::DIUtils::GDDriver');
-	use_ok('Labyrinth::DIUtils::IMDriver');
+	use_ok('Labyrinth::DIUtils::Base');
 	use_ok('Labyrinth::DTUtils');
 	use_ok('Labyrinth::Globals');
 	use_ok('Labyrinth::Groups');
