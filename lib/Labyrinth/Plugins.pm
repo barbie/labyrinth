@@ -21,7 +21,7 @@ to quickly reference all the available plugins.
 =cut
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.04';
+$VERSION = '5.05';
 
 # -------------------------------------
 # Export Details
