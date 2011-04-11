@@ -171,7 +171,7 @@ sub Publish {
     if($layout =~ /\.html$/) {
         my $html;
         eval { $parser->process($layout,$vars,\$html) };
-        die $parser->error()    if($@);
+        die $parser->error()    if($@ || !$html);
         my ($top,$body,$tail) = ($html =~ m!^(.*?<body[^>]*>)(.*?)(</body>.*)$!si);
 #   LogDebug( "html=[$html]" );
 #   LogDebug( "top=[$top]" );

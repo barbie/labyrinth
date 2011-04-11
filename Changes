@@ -1,5 +1,8 @@
 Changes for the Labyrinth Core
 
+5.05	current
+	- fixes and code cleaning from CPAN Testers Blog site.
+
 5.04	13/03/2011
 	- Abstracted GD and ImageMagick drivers into their own distributions.
 

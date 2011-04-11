@@ -188,7 +188,7 @@ sub StockSelect {
         $html .= ' selected="selected"' if($opt == $_);
         $html .= ">$stock{$_}->{title}</option>";
     }
-    $html .= "</select>\n";
+    $html .= "</select>";
 
     return $html;
 }

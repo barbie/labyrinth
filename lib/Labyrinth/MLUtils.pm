@@ -222,7 +222,7 @@ sub DropDownList {
             join("",(map { qq|<option value="$_"|.
                     (defined $opt && $opt == $_ ? ' selected="selected"' : '').
                     ">$_</option>" } @items)) .
-            "</select>\n";
+            "</select>";
 }
 
 sub DropDownListText {
@@ -232,7 +232,7 @@ sub DropDownListText {
             join("",(map { qq|<option value="$_"|.
                     (defined $opt && $opt eq $_ ? ' selected="selected"' : '').
                     ">$_</option>" } @items)) .
-            "</select>\n";
+            "</select>";
 }
 
 sub DropDownRows {
@@ -242,7 +242,7 @@ sub DropDownRows {
             join("",(map { qq|<option value="$_->{$index}"|.
                     (defined $opt && $opt == $_->{$index} ? ' selected="selected"' : '').
                     ">$_->{$value}</option>" } @items)) .
-            "</select>\n";
+            "</select>";
 }
 
 sub DropDownRowsText {
@@ -252,7 +252,7 @@ sub DropDownRowsText {
             join("",(map { qq|<option value="$_->{$index}"|.
                     (defined $opt && $opt eq $_->{$index} ? ' selected="selected"' : '').
                     ">$_->{$value}</option>" } @items)) .
-            "</select>\n";
+            "</select>";
 }
 
 sub DropDownMultiList {
@@ -273,7 +273,7 @@ sub DropDownMultiList {
             join("",(map { qq|<option value="$_"|.
                     (defined $opts && $opts{$_} ? ' selected="selected"' : '').
                     ">$_</option>" } @items)) .
-            "</select>\n";
+            "</select>";
 }
 
 sub DropDownMultiRows {
@@ -294,7 +294,7 @@ sub DropDownMultiRows {
             join("",(map { qq|<option value="$_->{$index}"|.
                     (defined $opts && $opts{$_->{$index}} ? ' selected="selected"' : '').
                     ">$_->{$value}</option>" } @items)) .
-            "</select>\n";
+            "</select>";
 }
 
 =head2 Error Functions
@@ -513,7 +513,7 @@ use vars qw(%safe_tags %safe_style %tag_is_empty %closetag_is_optional
 
 sub process_html {
     my ($text, $line_breaks, $allow_html) = @_;
-    $text =~ s!</pre><pre>!<br />!gs;
+    $text =~ s!</pre><pre>!<br />!gs    if($text);
 
     # clean text of any nasties
     #$text =~ s/[\x201A\x2018\x2019`]/&#39;/g;   # nasty single quotes
@@ -1012,6 +1012,8 @@ use vars qw(@stack $safe_tags $convert_nl);
 sub cleanup_html {
     local ($_, $convert_nl, $safe_tags) = @_;
     local @stack = ();
+
+    return ''   unless($_);
 
     my $ignore_comments = 0;
     if($ignore_comments) {

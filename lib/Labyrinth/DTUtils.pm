@@ -188,7 +188,7 @@ sub OptSelect {
         $html .= ' selected="selected"' if($opt && $opt eq $item);
         $html .= ">$list->{$item}</option>";
     }
-    $html .= "</select>\n";
+    $html .= "</select>";
 
     return $html;
 }
