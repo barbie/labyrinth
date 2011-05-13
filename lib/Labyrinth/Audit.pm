@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.05';
+$VERSION = '5.06';
 
 =head1 NAME
 
@@ -164,11 +164,8 @@ sub LogRecord {
     my $audit = "<:$username> [$level] $mess";
 
     if($CALLER) {
-        my @calls = caller(1);
-        $audit .= " CALLER($calls[1],$calls[2])";
-        for my $i (2..5) {
-            @calls = caller($i);
-            last    unless(@calls);
+        my $i = 1;
+        while(my @calls = caller($i++)) {;
             $audit .= " => CALLER($calls[1],$calls[2])";
         }
     }

@@ -3,7 +3,7 @@ package Labyrinth::RSS;
 use warnings;
 use strict;
 
-my $VERSION = '5.05';
+my $VERSION = '5.06';
 
 =head1 NAME
 
@@ -214,7 +214,6 @@ sub RSS_2_0 {
         language        => 'en',
         copyrights      => $settings{copyright},
         pubDate         => formatDate(16),
-#        lastBuildDate   => formatDate(16),
         managingEditor  => $settings{rsseditor},
         webMaster       => $settings{rssmaster},
         generator       => $GENERATOR,
@@ -237,7 +236,7 @@ sub RSS_2_0 {
             pubDate     => formatDate(16,$item->{data}{createdate}),
             title       => CleanEntities($item->{data}{title}),
             description => CleanEntities($block),
-            link        => $settings{rsslink} . $self->{perma},
+            link        => $settings{rsslink} . $perma,
             guid        => $settings{rsslink} . $perma,
             comments    => $settings{rsslink} . $perma . '#comments'
         );

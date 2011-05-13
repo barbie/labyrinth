@@ -3,7 +3,7 @@ package Labyrinth;
 use warnings;
 use strict;
 
-our $VERSION = '5.05';
+our $VERSION = '5.06';
 
 =head1 NAME
 
@@ -188,7 +188,7 @@ LogDebug("run: layout=$tvars{layout}");
 LogDebug("run: content=$tvars{content}");
 LogDebug("run: loggedin=$tvars{loggedin}");
 
-    Publish();
+    return Publish();
 }
 
 =item load()

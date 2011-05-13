@@ -5,7 +5,7 @@ use strict;
 use utf8;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.05';
+$VERSION = '5.06';
 
 =head1 NAME
 
@@ -95,9 +95,9 @@ sub MailSend {
 
     my $template = $hash{template}  or return LogError("MailSend: template not set");
     my $email    = $hash{email}     or return LogError("MailSend: email not set");
-    my $body;
 
-    Transform($template,\%hash,\$body);
+    my $ref = Transform($template,\%hash);
+    my $body = $$ref;
     unless($hash{nowrap}) {
         $Text::Wrap::columns = 72;
         $body = wrap('', '', $body);
@@ -154,9 +154,10 @@ sub MailSent {
 
 sub HTMLSend {
     my %hash  = @_;
-    my $html;
 
-    Transform($hash{html},\%tvars,\$html);
+    my $ref = Transform($hash{html},\%tvars);
+    my $html = $$ref;
+
 
     MIME::Lite->send('smtp', $settings{smtp}, Timeout=>60);
 #    MIME::Lite->send('sendmail', "$settings{mailsend} $hash{to}", Timeout=>60);

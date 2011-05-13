@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 27;
+use Test::More tests => 30;
 
 BEGIN {
 	use_ok('Labyrinth');
@@ -24,6 +24,7 @@ BEGIN {
 	use_ok('Labyrinth::Phrasebook');
 	use_ok('Labyrinth::Plugin::Base');
 	use_ok('Labyrinth::Plugins');
+	use_ok('Labyrinth::Query::CGI');
 	use_ok('Labyrinth::RSS');
 	use_ok('Labyrinth::Request');
 	use_ok('Labyrinth::Session');
@@ -31,4 +32,6 @@ BEGIN {
 	use_ok('Labyrinth::Users');
 	use_ok('Labyrinth::Variables');
 	use_ok('Labyrinth::Writer');
+	use_ok('Labyrinth::Writer::Parser::TT');
+	use_ok('Labyrinth::Writer::Render::CGI');
 }

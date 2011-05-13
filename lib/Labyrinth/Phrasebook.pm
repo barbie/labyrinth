@@ -3,7 +3,7 @@ package Labyrinth::Phrasebook;
 use warnings;
 use strict;
 
-my $VERSION = '5.05';
+my $VERSION = '5.06';
 
 =head1 NAME
 

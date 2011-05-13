@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.05';
+$VERSION = '5.06';
 
 =head1 NAME
 
@@ -65,11 +65,6 @@ require Exporter;
 
 @EXPORT_OK  = ( @{$EXPORT_TAGS{'all'}} );
 @EXPORT     = ( @{$EXPORT_TAGS{'all'}} );
-
-# -------------------------------------
-# Library Modules
-
-use CGI;
 
 # -------------------------------------
 # Variables
@@ -143,7 +138,15 @@ sub init {
     $settings{urlregex}   = $urlregex;
     $settings{emailregex} = $email;
 
-    $cgi = CGI->new();
+    $settings{'query-parser'} ||= 'CGI';
+    my $class = 'Labyrinth::Query::' . $settings{'query-parser'};
+
+    eval {
+        eval "CORE::require $class";
+        $cgi = $class->new();
+    };
+
+    die "Cannot load Query package for '$settings{'query-parser'}': $@" if($@);
 }
 
 =head2 CGI Parameter Handling

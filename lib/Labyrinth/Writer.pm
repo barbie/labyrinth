@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-$VERSION = '5.05';
+$VERSION = '5.06';
 
 =head1 NAME
 
@@ -25,6 +25,9 @@ the parsing of a given template with global variables and prints the result.
 
   Publish
   PublishCode
+  UnPublish
+  Transform
+  Croak
 
 =cut
 
@@ -39,8 +42,6 @@ require Exporter;
 # -------------------------------------
 # Library Modules
 
-use CGI                 qw(:standard);
-use Template;
 use File::Basename;
 use MIME::Types;
 
@@ -51,6 +52,8 @@ use Labyrinth::MLUtils;
 
 # -------------------------------------
 # Variables
+
+my ($PARSER,$RENDER);
 
 my $published;
 
@@ -82,6 +85,33 @@ my %knowntypes = (
 
 =over 4
 
+=item Config()
+
+Configure template parser and output method.
+
+=cut
+
+sub Config {
+    $settings{'writer-parser'} ||= 'TT';
+    $settings{'writer-render'} ||= 'CGI';
+
+    my $parser = 'Labyrinth::Writer::Parser::' . $settings{'writer-parser'};
+    my $render = 'Labyrinth::Writer::Render::' . $settings{'writer-render'};
+
+    eval {
+        eval "CORE::require $parser";
+        $PARSER = $parser->new();
+    };
+    die "Cannot load Writer::Parser package for '$settings{'writer-parser'}': $@" if($@);
+
+    eval {
+        eval "CORE::require $render";
+        $RENDER = $render->new();
+    };
+    die "Cannot load Writer::Render package for '$settings{'writer-render'}': $@" if($@);
+
+}
+
 =item Publish()
 
 Publish() parses a given template, via Template Toolkit, and prints the
@@ -91,6 +121,9 @@ result.
 
 =item UnPublish
 
+Used to reset publishing status. Usually only applicable in mod_perl 
+environments.
+
 =item Transform
 
 =cut
@@ -98,28 +131,25 @@ result.
 sub Publish {
     return  if($published);
 
-    my $path = $settings{'templates'};
-    my $vars = \%tvars;
+    Config()    unless($PARSER && $RENDER);
 
-    if($vars->{redirect}) {
-        print $cgi->redirect($vars->{redirect});
+    # redirects require minimal processing
+    if($tvars{redirect}) {
+        $RENDER->redirect($tvars{redirect});
+        $published = 1;
         return;
     }
 
-    # binary files are output directly
-    if($vars->{'contenttype'} && $binary{$vars->{'contenttype'}}) {
-        #LogDebug("content-type=[$vars->{'contenttype'}]");
-        #LogDebug("content-file=[$vars->{'file'}]");
-        my $fh = IO::File->new($settings{webdir}.'/'.$vars->{'file'},'r');
-        if($fh) {
-            print $cgi->header( -type => $binary{$vars->{'contenttype'}} );
-            my $buffer;
-            while(read($fh,$buffer,1024)) { print $buffer }
-            $fh->close;
-            $published = 1;
-            return;
-        }
+    # binary files handled directly
+    if($tvars{contenttype} && $binary{$tvars{contenttype}}) {
+        $tvars{'writer'} = { 'ctype' => $binary{$tvars{'contenttype'}}, 'file' => $tvars{'file'} };
+        $RENDER->binary($tvars{'writer'});
+        $published = 1;
+        return;
     }
+
+    my $path = $settings{'templates'};
+    my $vars = \%tvars;
 
     unless($vars->{'layout'} && -r "$path/$vars->{'layout'}") {
         $vars->{'badlayout'} = $vars->{'layout'};
@@ -135,62 +165,48 @@ sub Publish {
 #   LogDebug( "layout=[$layout]" );
 #   LogDebug( "content=[$content]" );
 #   LogDebug( "cookie=[$vars->{cookie}]" )  if($vars->{cookie});
-    use Data::Dumper;
-    LogDebug( "vars=".Dumper($vars) );
+#   use Data::Dumper;
+#   LogDebug( "vars=".Dumper($vars) );
 
 
-    my %config = (                              # provide config info
-        RELATIVE        => 1,
-        ABSOLUTE        => 1,
-        INCLUDE_PATH    => $path,
-        INTERPOLATE     => 0,
-        POST_CHOMP      => 1,
-        TRIM            => 1,
-        EVAL_PERL       => ($content eq $codes{BADPAGE} ? 1 : 0),
-    );
+    $vars->{evalperl} = ($content eq $codes{BADPAGE} ? 1 : 0);
+
+    #LogDebug("<!-- $layout : $content -->");
+
+    my $output = $PARSER->parser($layout,$vars);
 
     my ($ext) = $layout =~ m/\.(\w+)$/;
     $ext ||= 'html';
 
-    my $type = $knowntypes{$ext} || do {
+    # split HTML and process etc
+    if($ext =~ /htm/) {
+        my ($top,$body,$tail) = ($$output =~ m!^(.*?<body[^>]*>)(.*?)(</body>.*)$!si);
+#       LogDebug( "html=[$html]" );
+#       LogDebug( "top=[$top]" );
+#       LogDebug( "tail=[$tail]" );
+#       LogDebug( "body=[$body]" );
+        my $html = $top . process_html($body,0,1) . $tail;
+        $output = \$html;
+    }
+
+    $tvars{headers}{type} = $knowntypes{$ext} || do {
         my $types = MIME::Types->new;
         my $mime = $types->mimeTypeOf($ext);
         $mime->type || 'text/html';
     };
 
-    my %cgihash = ( -type => $type );
-    $cgihash{'-status'}     = '404 Page Not Found'  if($content eq $codes{BADPAGE} || $content eq $codes{BADCMD});
-    $cgihash{'-cookie'}     = $vars->{cookie}       if($vars->{cookie});
-    $cgihash{'-attachment'} = basename($content)    if($layout =~ /\.ics$/);
-    #LogDebug("CGI Hash=".Dumper(\%cgihash));
-    print $cgi->header( %cgihash );
-
-    #LogDebug("<!-- $layout : $content -->");
-
-    my $parser = Template->new(\%config);   # initialise parser
-    if($layout =~ /\.html$/) {
-        my $html;
-        eval { $parser->process($layout,$vars,\$html) };
-        die $parser->error()    if($@ || !$html);
-        my ($top,$body,$tail) = ($html =~ m!^(.*?<body[^>]*>)(.*?)(</body>.*)$!si);
-#   LogDebug( "html=[$html]" );
-#   LogDebug( "top=[$top]" );
-#   LogDebug( "tail=[$tail]" );
-#   LogDebug( "body=[$body]" );
-        print $top . process_html($body,0,1) . $tail;
-    } else {
-        $parser->process($layout,$vars)         # parse the template
-            or die $parser->error();
-    }
+    $tvars{headers}{'status'}     = '404 Page Not Found'    if($content eq $codes{BADPAGE} || $content eq $codes{BADCMD});
+    $tvars{headers}{'cookie'}     = $tvars{cookie}          if($tvars{cookie});
+    $tvars{headers}{'attachment'} = basename($content)      if($layout =~ /\.ics$/);
 
     $published = 1;
+
+    return $RENDER->publish($tvars{headers}, $output);
 }
 
 sub PublishCode {
     $tvars{'content'} = $codes{$_[0]};
-#   LogDebug("code=$_[0]");
-#   LogDebug("content=$codes{$_[0]}");
-    Publish();
+    return Publish();
 }
 
 sub UnPublish {
@@ -200,38 +216,14 @@ sub UnPublish {
 sub Transform {
     my ($template,$vars,$output) = @_;
 
-    #print STDERR "Transform: template=$template, output=$output\n";
-    #LogDebug("Transform: template=$template, output=$output");
-
     my $path = $settings{'templates'};
     my $layout = "$path/$template";
 
-    #LogDebug("Transform: layout=$layout");
-
     die "Missing template [$layout]\n"  unless(-e $layout);
 
-    my %config = (                              # provide config info
-        RELATIVE        => 1,
-        ABSOLUTE        => 1,
-        INCLUDE_PATH    => $path,
-        OUTPUT_PATH     => $vars->{cache},
-        INTERPOLATE     => 0,
-        POST_CHOMP      => 1,
-        TRIM            => 1,
-    );
+    Config()    unless($PARSER && $RENDER);
 
-    my $parser = Template->new(\%config);   # initialise parser
-    #eval {
-    $parser->process($layout,$vars,$output) # parse the template
-        or die $parser->error();
-    #};
-    #if($@) {
-    #    my $error = $parser->error();
-    #    LogDebug("Transform: Error - $@");
-    #    LogDebug("Transform: Type  - ".$error->type());
-    #    LogDebug("Transform: Info  - ".$error->info());
-    #}
-    #LogDebug("Transform: Done");
+    return $PARSER->parser($layout,$vars);
 }
 
 =item Croak
@@ -254,8 +246,6 @@ __END__
 
 =head1 SEE ALSO
 
-  CGI,
-  Template (Template Toolkit)
   Labyrinth
 
 =head1 AUTHOR

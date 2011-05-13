@@ -1,5 +1,12 @@
 Changes for the Labyrinth Core
 
+5.06	current
+	- abstracted input CGI to Labyrinth::Query::CGI.
+	- abstracted output CGI to Labyrinth::Writer::Render::CGI.
+	- abstracted template parser to Labyrinth::Writer::Parser::TT.
+	- all above in order to allow PSGI packages and other template parsers
+	  to be used.
+
 5.05	11/04/2011
 	- fixes and code cleaning from CPAN Testers Blog site.
 

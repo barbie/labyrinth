@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.05';
+$VERSION = '5.06';
 
 =head1 NAME
 
@@ -447,7 +447,7 @@ sub ParseParams {
     my $results;
 
 #   LogDebug("rules=".Dumper(\%rules));
-#   LogDebug("env=".Dumper(\%ENV));
+#   LogDebug("env=".Dumper(\%cgi->env()));
 
     if(!defined $ENV{'SERVER_SOFTWARE'}) {  # commandline testing
         my $file = "$settings{'config'}/cgiparams.nfo";
