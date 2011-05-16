@@ -16,6 +16,7 @@ Labyrinth::Query::CGI - Environment hander for Labyrinth.
 
   $cgi->env();
   $cgi->Vars();
+  $cgi->cookie();
 
 =head1 DESCRIPTION
 
@@ -27,6 +28,7 @@ Thin wrapper around CGI.pm.
 # Library Modules
 
 use base qw(CGI);
+use CGI::Cookie;
 
 # -------------------------------------
 # The Subs

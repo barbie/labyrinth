@@ -30,8 +30,8 @@ Labyrinth::Audit - Set of general Audit Functions.
 
 =head1 DESCRIPTION
 
-The Audit package contains a number of variables and functions that are
-used across the system.
+The Audit package contains a number of variables and functions that can be
+used within the framework to provide error, debugging and trace information.
 
 =head1 EXPORT
 

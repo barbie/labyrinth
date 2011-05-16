@@ -12,6 +12,8 @@ Labyrinth::Constraints::Emails - Data constraints for email
 
 =head1 DESCRIPTION
 
+Validates emails, eith in simplistic terms or according to the RFCs.
+
 =cut
 
 #----------------------------------------------------------------------------
@@ -56,6 +58,8 @@ my $email_harsh     = qr¬$local_harsh\@$host¬;
 
 =head2 emails
 
+Validate email strings against general usage.
+
 =over 4
 
 =item emails
@@ -83,6 +87,8 @@ sub match_emails {
 }
 
 =head2 email_rfc
+
+Validate email strings against the RFC specs.
 
 =over 4
 

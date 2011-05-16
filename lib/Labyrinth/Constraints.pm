@@ -12,6 +12,8 @@ Labyrinth::Constraints
 
 =head1 DESCRIPTION
 
+Provides basic constraint methods used within Labyrinth.
+
 =cut
 
 #----------------------------------------------------------------------------
@@ -35,6 +37,8 @@ require Exporter;
 =head1 FUNCTIONS
 
 =head2 ddmmyy
+
+Validates simple day-month-year date strings.
 
 =over 4
 
@@ -80,6 +84,8 @@ sub match_ddmmyy {
 }
 
 =head2 url
+
+Validates simple URL patterns.
 
 =over 4
 

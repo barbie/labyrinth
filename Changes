@@ -6,6 +6,8 @@ Changes for the Labyrinth Core
 	- abstracted template parser to Labyrinth::Writer::Parser::TT.
 	- all above in order to allow PSGI packages and other template parsers
 	  to be used.
+	- documentation updates.
+	- reworked CookieLib to use new Labyrinth::Query::CGI package.
 
 5.05	11/04/2011
 	- fixes and code cleaning from CPAN Testers Blog site.

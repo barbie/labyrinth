@@ -50,6 +50,8 @@ my $tool = 'Base';  # defaults to no processing
 
 =item Tool
 
+Configuration function to determine which image package to load.
+
 =back
 
 =cut
@@ -63,6 +65,8 @@ sub Tool {
 =over 4
 
 =item new()
+
+Constructs the interface between Labyrinth and the image package.
 
 =back
 

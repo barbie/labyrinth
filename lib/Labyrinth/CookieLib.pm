@@ -12,9 +12,17 @@ Labyrinth::CookieLib - Cookie handling library
 
 =head1 DESCRIPTION
 
-Based on the NMS cookielib script
+This collection of functions provides the cookie functionality within 
+the Labyrinth framework.
+
+Based on the NMS cookielib script. 
 
 =cut
+
+# -------------------------------------
+# Library Modules
+
+use Labyrinth::Variables;
 
 # -------------------------------------
 # Export Details
@@ -33,12 +41,6 @@ require Exporter;
 @EXPORT    = ( @{ $EXPORT_TAGS{'all'} } );
 
 # -------------------------------------
-# Library Modules
-
-use CGI;
-use CGI::Cookie;
-
-# -------------------------------------
 # The Subs
 
 =head1 FUNCTIONS
@@ -47,21 +49,39 @@ use CGI::Cookie;
 
 =item SetCookieExpDate
 
+Set the cookie expiration date.
+
 =item SetCookiePath
+
+Set the cookie path.
 
 =item SetCookieDomain
 
+Set the cookie domain.
+
 =item SetSecureCookie
+
+Set the cookie security.
 
 =item GetCookies
 
+Get all existing cookies.
+
 =item SetCookie
+
+Set a single cookie.
 
 =item SetCookies
 
+Set all given cookies.
+
 =item GetCompressedCookies
 
+Get all compressed cookies.
+
 =item SetCompressedCookies
+
+Set all given cookies as compressed cookies.
 
 =back
 
@@ -108,7 +128,7 @@ sub GetCookies
     my $exists = 0;
     foreach my $name (@cookies)
     {
-        my $value = CGI->cookie($name);
+        my $value = $cgi->cookie($name);
         $main::Cookies{$name} = $value;
         $exists = 1 if $value;
     }
@@ -117,7 +137,7 @@ sub GetCookies
 
 sub SetCookie {
     my ($name,$value) = @_;
-    my $c = CGI->cookie (
+    my $c = $cgi->cookie (
                          -name    => $name,
                          -value   => $value,
                          -expires => (exists($cookie_config{expires}) ? $cookie_config{expires} : undef),
@@ -189,8 +209,6 @@ __END__
 
 =head1 SEE ALSO
 
-  CGI,
-  CGI::Cookie
   Labyrinth
 
 =head1 AUTHOR

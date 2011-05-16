@@ -61,6 +61,8 @@ my %plugins;
 
 =item new()
 
+Instantiates the Labyrinth object.
+
 =back
 
 =cut
@@ -82,7 +84,8 @@ sub new {
 
 =item run
 
-run provides the interface between the CGI and the modules
+Provides the dispatch loop, instantiating any configuration required, then
+processes each command in turn, before finally publishing the result.
 
 =cut
 
@@ -193,7 +196,7 @@ LogDebug("run: loggedin=$tvars{loggedin}");
 
 =item load()
 
-Loads plugins found under the plugins directory.
+Loads plugins found within the plugin directory.
 
 =item action($action)
 
