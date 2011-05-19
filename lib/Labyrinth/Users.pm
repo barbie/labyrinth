@@ -12,7 +12,8 @@ Labyrinth::Users - Generic User functions for Labyrinth
 
 =head1 DESCRIPTION
 
-Contains generic user functionality
+Contains generic user functionality that are required across the Labyrinth
+framework, and may be used within plugins.
 
 =cut
 
@@ -54,11 +55,19 @@ my (%usernames,%userids);  # quick lookup hashes
 
 =item UserName($id)
 
+Given a user id, returns the user's name.
+
 =item UserID
+
+Given a user's name (real name or nick name), returns the user id.
 
 =item FreshPassword
 
+Returns a generated password string.
+
 =item PasswordCheck
+
+Checks the given password against the required rules.
 
 =back
 
@@ -132,6 +141,11 @@ sub PasswordCheck {
 =over 4
 
 =item UserSelect
+
+Provides a dropdown selection box, as a XHTML code snippet, of the currently 
+listed users.
+
+By default only users listed as searchable are listed.
 
 =back
 

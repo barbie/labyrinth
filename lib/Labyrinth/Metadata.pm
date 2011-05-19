@@ -8,7 +8,7 @@ $VERSION = '5.06';
 
 =head1 NAME
 
-Labyrinth::Metadata - Handles the metadata tagging for tables.
+Labyrinth::Metadata - Metadata tagging functionality for Labyrinth.
 
 =cut
 
@@ -81,7 +81,11 @@ Gets the metadata for the given id.
 
 =item MetaCloud
 
+Returns the XHTML snippet to display a Metadata Tag Cloud.
+
 =item MetaTags
+
+Returns the list of tags attributed to a entry type and section ids.
 
 =back
 
@@ -193,9 +197,6 @@ sub MetaTags {
     my @tags = map {$_->{metadata}} @rows;
     return @tags;
 }
-
-#----------------------------------------------------------------------------
-# Administration Interface Functions
 
 1;
 

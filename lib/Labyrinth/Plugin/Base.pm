@@ -7,7 +7,7 @@ my $VERSION = '5.06';
 
 =head1 NAME
 
-Labyrinth::Plugin::Base - Plugin base functional template for Labyrinth
+Labyrinth::Plugin::Base - Plugin base code template for Labyrinth plugins
 
 =head1 DESCRIPTION
 
@@ -56,6 +56,8 @@ my %fields;
 
 =item new()
 
+Creates the Plugin object.
+
 =back
 
 =cut
@@ -90,7 +92,7 @@ sub new {
 
 =head1 PUBLIC INTERFACE METHODS
 
-None currently.
+None by default.
 
 =head1 ADMIN INTERFACE METHODS
 

@@ -59,6 +59,8 @@ Redirect to given URL.
 
 Publishes text output.
 
+=back
+
 =cut
 
 sub new {
@@ -97,8 +99,6 @@ sub publish {
 1;
 
 __END__
-
-=back
 
 =head1 SEE ALSO
 

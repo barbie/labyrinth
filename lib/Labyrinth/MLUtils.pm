@@ -9,7 +9,7 @@ $VERSION = '5.06';
 
 =head1 NAME
 
-Labyrinth::MLUtils - Standard Database Access Methods
+Labyrinth::MLUtils - Markup Language Utility functions for Labyrinth.
 
 =head1 SYNOPSIS
 
@@ -88,7 +88,11 @@ input textarea edit preparation.
 
 =item CleanLink
 
+Attempts to remove known spam style links.
+
 =item CleanWords
+
+Attempts to remove known profanity words.
 
 =back
 
@@ -199,17 +203,52 @@ sub _buildtags {
 
 =over 4
 
-=item DropDownList
+=item DropDownList($opt,$name,@items)
 
-=item DropDownListText
+Returns a dropdown selection box given a list of numbers. Can optionally pass
+a option value to be pre-selected. The name of the form element is used as
+both the element name and id.
 
-=item DropDownRows
+=item DropDownListText($opt,$name,@items)
 
-=item DropDownRowsText
+Returns a dropdown selection box given a list of strings. Can optionally pass
+a option value to be pre-selected. The name of the form element is used as
+both the element name and id.
 
-=item DropDownMultiList
+=item DropDownRows($opt,$name,$index,$value,@items)
 
-=item DropDownMultiRows
+Returns a dropdown selection box given a list of rows. Can optionally pass
+a option value to be pre-selected. The name of the form element is used as
+both the element name and id. The 'index' and 'value' refence the field names
+within each row hash.
+
+=item DropDownRowsText($opt,$name,$index,$value,@items)
+
+Returns a dropdown selection box given a list of strings. Can optionally pass
+a option value to be pre-selected. The name of the form element is used as
+both the element name and id. The 'index' and 'value' refence the field names
+within each row hash.
+
+=item DropDownMultiList($opts,$name,$count,@items)
+
+Returns a dropdown multi-selection box given a list of strings. The name of the
+form element is used as both the element name and id. The default number of
+rows visible is 5, but this can be changed by providing a value for 'count'.
+
+Can optionally pass an option value to be pre-selected. The option can be a
+comma separated list (as a single string) of values or an arrayref to a list
+of values.
+
+=item DropDownMultiRows($opts,$name,$index,$value,$count,@items)
+
+Returns a dropdown multi-selection box given a list of rows. The name of the
+form element is used as both the element name and id. The default number of
+rows visible is 5, but this can be changed by providing a value for 'count'.
+The 'index' and 'value' refence the field names within each row hash.
+
+Can optionally pass an option value to be pre-selected. The option can be a
+comma separated list (as a single string) of values or an arrayref to a list
+of values.
 
 =back
 
@@ -218,7 +257,7 @@ sub _buildtags {
 sub DropDownList {
     my ($opt,$name,@items) = @_;
 
-    return  qq|<select name="$name">| .
+    return  qq|<select id="$name" name="$name">| .
             join("",(map { qq|<option value="$_"|.
                     (defined $opt && $opt == $_ ? ' selected="selected"' : '').
                     ">$_</option>" } @items)) .
@@ -228,7 +267,7 @@ sub DropDownList {
 sub DropDownListText {
     my ($opt,$name,@items) = @_;
 
-    return  qq|<select name="$name">| .
+    return  qq|<select id="$name" name="$name">| .
             join("",(map { qq|<option value="$_"|.
                     (defined $opt && $opt eq $_ ? ' selected="selected"' : '').
                     ">$_</option>" } @items)) .
@@ -238,7 +277,7 @@ sub DropDownListText {
 sub DropDownRows {
     my ($opt,$name,$index,$value,@items) = @_;
 
-    return  qq|<select name="$name">| .
+    return  qq|<select id="$name" name="$name">| .
             join("",(map { qq|<option value="$_->{$index}"|.
                     (defined $opt && $opt == $_->{$index} ? ' selected="selected"' : '').
                     ">$_->{$value}</option>" } @items)) .
@@ -248,7 +287,7 @@ sub DropDownRows {
 sub DropDownRowsText {
     my ($opt,$name,$index,$value,@items) = @_;
 
-    return  qq|<select name="$name">| .
+    return  qq|<select id="$name" name="$name">| .
             join("",(map { qq|<option value="$_->{$index}"|.
                     (defined $opt && $opt eq $_->{$index} ? ' selected="selected"' : '').
                     ">$_->{$value}</option>" } @items)) .
@@ -269,7 +308,7 @@ sub DropDownMultiList {
         }
     }
 
-    return  qq|<select name="$name" multiple="multiple" size="$count">| .
+    return  qq|<select id="$name" name="$name" multiple="multiple" size="$count">| .
             join("",(map { qq|<option value="$_"|.
                     (defined $opts && $opts{$_} ? ' selected="selected"' : '').
                     ">$_</option>" } @items)) .
@@ -290,7 +329,7 @@ sub DropDownMultiRows {
         }
     }
 
-    return  qq|<select name="$name" multiple="multiple" size="$count">| .
+    return  qq|<select id="$name" name="$name" multiple="multiple" size="$count">| .
             join("",(map { qq|<option value="$_->{$index}"|.
                     (defined $opts && $opts{$_->{$index}} ? ' selected="selected"' : '').
                     ">$_->{$value}</option>" } @items)) .
@@ -303,12 +342,23 @@ sub DropDownMultiRows {
 
 =item ErrorText
 
-Returns the given error string in a HTML span tag (bold red font).
+Returns the given error string in a HTML span tag, with the configured error
+class, which by default is called "alert". In your CSS sytle sheet you will 
+need to specify an appropriate class declaration, such as:
+
+  .alert { color: red; font-weight: bold; }
+
+Set the value of 'errorclass' in your site config file to change the class
+name used.
 
 =item ErrorSymbol
 
-Flags to the system that an error has occured and returns the HTML symbol for
-'empty' which can then be used as the error field indicator.
+Flags to the system that an error has occured and returns the configured error
+symbol, which by is the 'empty' symbol '&#8709;', which can then be used as the
+error field indicator.
+
+Set the value of 'errorsymbol' in your site config file to change the symbol
+used.
 
 =back
 
@@ -316,13 +366,14 @@ Flags to the system that an error has occured and returns the HTML symbol for
 
 sub ErrorText {
     my $text = shift;
-    return qq!<span style="color:red;font-weight:bold">$text</span>!;
+    $settings{errorclass} ||= 'alert';
+    return qq!<span class="$settings{errorclass}">$text</span>!;
 }
 
 sub ErrorSymbol {
     $tvars{errmess} = 1;
     $tvars{errcode} = 'ERROR';
-    return '&#8709;';
+    return $settings{errorsymbol} || '&#8709;';
 }
 
 =head2 Protection Functions
@@ -353,14 +404,24 @@ sub LinkSpam {
 
 =item create_inline_styles ( HASHREF )
 
+Create inline CSS style sheet block. Key value pairs should match the label
+(tag, identifier or class patterns) and its contents. For example:
+
+  my %css = ( '#label p' => 'font-weight: normal; color: #fff;' );
+
+The exception to this is the label 'media', which can be used to specify the
+medium for which the CSS will be used. Typically these are 'screen' or 'print'.
+
 =back
 
 =cut
 
 sub create_inline_styles {
     my $hash = shift;
+    my $media = '';
+    $media = ' media="' . delete $hash{media} "'";
 
-    my $text = qq|<style type="text/css" media="screen">\n|;
+    my $text = qq|<style type="text/css"$media>\n|;
     for(sort keys %$hash) {
         $text .= qq|$_ {\n|;
         for my $attr (keys %{$hash->{$_}}) {
@@ -378,7 +439,7 @@ sub create_inline_styles {
 
 =item demoroniser ( INPUT )
 
-Given a string, with replace the Microsoft "smart" characters with sensible
+Given a string, will replace the Microsoft "smart" characters with sensible
 ACSII versions.
 
 =back
@@ -411,6 +472,10 @@ sub demoroniser {
 }
 
 =head2 HTML Handling Code
+
+The following functions disassemble and reassemble the HTML code snippets, 
+validating and cleaning the code to fix any errors that may exist between the
+template and content of the database.
 
 =over 4
 

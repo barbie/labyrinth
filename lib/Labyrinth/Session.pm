@@ -8,7 +8,7 @@ $VERSION = '5.06';
 
 =head1 NAME
 
-Labyrinth::Session - simple indentification functions.
+Labyrinth::Session - Session Management for Labyrinth.
 
 =head1 SYNOPSIS
 
@@ -18,7 +18,8 @@ Labyrinth::Session - simple indentification functions.
 
 =head1 DESCRIPTION
 
-A session management module.
+Provides the session management functionality, including Login & Logout 
+functions, to maintain a user's access to the system. 
 
 =cut
 
@@ -64,7 +65,11 @@ my %USERS;
 
 =item Login
 
+Handles login capabilities, including bad logins.
+
 =item Logout
+
+Handles logout capabilities.
 
 =cut
 
@@ -315,6 +320,7 @@ sub CheckUser {
 
 =item GetFolderIDs
 
+Returns the list of folders the given user has access to.
 =cut
 
 sub GetFolderIDs {
@@ -353,6 +359,8 @@ sub GetFolderIDs {
 
 =item GetGroupIDs
 
+Returns the list of groups the given user has access to.
+
 =cut
 
 sub GetGroupIDs {
@@ -385,6 +393,12 @@ sub GetGroupIDs {
 
 =item ResetLanguage
 
+Within the current session, this function allows the user to change the
+language associated within the system.
+
+Currently this language element is under used, and could be used for error and
+message strings pulled from a phrasebook.
+
 =cut
 
 sub ResetLanguage {
@@ -400,6 +414,8 @@ sub ResetLanguage {
 }
 
 =item UpdateSession
+
+Updates specific fields for the current session.
 
 =back
 
@@ -424,11 +440,18 @@ sub UpdateSession {
 
 =head1 OBJECT METHODS
 
+In addition to the above functions, the Session Management also allows for an
+object interface.
+
 =over 4
 
 =item new
 
+Create a new session object.
+
 =item realm
+
+Returns the current realm.
 
 =cut
 

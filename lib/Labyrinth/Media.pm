@@ -75,31 +75,6 @@ use constant    MaxDefaultThumb     => 120;
 # -------------------------------------
 # Variables
 
-# -------------------------------------
-# The Subs
-
-=head1 PUBLIC INTERFACE FUNCTIONS
-
-=head2 Stock Control Functions
-
-=over
-
-=item CGIFile
-
-=item StockName
-
-=item StockPath
-
-=item StockSelect
-
-=item StockType
-
-=item PathMove
-
-=back
-
-=cut
-
 { # START Stock Control
 
 my @CHARS = (
@@ -109,11 +84,24 @@ my @CHARS = (
       /);
 
 my %stock;
-sub _init_stock {
-    my @rows = $dbi->GetQuery('hash','AllImageStock');
-    $stock{$_->{stockid}} = $_  for(@rows);
-}
 
+# -------------------------------------
+# The Functions
+
+=head1 PUBLIC INTERFACE FUNCTIONS
+
+=head2 Stock Control Functions
+
+=over
+
+=item CGIFile
+
+When uploading a file via a web form, this function will save the file to the
+local filesystem.
+
+=back
+
+=cut
 
 sub CGIFile {
     my $param = shift;
@@ -148,20 +136,34 @@ sub CGIFile {
     return ($name,$filename,$suffix);
 }
 
-sub _randname {
-    my $path = shift;
-    $path =~ s/X(?=X*\z)/$CHARS[ int( rand( $#CHARS ) ) ]/ge;
-    return $path;
-}
+=head2 Stock Control Functions
 
-sub StockType {
-    my $stock = shift || 'DRAFT';
-    _init_stock()   unless(%stock);
-    for(keys %stock) {
-        return $_   if($stock{$_}->{title} eq $stock);
-    }
-    return 1;   # default
-}
+The stock list relates to the directory paths where uploaded files should be
+saved on the local filesystem.
+
+=over
+
+=item StockName
+
+Return the name for the given stock id.
+
+=item StockPath
+
+Return the path for the given stock id.
+
+=item StockType
+
+Return the stock id for the given stock code.
+
+=item StockSelect
+
+Returns an XHTML snippet for a dropdown selection box of stock entries.
+
+=item PathMove
+
+=back
+
+=cut
 
 sub StockName {
     my $stock = shift || 1;
@@ -173,6 +175,15 @@ sub StockPath {
     my $stock = shift || 1;
     _init_stock()   unless(%stock);
     return $stock{$stock}->{path};
+}
+
+sub StockType {
+    my $stock = shift || 'DRAFT';
+    _init_stock()   unless(%stock);
+    for(keys %stock) {
+        return $_   if($stock{$_}->{title} eq $stock);
+    }
+    return 1;   # default
 }
 
 sub StockSelect {
@@ -205,7 +216,24 @@ sub PathMove {
     return "$stock{$stockid}->{path}/$name";
 }
 
+# -------------------------------------
+# Private Functions
+
+sub _init_stock {
+    my @rows = $dbi->GetQuery('hash','AllImageStock');
+    $stock{$_->{stockid}} = $_  for(@rows);
+}
+
+sub _randname {
+    my $path = shift;
+    $path =~ s/X(?=X*\z)/$CHARS[ int( rand( $#CHARS ) ) ]/ge;
+    return $path;
+}
+
 } # END Stock Control
+
+# -------------------------------------
+# Public Image Functions
 
 =head2 Image Functions
 
@@ -310,7 +338,12 @@ sub SaveImageFile {
 
 =item CopyPhotoFile()
 
+Copy an existing stored image, both on the filesystem and in the database.
+
 =item SavePhotoFile()
+
+Save a photo uploaded via a web form to the local filesystem and to the photo
+gallery database table.
 
 =back
 

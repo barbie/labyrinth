@@ -20,7 +20,7 @@ Labyrinth::Query::CGI - Environment hander for Labyrinth.
 
 =head1 DESCRIPTION
 
-Thin wrapper around CGI.pm.
+A thin wrapper around CGI.pm.
 
 =cut
 

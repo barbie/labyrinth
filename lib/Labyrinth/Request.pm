@@ -20,7 +20,27 @@ Labyrinth::Request - Determines the actions and content required of a request.
 =head1 DESCRIPTION
 
 The Request package, given a request string (or defaults), will retrieve
-the appropriate actions and template file for that request.
+the appropriate actions, template file and continuations for that request.
+
+The configuration of request settings can either be held within INI files
+within a designated path or in request table within a database.
+
+If using INI files, each file represents a collection of commands within a
+single section. There is one special section, 'realm', which describes the
+overall layout files, actions and continuations for the type of account. 
+Typically there are at least two realms, 'public' and 'admin'. To describe
+the path to these request files, the following should exist within your global
+settings file:
+
+  requests=/path/to/request/files
+
+Alternative if you wish to use the request settings from a database table, in
+your globale settings file, you will need the following setting:
+
+  requests=dbi
+
+For more information for the database method, please see the 
+L<Labyrinth::Request> distribution. 
 
 =cut
 
@@ -51,6 +71,8 @@ my %stored;
 =over 4
 
 =item new()
+
+Create a new request object.
 
 =back
 
@@ -101,7 +123,11 @@ sub new {
 
 =item next_action()
 
+For the current command request, return the next action within its action list.
+
 =item add_actions(@actions)
+
+Add actions to the action list for the current command request.
 
 =back
 
@@ -116,9 +142,16 @@ sub add_actions { my $self = shift; push  @{$self->{actions}}, @_ }
 
 =item reset_realm($realm)
 
+Reloads settings for a new realm setting.
+
 =item reset_request($request)
 
+Reloads settings for a new command request.
+
 =item redirect
+
+Instead of a local template file or a continuation, a redirect may be used.
+This method reformats the URL within a redirect request.
 
 =back
 
@@ -252,11 +285,11 @@ Content template to be used
 
 Command to execute if this command succeeds.
 
-=item onfailure
+=item onerror
 
 Command to execute if this command fails.
 
-=item onerror
+=item onfailure
 
 Command to execute if this command fails with an unrecoverable error.
 
@@ -268,8 +301,8 @@ my @autosubs = qw(
     layout
     content
     onsuccess
-    onfailure
     onerror
+    onfailure
 );
 my %autosubs = map {$_ => 1} @autosubs;
 

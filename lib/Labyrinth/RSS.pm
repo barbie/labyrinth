@@ -7,11 +7,11 @@ my $VERSION = '5.06';
 
 =head1 NAME
 
-Labyrinth::RSS - RSS handler plugin for Labyrinth
+Labyrinth::RSS - RSS handler for Labyrinth
 
 =head1 DESCRIPTION
 
-Contains all the RSS/Atom feeds required by Labyrinth
+Contains all the RSS/Atom feeds used by Labyrinth
 
 =cut
 
@@ -63,7 +63,7 @@ sub new {
 
     my $atts = {
         type    => ($hash{type}     || 'rss'),
-        version => ($hash{version}  || '1.0'),
+        version => ($hash{version}  || '2.0'),
         perma   => ($hash{perma}    || $settings{perma}),
         id      => ($hash{id}       || 'articleid'),
         block   => ($hash{block}    || 'articles/arts-block.html'),
@@ -78,6 +78,8 @@ sub new {
 =over
 
 =item feed
+
+For the given list of entries, reformats into the requested feed type.
 
 =back
 
@@ -103,15 +105,28 @@ sub feed {
 
 =item RSS_0_9
 
+Reformats article list into RSS 0.9.
+
 =item RSS_1_0
+
+Reformats article list into RSS 1.0.
 
 =item RSS_2_0
 
+Reformats article list into RSS 2.0.
+
 =item Atom_0_3
+
+Reformats article list into Atom 0.3.
 
 =item Atom_1_0
 
+Reformats article list into Atom 1.0.
+
 =item CleanEntities
+
+For a given string, reformats basic entities to avoid potential XML 
+irregularities.
 
 =back
 
@@ -362,7 +377,7 @@ Miss Barbell Productions, L<http://www.missbarbell.co.uk/>
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2007-2010 Barbie for Miss Barbell Productions
+  Copyright (C) 2007-2011 Barbie for Miss Barbell Productions
   All Rights Reserved.
 
   This module is free software; you can redistribute it and/or

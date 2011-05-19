@@ -29,13 +29,13 @@ available, currently these are:
 
 =over
 
-=item * Labyrinth::DIUtils::GDDriver
+=item * Labyrinth::DIUtils::GD
 
 Uses GD graphics library.
 
-=item * Labyrinth::DIUtils::IMDriver
+=item * Labyrinth::DIUtils::ImageMagick
 
-Use ImageMagick image library.
+Uses ImageMagick image library.
 
 =back
 

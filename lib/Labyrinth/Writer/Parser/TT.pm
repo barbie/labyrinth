@@ -57,6 +57,8 @@ Object constructor.
 Parses a given template, via Template Toolkit. Returns a string of the 
 parsed template.
 
+=back
+
 =cut
 
 sub new {
@@ -89,8 +91,6 @@ sub parser {
 1;
 
 __END__
-
-=back
 
 =head1 SEE ALSO
 

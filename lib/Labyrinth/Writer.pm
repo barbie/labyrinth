@@ -119,12 +119,24 @@ result.
 
 =item PublishCode
 
+Publishes a template based on an internal code. Current codes and associated
+templates are:
+
+    BADLAYOUT       => 'public/badlayout.html',
+    BADPAGE         => 'public/badpage.html',
+    BADCMD          => 'public/badcommand.html',
+    MESSAGE         => 'public/error_message.html',
+
+TODO: Provide these and more as configurable codes.
+
 =item UnPublish
 
 Used to reset publishing status. Usually only applicable in mod_perl 
 environments.
 
 =item Transform
+
+Given a template and a set of variables, parse without publishing the content.
 
 =cut
 
@@ -227,6 +239,8 @@ sub Transform {
 }
 
 =item Croak
+
+A shorthand call to publish and record errors.
 
 =cut
 

@@ -155,11 +155,14 @@ sub init {
 
 =item CGIArray($name)
 
-ParseParams only handles the scalar CGI parameters. In the event an array is
-required, CGIArray() is used to find and validate the parameter, before
-returning the list of values.
+ParseParams only handles the scalar interface (CGI) parameters. In the event 
+an array is required, CGIArray() is used to find and validate the parameter, 
+before returning the list of values.
 
 =item ParamsCheck
+
+Given a list of fields, checks whether the interface (CGI) parameters have 
+been set. Sets error conditions if any are missing.
 
 =back
 
@@ -187,9 +190,13 @@ sub ParamsCheck {
 
 =over
 
+=item SetError
+
+Sets the error condition as given.
+
 =item SetCommand
 
-=item SetError
+Set the next commmand to be run.
 
 =back
 

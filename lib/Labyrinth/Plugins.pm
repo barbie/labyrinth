@@ -5,7 +5,7 @@ use strict;
 
 =head1 NAME
 
-Labyrinth::Plugins - plugin manager for Labyrinth
+Labyrinth::Plugins - Plugin Manager for Labyrinth
 
 =head1 SYNOPSIS
 

@@ -19,6 +19,8 @@ Labyrinth::Phrasebook - A phrasebook maintainer
 
 =head1 DESCRIPTION
 
+Using L<Data::Phrasebook>, this package acts as a simple wrapper for the 
+Labyrinth framework.
 
 =cut
 

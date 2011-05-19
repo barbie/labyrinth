@@ -8,11 +8,13 @@ $VERSION = '5.06';
 
 =head1 NAME
 
-Labyrinth::Groups - handler for Labyrinth groups
+Labyrinth::Groups - Manage user groups in Labyrinth
 
 =head1 DESCRIPTION
 
-Contains all the groups handling functionality
+This package provides group management for user access. Groups can be used to
+set permissions for a set of users, without setting individual user
+permissions.
 
 =cut
 
@@ -49,11 +51,24 @@ use Labyrinth::Variables;
 
 =item GetGroupID
 
+Returns the ID of the specific group.
+
 =item UserInGroup
 
-=item GroupSelect
+Checks whether the specified user (or current user) is in the specified group
+Returns 1 if true, otherwise 0 for false.
 
-=item GroupSelectMulti
+=item GroupSelect([$opt])
+
+Provides the XHTML code for a single select dropdown box. Pass the id of a
+group to pre-select that group.
+
+=item GroupSelectMulti([$opt[,$rows]])
+
+Provides the XHTML code for a multiple select dropdown box. Pass the group id 
+or an arrayref to a list of group ids to pre-select those groups. By default
+the number of rows displayed is 5, although this can be changed by passing the
+number of rows you require.
 
 =cut
 
