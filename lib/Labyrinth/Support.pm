@@ -34,6 +34,8 @@ plugins.
   AccessUser
   AccessGroup
   AccessSelect
+  AccessAllFolders 
+  AccessAllAreas
 
   RealmCheck
   RealmSelect
@@ -280,7 +282,7 @@ available access states.
 
 Return list of folders current user has access to.
 
-=item AcessAllAreas
+=item AccessAllAreas
 
 Return list of areas current user has access to.
 
@@ -324,7 +326,7 @@ sub AccessAllFolders {
     my @folders = map {$_->[0]} @rows;
     return join(',',@folders);
 }
-sub AcessAllAreas {
+sub AccessAllAreas {
     my @rows = $dbi->GetQuery('array','AllAreas');
     my @areas = map {"'$_->[0]'"} @rows;
     return join(',',@areas);

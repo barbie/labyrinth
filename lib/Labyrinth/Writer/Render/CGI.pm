@@ -55,6 +55,10 @@ Object constructor.
 
 Redirect to given URL.
 
+=item binary($vars)
+
+Shorthand output of binary data and files.
+
 =item publish($format, $text)
 
 Publishes text output.
