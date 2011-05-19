@@ -1,6 +1,6 @@
 Changes for the Labyrinth Core
 
-5.06	current
+5.06	19/05/2011
 	- abstracted input CGI to Labyrinth::Query::CGI.
 	- abstracted output CGI to Labyrinth::Writer::Render::CGI.
 	- abstracted template parser to Labyrinth::Writer::Parser::TT.

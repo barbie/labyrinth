@@ -409,6 +409,11 @@ Create inline CSS style sheet block. Key value pairs should match the label
 
   my %css = ( '#label p' => 'font-weight: normal; color: #fff;' );
 
+or
+
+  my %css = ( '#label p' => { 'font-weight' => 'normal', 'color' => '#fff' } );
+
+
 The exception to this is the label 'media', which can be used to specify the
 medium for which the CSS will be used. Typically these are 'screen' or 'print'.
 
@@ -417,17 +422,21 @@ medium for which the CSS will be used. Typically these are 'screen' or 'print'.
 =cut
 
 sub create_inline_styles {
-    my $hash = shift;
-    my $media = '';
-    $media = ' media="' . delete $hash{media} "'";
+    my $hash = shift || return;
+    my $media = $hash->{media} ? ' media="' . $hash->{media} . '"' : '';
 
     my $text = qq|<style type="text/css"$media>\n|;
     for(sort keys %$hash) {
-        $text .= qq|$_ {\n|;
-        for my $attr (keys %{$hash->{$_}}) {
-            $text .= qq|\t$attr: $hash->{$_}->{$attr};\n|
+        next    if($_ eq 'media');
+        $text .= qq|$_ {|;
+        if(ref($hash->{$_}) eq 'SCALAR') {
+            $text .= qq| $hash->{$_}|;
+        } else {     
+            for my $attr (keys %{$hash->{$_}}) {
+                $text .= qq| $attr: $hash->{$_}->{$attr};|
+            }
         }
-        $text .= qq|}\n|;
+        $text .= qq| }\n|;
     }
     $text .= qq|</style>\n|;
     return $text;
