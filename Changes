@@ -1,5 +1,10 @@
 Changes for the Labyrinth Core
 
+5.08	19/06/2011
+	- documentation updates.
+	- added url mapping for MetaCloud links.
+	- fixes for GetImageSize.
+
 5.07	19/06/2011
 	- added GetImageSize & GetGravatar to Media.pm.
 	- added a cleanup of erroneous XHTML patterns in MLUtils.pm.

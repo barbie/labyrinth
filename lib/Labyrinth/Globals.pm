@@ -4,11 +4,11 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.07';
+$VERSION = '5.08';
 
 =head1 NAME
 
-Labyrinth::Globals - CGI/Configuration Functions used throughout the system.
+Labyrinth::Globals - Configuration and Parameter handling Functions.
 
 =head1 SYNOPSIS
 
@@ -17,9 +17,8 @@ Labyrinth::Globals - CGI/Configuration Functions used throughout the system.
   # database object creation
   DBConnect();
 
-  # CGI parameter handling
+  # Interface (CGI) parameter handling
   ParseParams();
-  my ($name,$localfile) = CGIFile('file',$type);
 
 =head1 DESCRIPTION
 
@@ -60,7 +59,6 @@ require Exporter;
 # -------------------------------------
 # Library Modules
 
-use CGI;
 use Config::IniFiles;
 use Cwd;
 use Data::Dumper;
@@ -116,8 +114,8 @@ attempt to figure it out via the current working directory.
 
 LoadRules() loads a rules file (default is parserules.ini or the name of the
 'parsefile' in the settings configuration file) and store the rules in an
-internal hash. This hash is then used to verify the contains of any CGI
-parameters passed to the script.
+internal hash. This hash is then used to verify the contains of any interface
+(CGI) parameters passed to the script.
 
 Note that as LoadRules() can be called many times with different rules
 files, only the last value of a given rule is stored. This is useful if
@@ -417,14 +415,14 @@ sub dbh {
     $dbi || DBConnect;
 }
 
-=head2 CGI Parameter & Template Variable Handling
+=head2 Interface Parameter Handling
 
 =over 4
 
 =item ParseParams($rules)
 
-ParseParams() reads and validates the CGI parameters that are sent via a
-HTTP request, before storing them in the %cgiparams hash. Each CGI parameter
+ParseParams() reads and validates the interface (CGI) parameters that are sent
+via a HTTP request, before storing them in the %cgiparams hash. Each parameter
 must have a rule for it to be accepted.
 
 The rules file (default is parserules.ini) is automatically loaded and stored.
@@ -432,10 +430,6 @@ The rules file (default is parserules.ini) is automatically loaded and stored.
 All valid input parameter values (scalars only) are also automatically stored
 in the template variable hash, %tvars. This is to enable templates to be
 reparsed in the event of an error, and retain the user's valid entries.
-
-=item CGIFile()
-
-to be completed
 
 =back
 
@@ -518,7 +512,6 @@ __END__
 
 =head1 SEE ALSO
 
-  CGI,
   IO::File,
   Cwd,
   File::Path,

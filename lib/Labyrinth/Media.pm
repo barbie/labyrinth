@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.07';
+$VERSION = '5.08';
 
 =head1 NAME
 
@@ -355,37 +355,32 @@ sub GetImageSize {
     my ($w,$h) = $size ? split('x',$size) : (0,0);
     ($w,$h) = imgsize("$settings{webdir}/$link") unless($w || $h);
 
-    unless(defined $width || defined $height) {
-        ($width,$height) = ($w,$h);
-    }
+    ($width,$height) = ($w,$h)  unless($width || $height);
 
     # long winded to avoid uninitialised variable errors
     if(defined $width && defined $height && $width > $height && $width > $maxwidth) {
-        $width = $maxwidth;
+        $width  = $maxwidth;
         $height = 0;
     } elsif(defined $width && defined $height && $width < $height && $height > $maxheight) {
         $height = $maxheight;
-        $width = 0;
+        $width  = 0;
     } elsif(defined $width && $width > $maxwidth) {
-        $width = $maxwidth;
+        $width  = $maxwidth;
         $height = 0;
     } elsif(defined $height && $height > $maxheight) {
         $height = $maxheight;
-        $width = 0;
-    } else {
-        $width = 0;
-        $height = 0;
+        $width  = 0;
     }
 
     if($width && $height) {
         # nothing
     } elsif( $width && !$height) {
-        $height = $h * ($width  / $w);
+        $height = int($h * ($width  / $w));
     } elsif(!$width &&  $height) {
-        $width  = $w * ($height / $h);
+        $width  = int($w * ($height / $h));
     }
 
-    LogDebug("dimensions: x.($w,$h) / ($width,$height)");
+    #LogDebug("dimensions: x.($w,$h) / ($width,$height) / ($settings{webdir}/$link)");
 
     return ($width,$height);
 }

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.07';
+$VERSION = '5.08';
 
 =head1 NAME
 
@@ -178,7 +178,8 @@ sub MetaCloud {
     my $sectionid = $hash{'sectionid'} || return;
     my $actcode   = $hash{'actcode'}   || return;
 
-    my $path = "$tvars{cgipath}/pages.cgi?act=$actcode&amp;data=";
+    my $path = $settings{'urlmap-'.$actcode} || "$tvars{cgipath}/pages.cgi?act=$actcode&amp;data=";
+
     my $cloud = HTML::TagCloud->new(levels=>10);
     my @rsa = $dbi->GetQuery('hash',"MetaCloud$key",{ids => $sectionid});
     for(@rsa) {
