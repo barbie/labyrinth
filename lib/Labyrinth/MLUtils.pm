@@ -5,7 +5,7 @@ use warnings;
 use utf8;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.06';
+$VERSION = '5.07';
 
 =head1 NAME
 
@@ -587,7 +587,15 @@ use vars qw(%safe_tags %safe_style %tag_is_empty %closetag_is_optional
 
 sub process_html {
     my ($text, $line_breaks, $allow_html) = @_;
-    $text =~ s!</pre><pre>!<br />!gs    if($text);
+
+    # cleanup erroneous XHTML patterns
+    if($text) {
+        $text =~ s!</pre><pre>!<br />!gsi;
+        $text =~ s!<ul>\s*<br />!<ul>!gsi;
+        $text =~ s!<br />\s*</ul>!</ul>!gsi;
+        $text =~ s!<ul>\s*</ul>!!gsi;
+        $text =~ s!<ol>\s*</ol>!!gsi;
+    }
 
     # clean text of any nasties
     #$text =~ s/[\x201A\x2018\x2019`]/&#39;/g;   # nasty single quotes

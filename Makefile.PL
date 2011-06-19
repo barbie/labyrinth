@@ -37,6 +37,7 @@ WriteMakefile(
         'Template'              => 0,
         'Text::Wrap'            => 0,
         'Time::Local'           => 0,
+        'URI::Escape'           => 0,
         'WWW::Mechanize'        => 0,
         'XML::Atom'             => 0,
         'XML::Atom::Feed'       => 0,

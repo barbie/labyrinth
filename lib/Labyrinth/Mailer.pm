@@ -5,7 +5,7 @@ use strict;
 use utf8;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.06';
+$VERSION = '5.07';
 
 =head1 NAME
 
@@ -127,6 +127,7 @@ sub MailSend {
         } else {
             $mailer{result} = 0;
             $tvars{mailer}{result} = 0;
+            $tvars{mailer}{error} = $!;
         }
 
         unless($mailer{result}) {

@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.06';
+$VERSION = '5.07';
 
 =head1 NAME
 
@@ -132,7 +132,7 @@ sub init {
     my $query    = qr¬(?:\?$legal3)*¬;
     my $local    = qr¬[-\w\'=.]+¬;
 
-    my $urlregex = qr¬(?:(?:$prot)?(?:$domain|$ip|$path)(?:(?:$path)?(?:$query)?)?)(?:#[\w\-.]+)?¬;
+    my $urlregex = qr¬(?:(?:$prot)?(?:$domain|$ip|$path)(?:(?:$path)?(?:$query)?)?)(?:\#[\w\-.]+)?¬;
     my $email    = qr¬$local\@(?:$domain|$ip)¬;
 
     $settings{urlregex}   = $urlregex;

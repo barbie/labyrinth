@@ -3,7 +3,7 @@ package Labyrinth::Query::CGI;
 use warnings;
 use strict;
 
-my $VERSION = '5.06';
+my $VERSION = '5.07';
 
 =head1 NAME
 

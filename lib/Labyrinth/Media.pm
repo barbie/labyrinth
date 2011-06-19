@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.06';
+$VERSION = '5.07';
 
 =head1 NAME
 
@@ -39,7 +39,9 @@ require Exporter;
                     StockSelect StockName StockPath StockType PathMove
                     GetImage SaveImageFile MirrorImageFile
                     CopyPhotoFile SavePhotoFile
-                    GetMedia SaveMedia SaveFile UnZipFile ) ]
+                    GetMedia SaveMedia SaveFile UnZipFile
+                    GetImageSize GetGravatar
+                ) ]
 );
 
 @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -49,10 +51,12 @@ require Exporter;
 # Library Modules
 
 use Archive::Extract;
+use Digest::MD5 qw(md5_hex);
 use File::Path;
 use File::Copy;
 use File::Basename;
 use Image::Size;
+use URI::Escape qw(uri_escape);
 use WWW::Mechanize;
 
 use Labyrinth::Audit;
@@ -257,6 +261,17 @@ the following:
 
 =item MirrorImageFile
 
+Mirrors a file from a URL to the local file system.
+
+=item GetImageSize
+
+For a given file, returns the true width and height that will be rendered
+within the browser, given the current and default settings.
+
+=item GetGravatar
+
+Returns a Gravatar link.
+
 =back
 
 =cut
@@ -330,6 +345,64 @@ sub SaveImageFile {
                             $hash{href},
                             $size_x.'x'.$size_y);
     return ($imageid,$filename);
+}
+
+sub GetImageSize {
+    my ($link,$size,$width,$height,$maxwidth,$maxheight) = @_;
+    $maxwidth  ||= MaxDefaultWidth;
+    $maxheight ||= MaxDefaultHeight;
+
+    my ($w,$h) = $size ? split('x',$size) : (0,0);
+    ($w,$h) = imgsize("$settings{webdir}/$link") unless($w || $h);
+
+    unless(defined $width || defined $height) {
+        ($width,$height) = ($w,$h);
+    }
+
+    # long winded to avoid uninitialised variable errors
+    if(defined $width && defined $height && $width > $height && $width > $maxwidth) {
+        $width = $maxwidth;
+        $height = 0;
+    } elsif(defined $width && defined $height && $width < $height && $height > $maxheight) {
+        $height = $maxheight;
+        $width = 0;
+    } elsif(defined $width && $width > $maxwidth) {
+        $width = $maxwidth;
+        $height = 0;
+    } elsif(defined $height && $height > $maxheight) {
+        $height = $maxheight;
+        $width = 0;
+    } else {
+        $width = 0;
+        $height = 0;
+    }
+
+    if($width && $height) {
+        # nothing
+    } elsif( $width && !$height) {
+        $height = $h * ($width  / $w);
+    } elsif(!$width &&  $height) {
+        $width  = $w * ($height / $h);
+    }
+
+    LogDebug("dimensions: x.($w,$h) / ($width,$height)");
+
+    return ($width,$height);
+}
+
+sub GetGravatar {
+    my ($id,$email) = @_;
+    my $nophoto = uri_escape($settings{nophoto});
+
+    return $nophoto     unless($id);
+    my @rows = $dbi->GetQuery('hash','GetUserByID',$id);
+    return $nophoto     unless(@rows);
+
+    return
+        'http://www.gravatar.com/avatar.php?'
+        .'gravatar_id='.md5_hex($email)
+        .'&amp;default='.$nophoto
+        .'&amp;size=80';
 }
 
 =head2 Image Functions
