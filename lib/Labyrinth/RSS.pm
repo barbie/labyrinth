@@ -3,7 +3,7 @@ package Labyrinth::RSS;
 use warnings;
 use strict;
 
-my $VERSION = '5.08';
+my $VERSION = '5.09';
 
 =head1 NAME
 
@@ -197,7 +197,7 @@ sub RSS_1_0 {
         my $body = $item->{data}{body} || $item->{body};
         if($self->{id} eq 'articleid') {
             my %vars = ( 'block' => $body );
-            Transform($self->{block},\%vars,\$block);
+            $block = Transform($self->{block},\%vars);
         } else {
             $block = $body;
         }
@@ -242,7 +242,7 @@ sub RSS_2_0 {
         my $body = $item->{data}{body} || $item->{body};
         if($self->{id} eq 'articleid') {
             my %vars = ( 'block' => $body );
-            Transform($self->{block},\%vars,\$block);
+            $block = Transform($self->{block},\%vars);
         } else {
             $block = $body;
         }
@@ -282,7 +282,7 @@ sub Atom_0_3 {
         my $body = $item->{data}{body} || $item->{body};
         if($self->{id} eq 'articleid') {
             my %vars = ( 'block' => $body );
-            Transform($self->{block},\%vars,\$block);
+            $block = Transform($self->{block},\%vars);
         } else {
             $block = $body;
         }
@@ -326,7 +326,7 @@ sub Atom_1_0 {
         my $body = $item->{data}{body} || $item->{body};
         if($self->{id} eq 'articleid') {
             my %vars = ( 'block' => $body );
-            Transform($self->{block},\%vars,\$block);
+            $block = Transform($self->{block},\%vars);
         } else {
             $block = $body;
         }

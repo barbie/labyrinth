@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-$VERSION = '5.08';
+$VERSION = '5.09';
 
 =head1 NAME
 
@@ -226,7 +226,7 @@ sub UnPublish {
 }
 
 sub Transform {
-    my ($template,$vars,$output) = @_;
+    my ($template,$vars) = @_;
 
     my $path = $settings{'templates'};
     my $layout = "$path/$template";
@@ -235,7 +235,8 @@ sub Transform {
 
     Config()    unless($PARSER && $RENDER);
 
-    return $PARSER->parser($layout,$vars);
+    my $output = $PARSER->parser($layout,$vars);
+    return $$output;
 }
 
 =item Croak
