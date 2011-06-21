@@ -120,20 +120,20 @@ Prepares the standard variable values, so that they are only called once on setu
 =cut
 
 sub init {
-    my $prot     = qr¬(?:http|https|ftp|afs|news|nntp|mid|cid|mailto|wais|prospero|telnet|gopher)://¬;
-    my $atom     = qr¬[a-z\d]¬i;
-    my $domain   = qr¬(?:(?:(?:$atom(?:(?:$atom|-)*$atom)?)\.)*(?:[a-zA-Z](?:(?:$atom|-)*$atom)?))¬;
-    my $ip       = qr¬(?:(?:\d+)(?:\.(?:\d+)){3})(?::(?:\d+))?¬;
-    my $enc      = qr¬%[a-fA-F\d]{2}¬;
-    my $legal1   = qr¬[a-zA-Z\d\$\-_.+!*\'(),~]¬;
-    my $legal2   = qr¬[\/;:@&=]¬;
-    my $legal3   = qr¬(?:(?:(?:$legal1|$enc)|$legal2)*)¬;
-    my $path     = qr¬\/$legal3(?:\/$legal3)*¬;
-    my $query    = qr¬(?:\?$legal3)*¬;
-    my $local    = qr¬[-\w\'=.]+¬;
+    my $prot     = qr{(?:http|https|ftp|afs|news|nntp|mid|cid|mailto|wais|prospero|telnet|gopher)://};
+    my $atom     = qr{[a-z\d]}i;
+    my $domain   = qr{(?:(?:(?:$atom(?:(?:$atom|-)*$atom)?)\.)*(?:[a-zA-Z](?:(?:$atom|-)*$atom)?))};
+    my $ip       = qr{(?:(?:\d+)(?:\.(?:\d+)){3})(?::(?:\d+))?};
+    my $enc      = qr{%[a-fA-F\d]{2}};
+    my $legal1   = qr{[a-zA-Z\d\$\-_.+!*\'(),~\#]};
+    my $legal2   = qr{[\/;:@&=]};
+    my $legal3   = qr{(?:(?:(?:$legal1|$enc)|$legal2)*)};
+    my $path     = qr{\/$legal3(?:\/$legal3)*};
+    my $query    = qr{(?:\?$legal3)*};
+    my $local    = qr{[-\w\'=.]+};
 
-    my $urlregex = qr¬(?:(?:$prot)?(?:$domain|$ip|$path)(?:(?:$path)?(?:$query)?)?)(?:\#[\w\-.]+)?¬;
-    my $email    = qr¬$local\@(?:$domain|$ip)¬;
+    my $urlregex = qr{(?:(?:$prot)?(?:$domain|$ip|$path)(?:(?:$path)?(?:$query)?)?)(?:\#[\w\-.]+)?};
+    my $email    = qr{$local\@(?:$domain|$ip)};
 
     $settings{urlregex}   = $urlregex;
     $settings{emailregex} = $email;

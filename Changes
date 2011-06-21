@@ -3,6 +3,7 @@ Changes for the Labyrinth Core
 5.09	current
 	- fix to Transform to correctly return content.
 	- fix to RSS.pm to use new Transform.
+	- fix to URL pattern match.
 
 5.08	19/06/2011
 	- documentation updates.
