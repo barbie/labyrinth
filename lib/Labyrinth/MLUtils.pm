@@ -24,7 +24,7 @@ require Exporter;
 @ISA = qw(Exporter);
 %EXPORT_TAGS = ( 'all' => [ qw(
         LegalTag LegalTags CleanTags
-        CleanHTML SafeHTML CleanLink CleanWords
+        CleanHTML SafeHTML CleanLink CleanWords LinkTitles
         DropDownList DropDownListText
         DropDownRows DropDownRowsText
         DropDownMultiList DropDownMultiRows
@@ -93,6 +93,12 @@ Attempts to remove known spam style links.
 =item CleanWords
 
 Attempts to remove known profanity words.
+
+=item LinkTitles
+
+Given a XHTML snippet, will look for basic links and add title attributes.
+Titles are of rhe format 'External Site: $domain', where $domain is the domain
+used in the link.
 
 =back
 
@@ -182,6 +188,23 @@ sub CleanWords {
     $text =~ s/$RE{profanity}//gis;
     my $filter = join("|", map {$_->[1]} $dbi->GetQuery('array','AllBadWords'));
     $text =~ s/$filter//gis;
+
+    return $text;
+}
+
+sub LinkTitles {
+    my $text = shift;
+
+    for my $href ($text =~ m!(<a href="https?://[^/"]+(?:/[^"]*)?">)!g) {
+        my ($link1,$path,$link2) = ($href =~ m!(<a href=")((?:https?://|/)?([^/"]+)(?:/[^"]*)?)">!);
+        $href =~ s!([\\\?\+\-\.()\[\]])!\\$1!sig;
+
+        my $title;
+        $title ||= $settings{pathmap}{$path}    if($settings{pathmap}{$path});
+        $title ||= $settings{titlemap}{$link2}  if($settings{titlemap}{$link2});
+        $title ||= "External Site: $link2";
+        $text =~ s!$href!$link1$path" title="$title">!sgi;
+    }
 
     return $text;
 }

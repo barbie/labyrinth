@@ -224,6 +224,23 @@ sub LoadSettings {
         $settings{$key} = File::Spec->rel2abs( $settings{$key} ) ;
     }
 
+    # path & title mappings
+    for my $map (qw(path title)) {
+        next    unless($settings{$map . 'maps'});
+        if( ref($settings{$map . 'maps'}) eq 'ARRAY') {
+            for(@{ $settings{$map . 'maps'} }) {
+                my ($name,$value) = split(/=/,$_,2);
+                $settings{$map . 'map'}{$name} = $value;
+            }
+        } elsif($settings{$map . 'maps'}) {
+            my ($name,$value) = split(/=/,$settings{$map . 'maps'},2);
+            $settings{$map . 'map'}{$name} = $value;
+        }
+    }
+
+#use Data::Dumper;
+#LogDebug("settings=".Dumper(\%settings));
+
     # set image processing driver, if specified
     Labyrinth::DIUtils::Tool($settings{diutils})    if($settings{diutils});
 

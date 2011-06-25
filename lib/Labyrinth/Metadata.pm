@@ -185,7 +185,14 @@ sub MetaCloud {
     for(@rsa) {
         $cloud->add($_->{metadata}, $path . $_->{metadata}, $_->{count});
     }
-    $cloud->html();
+
+    my $html = $cloud->html();
+    while($html =~ m!((<a href="$path)([^"]+)">)!) {
+        my ($href,$link1,$link2) = ($1,$2,$3);
+        $html =~ s!$href!$link1$link2" title="Meta search for '$link2'">!sgi;
+    }
+
+    return $html;
 }
 
 sub MetaTags {
