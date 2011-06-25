@@ -191,6 +191,13 @@ sub LoadSettings {
     }
     $cfg = undef;
 
+    SetLogFile( FILE   => $settings{'logfile'},
+                USER   => 'labyrinth',
+                LEVEL  => ($settings{'loglevel'} || 0),
+                CLEAR  => (defined $settings{'logclear'}  ? $settings{'logclear'}  : 1),
+                CALLER => (defined $settings{'logcaller'} ? $settings{'logcaller'} : 1)
+        );
+
     # evaluate standard path settings
     $settings{'protocol'}   = $protocol;
     $settings{'host'}       = $host;

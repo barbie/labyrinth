@@ -853,6 +853,9 @@ BEGIN
                 'rows'      => \&cleanup_attr_number,
                 'cols'      => \&cleanup_attr_number,
         },
+        'label'      => { %attr,
+                'for'       => \&cleanup_attr_text,
+        },
 
         # LAYOUT STYLE
         'style'     => {

@@ -4,6 +4,8 @@ Changes for the Labyrinth Core
 	- fix to Transform to correctly return content.
 	- fix to RSS.pm to use new Transform.
 	- fix to URL pattern match.
+	- added <label> as a valid tag to MLUtils.
+	- moved SetLogFile into Globals and allowed more settings.
 
 5.08	19/06/2011
 	- documentation updates.

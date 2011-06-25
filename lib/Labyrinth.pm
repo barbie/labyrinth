@@ -101,12 +101,6 @@ sub run {
     UnPublish();                    # Start a fresh slate
     LoadSettings($file);            # Load All Global Settings
 
-    SetLogFile( FILE   => $settings{'logfile'},
-                USER   => 'labyrinth',
-                LEVEL  => ($settings{'loglevel'} || 0),
-                CLEAR  => 1,
-                CALLER => 1);
-
     MailSet(mailsend => $settings{mailsend}, logdir => $settings{logdir});
 
     ParseParams();
