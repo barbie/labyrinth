@@ -316,6 +316,8 @@ sub LoadRules {
     }
     $fh->close;
 
+#LogDebug("Constraints: rules=" . Dumper(\%rules));
+
     if($required_regex) {
         $required_regex =~ s/|$//;
         $rules{required_regexp} = qr/^$required_regex$/;
@@ -336,7 +338,7 @@ sub _constraint {
     if($constraint eq 'imagefile') {
         my %hash = (
             constraint_method => 'file_format',
-            params => [{mime_types => [qw!image/jpe image/jpg image/jpeg image/gif image/png!]}],
+            params => [mime_types => [qw!image/jpe image/jpg image/jpeg image/gif image/png!]],
         );
         return \%hash;
     } else {
@@ -465,7 +467,6 @@ sub ParseParams {
     my $results;
 
 #   LogDebug("rules=".Dumper(\%rules));
-#   LogDebug("env=".Dumper(\%cgi->env()));
 
     if(!defined $ENV{'SERVER_SOFTWARE'}) {  # commandline testing
         my $file = "$settings{'config'}/cgiparams.nfo";
