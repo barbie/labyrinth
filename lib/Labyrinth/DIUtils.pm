@@ -33,6 +33,7 @@ Handles the driver software for image manipulation;
 #############################################################################
 
 use Labyrinth::Globals;
+use Labyrinth::Writer;
 
 #############################################################################
 #Variables
@@ -84,11 +85,11 @@ sub new {
     } else {
         my $class = "Labyrinth::DIUtils::$tool";
         eval { 
-            require $class;
+            eval "require $class";
             $hook = $class->new($file);
         };
         if($@ || !$hook) {
-            Croak("Invalid image tool [$tool] specified for $self.");
+            Croak("Invalid image tool [$tool] specified for $self. [$@]");
         }
     }
 
