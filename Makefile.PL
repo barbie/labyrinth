@@ -24,6 +24,7 @@ WriteMakefile(
         'File::Basename'        => 0,
         'File::Copy'            => 0,
         'File::Path'            => 0,
+        'File::Slurp'           => 0,
         'File::Spec::Functions' => 0,
         'HTML::TagCloud'        => 0.34,
         'Image::Size'           => 0,

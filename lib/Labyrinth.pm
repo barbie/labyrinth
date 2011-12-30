@@ -82,7 +82,7 @@ sub new {
 
 =over 4
 
-=item run
+=item run()
 
 Provides the dispatch loop, instantiating any configuration required, then
 processes each command in turn, before finally publishing the result.

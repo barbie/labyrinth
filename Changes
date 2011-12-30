@@ -1,6 +1,13 @@
 Changes for the Labyrinth Core
 
-5.09	current
+5.10	current
+	- fixed capturing require errors in DIUtils
+	- fixed passing args to D::FV::Constraints::Upload
+	- fixed file uploads in Media.
+	- fixed wrapper for Query::CGI.
+	- added File:Slurp as a prerequisite.
+
+5.09	25/06/2011 [unreleased]
 	- fix to Transform to correctly return content.
 	- fix to RSS.pm to use new Transform.
 	- fix to URL pattern match.

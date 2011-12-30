@@ -24,12 +24,16 @@ DESCRIPTION
 FUNCTIONS
    Constructor
        new()
+           Instantiates the Labyrinth object.
 
    Methods
-       run run provides the interface between the CGI and the modules
+       run()
+           Provides the dispatch loop, instantiating any configuration
+           required, then processes each command in turn, before finally
+           publishing the result.
 
        load()
-           Loads plugins found under the plugins directory.
+           Loads plugins found within the plugin directory.
 
        action($action)
            Calls the appropriate plugin method.
@@ -67,8 +71,8 @@ COPYRIGHT & LICENSE
          All Rights Reserved.
 
          This module is free software; you can redistribute it and/or
-         modify it under the same terms as Perl itself.
+         modify it under the Artistic License 2.0.
 
 
 
-perl v5.10.1                      2010-12-31                      Labyrinth(3)
+perl v5.10.1                      2011-12-30                      Labyrinth(3)
