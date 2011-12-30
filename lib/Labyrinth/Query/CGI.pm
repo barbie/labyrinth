@@ -14,13 +14,12 @@ Labyrinth::Query::CGI - Environment hander for Labyrinth.
   use Labyrinth::Query::CGI;
   my $cgi = Labyrinth::Query::CGI->new();
 
-  $cgi->env();
   $cgi->Vars();
   $cgi->cookie();
 
 =head1 DESCRIPTION
 
-A thin wrapper around CGI.pm.
+A very thin wrapper around CGI.pm.
 
 =cut
 
@@ -35,35 +34,9 @@ use CGI::Cookie;
 
 =head1 METHODS
 
-=over 4
-
-=item new
-
-Object constructor.
-
-=item env
-
-Provides the %ENV hash.
+All methods are as per CGI.pm.
 
 =cut
-
-sub new {
-    my($class) = @_;
-    CGI::initialize_globals();
-
-    my $self = bless {
-        env         => \%ENV,
-    }, $class;
-
-    $self->SUPER::init;
-
-    $self;
-}
-
-sub env {
-    my $self = shift;
-    return $self->{env};
-}
 
 1;
 
