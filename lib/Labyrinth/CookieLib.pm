@@ -87,42 +87,34 @@ Set all given cookies as compressed cookies.
 
 =cut
 
-sub SetCookieExpDate
-{
+sub SetCookieExpDate {
     $cookie_config{expires} = $_[0];
 }
 
-sub SetCookiePath
-{
+sub SetCookiePath {
     $cookie_config{path} = $_[0];
 }
 
-sub SetCookieDomain
-{
+sub SetCookieDomain {
 
     if ($_[0] =~ /(.com|.edu|.net|.org|.gov|.mil|.int)$/i &&
         $_[0] =~ /\.[^.]+\.\w{3}$/) {
         $cookie_config{domain} = $_[0];
         return 1;
-    }
-    elsif ($_[0] !~ /(.com|.edu|.net|.org|.gov|.mil|.int)$/i &&
+    } elsif ($_[0] !~ /(.com|.edu|.net|.org|.gov|.mil|.int)$/i &&
            $_[0] =~ /\.[^.]+\.[^.]+\./) {
         $cookie_config{domain} = $_[0];
         return 1;
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-sub SetSecureCookie
-{
+sub SetSecureCookie {
     $cookie_config{secure} = $_[0];
 }
 
-sub GetCookies
-{
+sub GetCookies {
     my @cookies = @_;
 
     my $exists = 0;
@@ -150,15 +142,13 @@ sub SetCookie {
 
 sub SetCookies {
     my (%input) = @_;
-    while( my($name,$value) = each %input )
-    {
+    while( my($name,$value) = each %input ) {
         my $c = SetCookie($name,$value);
         print "Set-Cookie: ", $c, "\n";
     }
 }
 
-sub GetCompressedCookies
-{
+sub GetCompressedCookies {
     my($cookie_name,@cookies) = @_;
     my $exists = 0;
 
@@ -186,14 +176,12 @@ sub GetCompressedCookies
     return $exists;
 }
 
-sub SetCompressedCookies
-{
+sub SetCompressedCookies {
     my($cookie_name,@cookies) = @_;
     my $cookie_value = "";
 
     my %input = (@cookies);
-    while( my($name,$value) = each %input )
-    {
+    while( my($name,$value) = each %input ) {
         if ($cookie_value) {
             $cookie_value .= '&'.$name.'::'.$value;
         } else {
