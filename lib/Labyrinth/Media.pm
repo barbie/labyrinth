@@ -52,9 +52,10 @@ require Exporter;
 
 use Archive::Extract;
 use Digest::MD5 qw(md5_hex);
-use File::Path;
-use File::Copy;
 use File::Basename;
+use File::Copy;
+use File::Path;
+use File::Slurp;
 use Image::Size;
 use URI::Escape qw(uri_escape);
 use WWW::Mechanize;
@@ -111,13 +112,12 @@ sub CGIFile {
     my $param = shift;
     my $stock = shift || 1;
 
-    my $f = $cgi->param($param) || die "Cannot access filehandle\n";
-
     _init_stock()   unless(%stock);
     $stock = 1  unless($stock{$stock});
     my $path = "$settings{webdir}/$stock{$stock}->{path}";
     mkpath($path);
 
+    my $f = $cgi->upload($param) || die "Cannot access filehandle\n";
     my ($name,$suffix) = ($f =~ m!([^/\\]*)(\.\w+)$!);
     my $filename;
     my $tries = 0;
@@ -128,13 +128,14 @@ sub CGIFile {
         last;
     }
 
-    die "Unable to create temporary file" if(-f $filename);
-    my $fh = IO::File->new($filename, "w")    or die "Unable to create temporary file";
-    binmode($fh);# if ($^O =~ /OS2|VMS|Win|DOS|Cygwin/i);
+    my $buffer = read_file($f, binmode => ':raw');
+    my $bytes = length($buffer);
+    write_file($filename, { binmode => ':raw' }, $buffer);
 
-    my $buffer;
-    while(read($f,$buffer,1024)) { print $fh $buffer }
-    close($fh);
+    if($bytes == 0) {
+        LogError("CGIFile: no bytes read for input file [$param]");
+        return;
+    }
 
     $filename =~ s!^$settings{webdir}/!!;
     return ($name,$filename,$suffix);
