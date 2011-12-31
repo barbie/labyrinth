@@ -1,6 +1,6 @@
 Changes for the Labyrinth Core
 
-5.10	current
+5.10	31/12/2011
 	- fixed capturing require errors in DIUtils
 	- fixed passing args to D::FV::Constraints::Upload
 	- fixed file uploads in Media.
