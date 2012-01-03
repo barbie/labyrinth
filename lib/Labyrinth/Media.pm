@@ -73,9 +73,10 @@ use Labyrinth::Variables;
 # -------------------------------------
 # Constants
 
-use constant    MaxDefaultWidth     => 120;
-use constant    MaxDefaultHeight    => 120;
-use constant    MaxDefaultThumb     => 120;
+use constant    MaxDefaultImageWidth     => 120;
+use constant    MaxDefaultImageHeight    => 120;
+use constant    MaxDefaultThumbWidth     => 120;
+use constant    MaxDefaultThumbHeight    => 120;
 
 # -------------------------------------
 # Variables
@@ -324,8 +325,8 @@ sub SaveImageFile {
     my %hash = @_;
 
     my $param   = $hash{param};
-    my $xmax    = $hash{width}  || MaxDefaultWidth;
-    my $ymax    = $hash{height} || MaxDefaultHeight;
+    my $xmax    = $hash{width}  || MaxDefaultImageWidth;
+    my $ymax    = $hash{height} || MaxDefaultImageHeight;
     my $imageid = $hash{imageid};
     my $stock   = StockType($hash{stock});
 
@@ -350,8 +351,8 @@ sub SaveImageFile {
 
 sub GetImageSize {
     my ($link,$size,$width,$height,$maxwidth,$maxheight) = @_;
-    $maxwidth  ||= MaxDefaultWidth;
-    $maxheight ||= MaxDefaultHeight;
+    $maxwidth  ||= MaxDefaultImageWidth;
+    $maxheight ||= MaxDefaultImageHeight;
 
     my ($w,$h) = $size ? split('x',$size) : (0,0);
     ($w,$h) = imgsize("$settings{webdir}/$link") unless($w || $h);
@@ -422,8 +423,8 @@ sub CopyPhotoFile {
     my %hash = @_;
 
     my $photo = $hash{photo};
-    my $xmax  = $hash{width}  || MaxDefaultWidth;
-    my $ymax  = $hash{height} || MaxDefaultHeight;
+    my $xmax  = $hash{width}  || MaxDefaultImageWidth;
+    my $ymax  = $hash{height} || MaxDefaultImageHeight;
     my $stock = StockType($hash{stock});
 
     return  unless($photo);
@@ -455,15 +456,16 @@ sub CopyPhotoFile {
 sub SavePhotoFile {
     my %hash = @_;
 
-    my $param = $hash{param}  || return;
-    my $path  = $hash{path}   || return;
-    my $page  = $hash{page}   || return;
-    my $xmax  = $hash{width}  || MaxDefaultWidth;
-    my $ymax  = $hash{height} || MaxDefaultHeight;
-    my $smax  = $hash{thumb}  || MaxDefaultThumb;
-    my $order = $hash{order}  || 1;
-    my $tag   = $hash{tag};
-    my $stock = StockType($hash{stock});
+    my $param   = $hash{param}   || return;
+    my $path    = $hash{path}    || return;
+    my $page    = $hash{page}    || return;
+    my $iwidth  = $hash{iwidth}  || MaxDefaultImageWidth;
+    my $iheight = $hash{iheight} || MaxDefaultImageHeight;
+    my $twidth  = $hash{twidth}  || MaxDefaultThumbWidth;
+    my $theight = $hash{theight} || MaxDefaultThumbHeight;
+    my $order   = $hash{order}   || 1;
+    my $tag     = $hash{tag};
+    my $stock   = StockType($hash{stock});
 
     return  unless($cgiparams{$param});
 
@@ -483,9 +485,9 @@ sub SavePhotoFile {
     copy($source,$target);
 
     my $i = Labyrinth::DIUtils->new($source);
-    $i->reduce($xmax,$ymax);
+    $i->reduce($iwidth,$iheight);
     my $t = Labyrinth::DIUtils->new($target);
-    $t->reduce($smax,$smax);
+    $t->reduce($twidth,$theight);
 
     my ($size_x,$size_y) = imgsize($source);
 
