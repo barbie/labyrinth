@@ -21,7 +21,8 @@ plugins.
 
 =head1 EXPORT
 
-  Alignment
+  AlignName
+  AlignClass
   AlignSelect
 
   PublishState
@@ -56,7 +57,7 @@ require Exporter;
 
 %EXPORT_TAGS = (
     'all' => [ qw(
-        Alignment AlignSelect
+        AlignName AlignClass AlignSelect
         PublishState PublishSelect PublishAction
         FieldCheck AuthorCheck MasterCheck
         AccessUser AccessGroup AccessSelect
@@ -147,17 +148,22 @@ sub PublishAction {
 }
 
 my %alignments = (
-    0 => 'none',
-    1 => 'left',
-    2 => 'centre',
-    3 => 'right',
-    4 => 'wrap',
+    0 => { name => 'none',              class => 'nail'     },
+    1 => { name => 'left',              class => 'left'     },
+    2 => { name => 'centre',            class => 'centre'   },
+    3 => { name => 'right',             class => 'right'    },
+    4 => { name => 'left (no wrap)',    class => 'lnowrap'  },
+    5 => { name => 'right (no wrap)',   class => 'rnowrap'  },
 );
-my @alignments = map {{'id'=>$_,'value'=> $alignments{$_}}} sort keys %alignments;
+my @alignments = map {{'id'=>$_,'value'=> $alignments{$_}->{name}}} sort keys %alignments;
 
-=item Alignment
+=item AlignName
 
-Returns the name of the current alignment state, given the numeric state.
+Returns the name of the given alignment type, defaults to 'none'.
+
+=item AlignClass
+
+Returns the class of the given alignment type, defaults to 'nail'.
 
 =item AlignSelect
 
@@ -166,9 +172,14 @@ available alignment states.
 
 =cut
 
-sub Alignment {
+sub AlignName {
     my $opt = shift || 1;
-    return $alignments{$opt};
+    return $alignments{$opt}->{name};
+}
+
+sub AlignClass {
+    my $opt = shift || 1;
+    return $alignments{$opt}->{class};
 }
 
 sub AlignSelect {

@@ -93,11 +93,17 @@ sub MailSend {
     $mailer{mailsend}   or return LogError("MailSend: mailsend not set");
     $mailer{logdir}     or return LogError("MailSend: logdir not set");
 
-    my $template = $hash{template}  or return LogError("MailSend: template not set");
-    my $email    = $hash{email}     or return LogError("MailSend: email not set");
+    my $template = $hash{template}          or return LogError("MailSend: template not set");
+    my $email    = $hash{recipient_email}   or return LogError("MailSend: recipient_email not set");
+    my $body;
 
-    my $ref = Transform($template,\%hash);
-    my $body = $$ref;
+#use Data::Dumper;
+#LogDebug("MailSend: template=$template, email=$email, hash=".Dumper(\%hash));
+
+    eval { $body = Transform($template,\%hash); };
+    return LogError("MailSend: error=$@") if($@);
+#LogDebug("MailSend: body=$body");
+
     unless($hash{nowrap}) {
         $Text::Wrap::columns = 72;
         $body = wrap('', '', $body);
@@ -116,10 +122,11 @@ sub MailSend {
         $mailer{result} = 1;
         $tvars{mailer}{result} = 1;
     } else {
-        my $cmd = qq!|:utf8 $mailer{mailsend} $email!;
+        #my $cmd = qq!|:utf8 $mailer{mailsend} $email!;
+        my $cmd = qq!| $mailer{mailsend} $email!;
 
         if(my $fh = IO::File->new($cmd)) {
-            binmode($fh,':utf8');
+#            binmode($fh,':utf8');
             print $fh $body;
             $fh->close;
             $mailer{result} = 1;

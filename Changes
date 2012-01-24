@@ -1,5 +1,13 @@
 Changes for the Labyrinth Core
 
+5.12	current
+	- extended CSS list of styles (MLUtils).
+	- length pattern now includes px and em (MLUtils).
+	- email changed to recipient_email to avoid clashes (Mailer).
+	- catch any template parsing errors (Mailer).
+	- made alignment lists more consistent (Support).
+	- Alignment split into AlignName and AlignClass (Support).
+
 5.11	03/01/2012
 	- Media now allows more control for resizing thumbnails.
 	- DTUtils give more scope for configuring YearSelect.
