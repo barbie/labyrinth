@@ -1,6 +1,6 @@
 Changes for the Labyrinth Core
 
-5.12	current
+5.12	24/01/2012
 	- extended CSS list of styles (MLUtils).
 	- length pattern now includes px and em (MLUtils).
 	- email changed to recipient_email to avoid clashes (Mailer).
