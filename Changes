@@ -4,6 +4,8 @@ Changes for the Labyrinth Core
 	- added crawler detection.
 	- change file dates changed to meet W3CDTF standards.
 	- implemented Perl::Critic suggestions.
+        - reworked Makefile.PL for clarity.
+	- added example pages.cgi script.
 
 5.12	2012-01-24
 	- extended CSS list of styles (MLUtils).
