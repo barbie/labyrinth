@@ -1,3 +1,6 @@
+#!/usr/bin/perl -w
+use strict;
+
 use Test::More;
 
 # Skip if doing a regular install
