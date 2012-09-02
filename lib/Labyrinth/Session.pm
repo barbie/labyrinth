@@ -560,6 +560,7 @@ sub _get_session {
 
 sub _save_session {
     my @fields = @_;
+    my $session;
 
     LogDebug('SaveSession:1 fields=['.join('][',map {$_ || ''} @fields).']');
 
@@ -576,7 +577,7 @@ sub _save_session {
 
     LogDebug('SaveSession:2 fields=['.join('][',map {$_ || ''} @fields).']');
 
-    my $session = $main::Cookies{'sessionid'}   if (&GetCookies('sessionid'));
+    $session = $main::Cookies{'sessionid'}  if(GetCookies('sessionid'));
     if($session && $session ne 'expired') {
         # check the session has been recorded in case it's been reaped, a user
         # can relogin with the same session key

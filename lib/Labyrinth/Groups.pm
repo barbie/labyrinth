@@ -75,7 +75,7 @@ number of rows you require.
 sub GetGroupID {
     my $name = shift;
     my @rows = $dbi->GetQuery('array','GetGroupID',$name);
-    return undef    unless(@rows);
+    return  unless(@rows);
     return $rows[0]->[0];
 }
 

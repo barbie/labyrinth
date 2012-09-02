@@ -658,7 +658,7 @@ sub UnZipFile {
         return;
     }
 
-    my @files = map {s!$settings{webdir}/!!;$_} File::Find::Rule->file()->name('*')->in("$settings{webdir}/$path");
+    my @files = map {my $x = $_; $x =~ s!$settings{webdir}/!!; $x} File::Find::Rule->file()->name('*')->in("$settings{webdir}/$path");
     unless(@files > 0) {
         LogError("UnZip failure: file=[$file], path=[$path], error: No files in archive.");
         rmtree("$settings{webdir}/$path");

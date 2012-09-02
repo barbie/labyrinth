@@ -157,8 +157,9 @@ sub UserSelect {
     my $blank = shift || 0;
     my $title = shift || 'Name';
     my $all   = shift;
+    my $search;
 
-    my $search = 'WHERE search=1'   unless($all);
+    $search = 'WHERE search=1'   unless($all);
 
     my @rows = $dbi->GetQuery('hash','AllUsers',{search=>$search});
     foreach (@rows) { $_->{name} = $_->{realname} . ( $_->{nickname} ? ' (' . $_->{nickname} . ')' : '') }

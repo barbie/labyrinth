@@ -74,6 +74,7 @@ require Exporter;
 # -------------------------------------
 # Library Modules
 
+use IO::File;
 use Log::LogLite;
 
 # -------------------------------------
@@ -130,14 +131,14 @@ sub SetLogFile {
     return  unless($hash{FILE});
     return  unless($hash{USER});
 
-    if(!-e $hash{FILE}) { open FH, ">$hash{FILE}"; close FH }
+    if(!-e $hash{FILE}) { my $fh = IO::File->new("$hash{FILE}", 'w+'); $fh->close }
     return  unless(-w $hash{FILE});
 
     $username  = $hash{USER};
     $LOG_LEVEL = $hash{LEVEL}   if($hash{LEVEL});
     $CALLER    = 1              if($hash{CALLER});
 
-    if($hash{CLEAR}) { open FH, ">$hash{FILE}"; close FH }
+    if($hash{CLEAR}) { my $fh = IO::File->new("$hash{FILE}", 'w+'); $fh->close }
 
     $logfile = Log::LogLite->new($hash{FILE},$LOG_LEVEL);
     return  unless($logfile);

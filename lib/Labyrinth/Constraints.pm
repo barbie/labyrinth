@@ -111,7 +111,7 @@ sub url {
 sub match_url {
     my ($self,$text) = @_;
     $text =~ /^($settings{urlregex})$/x;
-    return undef                unless($1);
+    return                      unless($1);
     $text = 'http://' . $text   unless($2);
     return $text;
 }

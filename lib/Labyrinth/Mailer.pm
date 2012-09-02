@@ -110,15 +110,11 @@ sub MailSend {
     }
 
     if($hash{output}) {
-        open(FH, ">>:utf8", $hash{output})    or die "Cannot write to file [$hash{output}]: $!";
-        print FH $body;
-        print FH "\n\n#-----\n";
-#        my $fh = IO::File->new($hash{output},'a+')    or die "Cannot write to file [$hash{output}]: $!";
-#        binmode($fh,':utf8');
-#        print $fh $body;
-#        print $fh "\n\n#-----\n";
-#        $fh->close;
-        close(FH);
+        my $fh = IO::File->new($hash{output},'a+')  or die "Cannot write to file [$hash{output}]: $!";
+        $fh->binmode(':utf8');
+        print $fh $body;
+        print $fh "\n\n#-----\n";
+        $fh->close;
         $mailer{result} = 1;
         $tvars{mailer}{result} = 1;
     } else {
@@ -126,7 +122,7 @@ sub MailSend {
         my $cmd = qq!| $mailer{mailsend} $email!;
 
         if(my $fh = IO::File->new($cmd)) {
-#            binmode($fh,':utf8');
+            $fh->binmode(':utf8');
             print $fh $body;
             $fh->close;
             $mailer{result} = 1;

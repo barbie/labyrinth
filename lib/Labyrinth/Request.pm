@@ -82,6 +82,7 @@ sub new {
     my $self    = shift;
     my $realm   = shift;
     my $request = shift || 'home-'.$realm;
+    my @actions;
 
     ## split the reset request into it's component parts
     my ($section,$command) = split("-",$request);
@@ -94,7 +95,7 @@ sub new {
         = $self->_read_config('realm',$realm,@configkeys);
 
     $onsuccess = $request;
-    my @actions = split(",",$actions)   if($actions);
+    @actions = split(",",$actions)   if($actions);
 
     # create an attributes hash
     my $atts = {

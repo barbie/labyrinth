@@ -427,8 +427,9 @@ sub DBConnect {
 sub _errors {
     my $err = shift;
     my $sql = shift;
+    my $message = '';
 
-    my $message = "$err<br />"              if($err);
+    $message  = "$err<br />"                if($err);
     $message .= "<br />SQL=$sql<br />"      if($sql);
     $message .= "ARGS=[".join(",",@_)."]"   if(@_);
 
@@ -471,10 +472,10 @@ sub ParseParams {
     if(!defined $ENV{'SERVER_SOFTWARE'}) {  # commandline testing
         my $file = "$settings{'config'}/cgiparams.nfo";
         if(-r $file) {
-            open FH, "$file"    or return;
+            my $fh = IO::File->new($file, 'r')  or return;
             my (%params,$params);
-            { local $/ = undef; $params = <FH>; }
-            close FH;
+            { local $/ = undef; $params = <$fh>; }
+            $fh->close;
             foreach my $param (split(/[\r\n]+/,$params)) {
                 my ($name,$value) = $param =~ /(\w+)=(.*)/;
                 next    unless($name);
