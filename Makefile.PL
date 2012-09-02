@@ -34,6 +34,7 @@ WriteMakefile(
         'MIME::Lite::TT::HTML'  => 0,
         'MIME::Types'           => 0,
         'Module::Pluggable'     => 0,
+        'Regexp::Assemble'      => 0,
         'Regexp::Common'        => 0,
         'Template'              => 0,
         'Text::Wrap'            => 0,

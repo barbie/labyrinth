@@ -67,6 +67,11 @@ require Exporter;
 @EXPORT     = ( @{$EXPORT_TAGS{'all'}} );
 
 # -------------------------------------
+# Library Modules
+
+use Regexp::Assemble;
+
+# -------------------------------------
 # Variables
 
 =head2 Global Variables
@@ -137,6 +142,16 @@ sub init {
 
     $settings{urlregex}   = $urlregex;
     $settings{emailregex} = $email;
+
+
+    $settings{crawler} = 0;
+    if($settings{crawlers}) {
+        my $ra = Regexp::Assemble->new;
+        $ra->add( '\b' . quotemeta( $_ ) . '\b' )   for(@{ $settings{crawlers} });
+        my $re = $ra->re;
+        $settings{crawler} = 1  if($ENV{'HTTP_USER_AGENT'} =~ $re);
+    }
+
 
     $settings{'query-parser'} ||= 'CGI';
     my $class = 'Labyrinth::Query::' . $settings{'query-parser'};

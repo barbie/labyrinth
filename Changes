@@ -1,5 +1,8 @@
 Changes for the Labyrinth Core
 
+5.13	02/09/2012
+	- added crawler detection.
+
 5.12	24/01/2012
 	- extended CSS list of styles (MLUtils).
 	- length pattern now includes px and em (MLUtils).
