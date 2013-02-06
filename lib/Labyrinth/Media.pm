@@ -39,7 +39,7 @@ require Exporter;
                     StockSelect StockName StockPath StockType PathMove
                     GetImage SaveImageFile MirrorImageFile
                     CopyPhotoFile SavePhotoFile
-                    GetMedia SaveMedia SaveFile UnZipFile
+                    GetMedia SaveMedia SaveFile DeleteFile UnZipFile
                     GetImageSize GetGravatar
                 ) ]
 );
@@ -73,10 +73,10 @@ use Labyrinth::Variables;
 # -------------------------------------
 # Constants
 
-use constant    MaxDefaultImageWidth     => 120;
-use constant    MaxDefaultImageHeight    => 120;
-use constant    MaxDefaultThumbWidth     => 120;
-use constant    MaxDefaultThumbHeight    => 120;
+use constant    MaxDefaultImageWidth     => 800;
+use constant    MaxDefaultImageHeight    => 600;
+use constant    MaxDefaultThumbWidth     => 200;
+use constant    MaxDefaultThumbHeight    => 200;
 
 # -------------------------------------
 # Variables
@@ -325,8 +325,8 @@ sub SaveImageFile {
     my %hash = @_;
 
     my $param   = $hash{param};
-    my $xmax    = $hash{width}  || MaxDefaultImageWidth;
-    my $ymax    = $hash{height} || MaxDefaultImageHeight;
+    my $xmax    = $hash{width}  || $settings{maxdefaultimagewidth}  || MaxDefaultImageWidth;
+    my $ymax    = $hash{height} || $settings{maxdefaultimageheight} || MaxDefaultImageHeight;
     my $imageid = $hash{imageid};
     my $stock   = StockType($hash{stock});
 
@@ -335,8 +335,11 @@ sub SaveImageFile {
     my ($name,$filename) = CGIFile($param,$stock);
     return 1    unless($name);  # blank if anything goes wrong
 
+    eval {
+        LogDebug("reducing '$settings{webdir}/$filename' to $xmax x $ymax");
     my $i = Labyrinth::DIUtils->new("$settings{webdir}/$filename");
     $i->reduce($xmax,$ymax);
+    };
 
     my ($size_x,$size_y) = imgsize("$settings{webdir}/$filename");
 
@@ -351,8 +354,8 @@ sub SaveImageFile {
 
 sub GetImageSize {
     my ($link,$size,$width,$height,$maxwidth,$maxheight) = @_;
-    $maxwidth  ||= MaxDefaultImageWidth;
-    $maxheight ||= MaxDefaultImageHeight;
+    $maxwidth  ||= $settings{maxdefaultimagewidth}  || MaxDefaultImageWidth;
+    $maxheight ||= $settings{maxdefaultimageheight} || MaxDefaultImageHeight;
 
     my ($w,$h) = $size ? split('x',$size) : (0,0);
     ($w,$h) = imgsize("$settings{webdir}/$link") unless($w || $h);
@@ -423,8 +426,8 @@ sub CopyPhotoFile {
     my %hash = @_;
 
     my $photo = $hash{photo};
-    my $xmax  = $hash{width}  || MaxDefaultImageWidth;
-    my $ymax  = $hash{height} || MaxDefaultImageHeight;
+    my $xmax  = $hash{width}  || $settings{maxdefaultimagewidth}  || MaxDefaultImageWidth;
+    my $ymax  = $hash{height} || $settings{maxdefaultimageheight} || MaxDefaultImageHeight;
     my $stock = StockType($hash{stock});
 
     return  unless($photo);
@@ -459,10 +462,10 @@ sub SavePhotoFile {
     my $param   = $hash{param}   || return;
     my $path    = $hash{path}    || return;
     my $page    = $hash{page}    || return;
-    my $iwidth  = $hash{iwidth}  || MaxDefaultImageWidth;
-    my $iheight = $hash{iheight} || MaxDefaultImageHeight;
-    my $twidth  = $hash{twidth}  || MaxDefaultThumbWidth;
-    my $theight = $hash{theight} || MaxDefaultThumbHeight;
+    my $iwidth  = $hash{iwidth}  || $settings{maxdefaultimagewidth}  || MaxDefaultImageWidth;
+    my $iheight = $hash{iheight} || $settings{maxdefaultimageheight} || MaxDefaultImageHeight;
+    my $twidth  = $hash{twidth}  || $settings{maxdefaultthumbwidth}  || MaxDefaultThumbWidth;
+    my $theight = $hash{theight} || $settings{maxdefaultthumbheight} || MaxDefaultThumbHeight;
     my $order   = $hash{order}   || 1;
     my $tag     = $hash{tag};
     my $stock   = StockType($hash{stock});
@@ -484,10 +487,16 @@ sub SavePhotoFile {
     $target = "$settings{webdir}/$path/$file-thumb$extn";
     copy($source,$target);
 
-    my $i = Labyrinth::DIUtils->new($source);
-    $i->reduce($iwidth,$iheight);
-    my $t = Labyrinth::DIUtils->new($target);
-    $t->reduce($twidth,$theight);
+    eval {
+        LogDebug("reducing '$source' to $iwidth x $iheight");
+        my $i = Labyrinth::DIUtils->new($source);
+        $i->reduce($iwidth,$iheight);
+    };
+    eval {
+        LogDebug("reducing '$target' to $twidth x $theight");
+        my $t = Labyrinth::DIUtils->new($target);
+        $t->reduce($twidth,$theight);
+    };
 
     my ($size_x,$size_y) = imgsize($source);
 
@@ -569,8 +578,6 @@ Note that this upload function assumes that the file is to be stored in the
 appropriate directory with a link being return. No imageid or further reference
 is held within the database.
 
-=back
-
 =cut
 
 sub SaveFile {
@@ -585,6 +592,25 @@ sub SaveFile {
     return  unless($name);  # undef if anything goes wrong
 
     return $filename;
+}
+
+=item DeleteFile(%hash)
+
+Deletes a previously uploaded media file from disk. No attempt is made to check
+whether file is used within the database, other checks should be used prior to
+calling this function if this is required. The hash can contain the following:
+
+  file      - file to be deleted
+
+=back
+
+=cut
+
+sub DeleteFile {
+    my %hash = @_;
+
+    my $file = $hash{file};
+    unlink $file;
 }
 
 =head1 ADMIN INTERFACE FUNCTIONS
