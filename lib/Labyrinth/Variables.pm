@@ -157,7 +157,7 @@ sub init {
     my $class = 'Labyrinth::Query::' . $settings{'query-parser'};
 
     eval {
-        require $class;
+        eval "CORE::require $class";
         $cgi = $class->new();
     };
 
