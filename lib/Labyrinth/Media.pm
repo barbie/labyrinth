@@ -337,8 +337,8 @@ sub SaveImageFile {
 
     eval {
         LogDebug("reducing '$settings{webdir}/$filename' to $xmax x $ymax");
-    my $i = Labyrinth::DIUtils->new("$settings{webdir}/$filename");
-    $i->reduce($xmax,$ymax);
+        my $i = Labyrinth::DIUtils->new("$settings{webdir}/$filename");
+        $i->reduce($xmax,$ymax);
     };
 
     my ($size_x,$size_y) = imgsize("$settings{webdir}/$filename");
