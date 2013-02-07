@@ -143,8 +143,8 @@ sub LoadSettings {
     my $PARSEFILE   = 'parserules.ini';
 
     # Server/HTTP values
-    my $host            = $ENV{'HTTP_HOST'};
-    my $ipaddr          = $ENV{'REMOTE_ADDR'};
+    my $host            = $ENV{'HTTP_HOST'}   || '';
+    my $ipaddr          = $ENV{'REMOTE_ADDR'} || '';
     my ($protocol)      = $ENV{'SERVER_PROTOCOL'}
                             ? ($ENV{'SERVER_PROTOCOL'} =~ m!^(.*)/!)
                             : $ENV{'SERVER_PORT'} && $ENV{'SERVER_PORT'} eq '443'
