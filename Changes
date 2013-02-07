@@ -3,6 +3,7 @@ Changes for the Labyrinth Core
         - added DeleteFile (Media).
         - updated default image and thmubnail upload sizes (Media).
         - added config support for image and thmubnail upload sizes (Media).
+        - GetFolderIDs now uses a hash rather than a hashref (Session).
 
 5.13	2012-09-02
         - added crawler detection.
