@@ -70,10 +70,13 @@ my %binary = (
 
 my %knowntypes = (
     html            => 'text/html',
-    rss             => 'application/xml',
-    xml             => 'application/xml',
     ics             => 'text/calendar',
+    #js              => 'application/javascript',
+    js              => 'text/html',
+    json            => 'application/json',
+    rss             => 'application/xml',
     txt             => 'text/plain',
+    xml             => 'application/xml',
     yml             => 'text/yaml',
     yaml            => 'text/yaml'
 );
@@ -185,7 +188,12 @@ sub Publish {
 
     #LogDebug("<!-- $layout : $content -->");
 
-    my $output = $PARSER->parser($layout,$vars);
+    my $output;
+    eval { $output = $PARSER->parser($layout,$vars) };
+    if($@ || !$output) {
+        LogDebug( "template error=$@" );
+        $$output = $@;
+    }
 
     my ($ext) = $layout =~ m/\.(\w+)$/;
     $ext ||= 'html';
