@@ -125,7 +125,7 @@ Prepares the standard variable values, so that they are only called once on setu
 =cut
 
 sub init {
-    my $prot     = qr{(?:http|https|ftp|afs|news|nntp|mid|cid|mailto|wais|prospero|telnet|gopher)://};
+    my $prot     = qr{(?:http|https|ftp|afs|news|nntp|mid|cid|mailto|wais|prospero|telnet|gopher|git)://};
     my $atom     = qr{[a-z\d]}i;
     my $domain   = qr{(?:(?:(?:$atom(?:(?:$atom|-)*$atom)?)\.)*(?:[a-zA-Z](?:(?:$atom|-)*$atom)?))};
     my $ip       = qr{(?:(?:\d+)(?:\.(?:\d+)){3})(?::(?:\d+))?};
