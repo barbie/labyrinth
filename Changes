@@ -6,6 +6,8 @@ Changes for the Labyrinth Core
         - GetFolderIDs now uses a hash rather than a hashref (Session).
         - added Javascript and JSON file types (Writer).
         - catch parsing errors (Writer).
+        - capture initialisation issues uniformly.
+        - added LICENSE file.
 
 5.13	2012-09-02
         - added crawler detection.
