@@ -37,6 +37,11 @@ lib/Labyrinth/Writer/Parser/TT.pm
 lib/Labyrinth/Writer/Render/CGI.pm
 README
 t/00use.t
+t/20-labyrinth.t
+t/21-labyrinth-audit.t
+t/22-labyrinth-constraints.t
+t/23-labyrinth-constraints-emails.t
+t/25-labyrinth-dbutils.t
 t/90podtest.t
 t/91podcover.t
 t/94metatest.t

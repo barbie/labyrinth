@@ -9,6 +9,7 @@ Changes for the Labyrinth Core
         - capture initialisation issues uniformly.
         - added LICENSE file.
         - fixed constraints and url/email patterns.
+        - extended test suite.
 
 5.13	2012-09-02
         - added crawler detection.
