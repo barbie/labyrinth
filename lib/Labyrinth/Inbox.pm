@@ -1,4 +1,4 @@
-hpackage Labyrinth::Inbox;
+package Labyrinth::Inbox;
 
 use warnings;
 use strict;
