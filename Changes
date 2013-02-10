@@ -1,5 +1,6 @@
 Changes for the Labyrinth Core
 
+5.14	2013-02-10
         - added DeleteFile (Media).
         - updated default image and thmubnail upload sizes (Media).
         - added config support for image and thmubnail upload sizes (Media).

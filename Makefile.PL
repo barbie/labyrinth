@@ -10,7 +10,7 @@ WriteMakefile(
     AUTHOR              => 'Barbie <barbie@cpan.org>',
     NAME                => 'Labyrinth',
     VERSION_FROM        => 'lib/Labyrinth.pm',
-    ABSTRACT	        => 'Core Labyrinth codebase - A Website Management Framework',
+    ABSTRACT	        => 'Labyrinth Website Management Framework',
     NO_META             => 1,
     PREREQ_PM           => {
 
