@@ -1,6 +1,7 @@
 Changes for the Labyrinth Core
 
         - added INSTALL file.
+        - rewrote README.
 
 5.14	2013-02-10
         - added DeleteFile (Media).
