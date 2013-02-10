@@ -65,6 +65,8 @@ my %mon = ( 1=>31,2=>29,3=>31,4=>30,5=>31,6=>30,7=>31,8=>31,9=>30,10=>31,11=>30,
 
 sub valid_ddmmyy {
     my ($self,$text) = @_;
+    return 0    unless($text);
+
     my @part = $text =~ m< ^ (\d{2,2}) [-/.] (\d{2,2}) [-/.] (\d{4,4}) $ >x;
     return 0    unless(@part == 3);
 
@@ -110,9 +112,12 @@ sub url {
 
 sub match_url {
     my ($self,$text) = @_;
-    $text =~ /^($settings{urlregex})$/x;
-    return                      unless($1);
-    $text = 'http://' . $text   unless($2);
+    return                      unless($text);
+
+    my ($url) = $text =~ /^($settings{urlregex})$/x;
+
+    return                      unless($url);
+    $text = 'http://' . $text   unless($text =~ m!^\w+://!);
     return $text;
 }
 
@@ -128,7 +133,7 @@ sub AUTOLOAD {
     # Since all the valid_* routines are essentially identical we're
     # going to generate them dynamically from match_ routines with the same names.
     if ((defined $prefix) and ($prefix eq 'valid_')) {
-        return defined &{$pkg.'match_' . $sub}(@_);
+        return defined &{$pkg.'match_' . $sub}(@_) ? 1 : 0;
     }
 }
 
