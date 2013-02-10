@@ -132,12 +132,12 @@ sub init {
     my $enc      = qr{%[a-fA-F\d]{2}};
     my $legal1   = qr{[a-zA-Z\d\$\-_.+!*\'(),~\#]};
     my $legal2   = qr{[\/;:@&=]};
-    my $legal3   = qr{(?:(?:(?:$legal1|$enc)|$legal2)*)};
-    my $path     = qr{\/$legal3(?:\/$legal3)*};
-    my $query    = qr{(?:\?$legal3)*};
+    my $legal3   = qr{(?:(?:(?:$legal1|$enc)|$legal2))};
+    my $path     = qr{\/$legal3(?:\/(?:$legal3)+)*};
+    my $query    = qr{(?:\?$legal3)+};
     my $local    = qr{[-\w\'=.]+};
 
-    my $urlregex = qr{(?:(?:$prot)?(?:$domain|$ip|$path)(?:(?:$path)?(?:$query)?)?)(?:\#[\w\-.]+)?};
+    my $urlregex = qr{(?: (?:$prot)?   (?:$domain|$ip|$path)  (?:(?:$path)?  (?:$query)?  )?)  (?:\#[\w\-.]+)?}x;
     my $email    = qr{$local\@(?:$domain|$ip)};
 
     $settings{urlregex}   = $urlregex;

@@ -8,6 +8,7 @@ Changes for the Labyrinth Core
         - catch parsing errors (Writer).
         - capture initialisation issues uniformly.
         - added LICENSE file.
+        - fixed constraints and url/email patterns.
 
 5.13	2012-09-02
         - added crawler detection.

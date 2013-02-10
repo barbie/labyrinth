@@ -35,21 +35,21 @@ my $digit           =  '[0-9]';
 my $alpha           =  '[a-zA-Z]';                # lowalpha | upalpha
 my $alphanum        =  '[a-zA-Z0-9]';             # alpha    | digit
 
-my $IPv4address     =  "(?:$digit+[.]$digit+[.]$digit+[.]$digit+)";
-my $toplabel        =  "(?:$alpha"."[-a-zA-Z0-9]*$alphanum|$alpha)";
-my $domainlabel     =  "(?:(?:$alphanum"."[-a-zA-Z0-9]*)?$alphanum)";
-my $hostname        =  "(?:(?:$domainlabel\[.])*$toplabel\[.]?)";
-my $host            =  "(?:$hostname|$IPv4address)";
+my $IPv4address     =  qr{ (?: \d+\.\d+\.\d+\.\d+ ) }x;
+my $toplabel        =  qr{ (?: $alpha (?: [-a-zA-Z\d]* $alphanum )? ) }x;
+my $domainlabel     =  qr{ (?: (?: $alphanum [-a-zA-Z\d]*)? $alphanum ) }x;
+my $hostname        =  qr{ (?: (?: $domainlabel\.)+ (?:$toplabel\.)? $alpha{2,} ) }x;
+my $host            =  qr{ (?: $hostname | $IPv4address ) }x;
 
 # RFC 2822, base definitions.
-my $atom_strict     = qr¬[\w!\#\$\%\&\'\*\+\-\/=\?^\`{|}~]¬i;
-my $local_strict    = qr¬$alphanum(?:\.?$atom_strict)*¬;
-my $local_quoted    = qr¬\"$local_strict(?:\ $local_strict)*\"¬;
-my $email_strict    = qr¬$local_strict\@$host¬;
+my $atom_strict     = qr{[\w!\#\$\%\&\'\*\+\-\/=\?^\`{|}~]}i;
+my $local_strict    = qr{$alphanum(?:\.?$atom_strict)*};
+my $local_quoted    = qr{\"$local_strict(?:\ $local_strict)*\"};
+my $email_strict    = qr{$local_strict\@$host};
 
-my $atom_harsh      = qr¬[\w\'\+\-=]¬i;
-my $local_harsh     = qr¬$alphanum(?:\.?$atom_harsh)*¬;
-my $email_harsh     = qr¬$local_harsh\@$host¬;
+my $atom_harsh      = qr{[\w\'\+\-=]}i;
+my $local_harsh     = qr{$alphanum(?:\.?$atom_harsh)*};
+my $email_harsh     = qr{$local_harsh\@$host};
 
 #----------------------------------------------------------------------------
 # Subroutines
@@ -83,6 +83,7 @@ sub emails {
 
 sub match_emails {
     my ($self,$text) = @_;
+    return unless $text;
     $text =~ m< ^($email_harsh )$ >x ? $1 : undef;
 }
 
@@ -113,6 +114,7 @@ sub email_rfc {
 
 sub match_email_rfc {
     my ($self,$text) = @_;
+    return unless $text;
     $text =~ m< ^( $email_strict )$ >x ? $1 : undef;
 }
 
@@ -128,7 +130,7 @@ sub AUTOLOAD {
     # Since all the valid_* routines are essentially identical we're
     # going to generate them dynamically from match_ routines with the same names.
     if ((defined $prefix) and ($prefix eq 'valid_')) {
-        return defined &{$pkg.'match_' . $sub}(@_);
+        return defined &{$pkg.'match_' . $sub}(@_) ? 1 : 0;
     }
 }
 
