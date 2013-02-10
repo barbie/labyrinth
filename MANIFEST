@@ -47,3 +47,4 @@ t/91podcover.t
 t/94metatest.t
 t/95changedate.t
 t/96metatest.t
+t/samples/phrasebook.ini
