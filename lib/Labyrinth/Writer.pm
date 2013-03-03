@@ -234,7 +234,7 @@ sub UnPublish {
 }
 
 sub Transform {
-    my ($template,$vars) = @_;
+    my ($template,$vars,$file,$binary) = @_;
 
     my $path = $settings{'templates'};
     my $layout = "$path/$template";
@@ -243,7 +243,12 @@ sub Transform {
 
     Config()    unless($PARSER && $RENDER);
 
-    my $output = $PARSER->parser($layout,$vars);
+    if($file) {
+        $PARSER->parse_to_file($layout,$vars,$file,$binary);
+        return;
+    }
+
+    my $output = $PARSER->parser($layout,$vars);hh
     return $$output;
 }
 

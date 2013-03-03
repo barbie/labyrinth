@@ -88,6 +88,34 @@ sub parser {
     return \$output;
 }
 
+sub parse_to_file {
+    my ($self, $layout, $vars, $file, $binary) = @_;
+    my $path = $settings{'templates'};
+
+#    use Data::Dumper;
+    LogDebug( "file=[$file], binary=[$binary]" );
+#    LogDebug( "layout=[$layout]" );
+#    LogDebug( "vars=".Dumper($vars) );
+
+    $self->{config}{INCLUDE_PATH} = $path;
+    $self->{config}{EVAL_PERL}    = ($vars->{evalperl} ? 1 : 0);
+    $self->{config}{OUTPUT_PATH}  = $vars->{cache};
+
+    my $parser = Template->new($self->{config});        # initialise parser
+
+    eval {
+        if($binary) {
+            # parse to binary
+            $parser->process($layout,$vars,$file, binmode => 1) or die $parser->error();
+        } else {
+            # parse to text
+            $parser->process($layout,$vars,$file) or die $parser->error();
+        }
+    };
+
+    die "eval=$@, error=" . $parser->error  if($@);
+}
+
 1;
 
 __END__

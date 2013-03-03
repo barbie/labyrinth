@@ -6,6 +6,7 @@ Changes for the Labyrinth Core
         - allow logout redirect to be set by config variable (Session).
         - clean up TinyMCE encodings (MLUtils).
         - updated HTMLSend (Mailer).
+        - Transform can now save to file (Writer, Writer/TT).
 
 5.14	2013-02-10
         - added DeleteFile (Media).
