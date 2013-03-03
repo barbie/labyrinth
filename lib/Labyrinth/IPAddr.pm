@@ -55,6 +55,9 @@ use Labyrinth::Globals;
 use Labyrinth::DBUtils;
 use Labyrinth::Variables;
 
+use JSON::XS;
+use WWW::Mechanize;
+
 # -------------------------------------
 # The Subs
 
@@ -74,6 +77,11 @@ the classification. Return codes are:
 =cut
 
 sub CheckIP {
+    if($settings{blockurl}) {
+        my $res = _request($settings{blockurl},'check',$settings{ipaddr});
+        return $res && $res->{success} ? $res->{result} : 0;
+    }
+
     my @rows = $dbi->GetQuery('hash','FindIPAddress',$settings{ipaddr});
     return @rows ? $rows[0]->{type} : 0;
 }
@@ -88,6 +96,11 @@ Block current request sender IP address.
 sub BlockIP {
     my $who     = shift || '';
     my $ipaddr  = shift || return;
+
+    if($settings{blockurl}) {
+        my $res = _request($settings{blockurl},'block',$ipaddr,$who);
+        return $res && $res->{success} ? $res->{result} : 0;
+    }
 
     if(my @rows = $dbi->GetQuery('array','FindIPAddress',$ipaddr)) {
         $dbi->DoQuery('SaveIPAddress',$who,1,$ipaddr);
@@ -106,11 +119,30 @@ sub AllowIP {
     my $who     = shift || '';
     my $ipaddr  = shift || return;
 
+    if($settings{blockurl}) {
+        my $res = _request($settings{blockurl},'allow',$ipaddr,$who);
+        return $res && $res->{success} ? $res->{result} : 0;
+    }
+
     if(my @rows = $dbi->GetQuery('array','FindIPAddress',$ipaddr)) {
         $dbi->DoQuery('SaveIPAddress',$who,2,$ipaddr);
     } else {
         $dbi->DoQuery('AddIPAddress',$who,2,$ipaddr);
     }
+}
+
+sub _request {
+    my $url = join('/',@_);
+
+    my $mech = WWW::Mechanize->new();
+    $mech->get($url);
+    if($mech->success()) {
+        my $json = $mech->content();
+        my $data = decode_json($json);
+        return $data;
+    }
+
+    return;
 }
 
 1;
