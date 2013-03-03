@@ -128,6 +128,7 @@ sub Logout {
     $tvars{user}{userid} = $tvars{'loginid'};
     $tvars{user}{access} = VerifyUser($tvars{'loginid'});
 
+    $tvars{redirect} = $settings{'logout-redirect'}   if($settings{'logout-redirect'});
     return($session,$tvars{user}{name},$tvars{'loginid'},$tvars{realm});
 }
 
