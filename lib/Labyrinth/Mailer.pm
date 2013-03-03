@@ -159,8 +159,8 @@ sub MailSent {
 sub HTMLSend {
     my %hash  = @_;
 
-    my $ref = Transform($hash{html},\%tvars);
-    my $html = $$ref;
+    my $ref = Transform($hash{html},$hash{vars});
+    my $html = $ref;
 
 
     MIME::Lite->send('smtp', $settings{smtp}, Timeout=>60);
@@ -194,7 +194,15 @@ sub HTMLSend {
 
     LogDebug("Mail=".$mail->as_string());
     eval {$mail->send;};
-    LogError("MailError: requestid=$cgiparams{requestid} [$@]") if($@);
+    if($@) {
+        LogError("MailError: eval=[$@]") ;
+        $mailer{result} = 0;
+        $tvars{mailer}{result} = 0;
+        $tvars{mailer}{error} = $@;
+    } else {
+        $mailer{result} = 1;
+        $tvars{mailer}{result} = 1;
+    }
 }
 
 sub HTMLSendX {
@@ -243,8 +251,16 @@ sub HTMLSendX {
     }
 
     LogDebug("Mail=".$mail->as_string());
-    eval {$mail->send;};
-    LogError("MailError: requestid=$cgiparams{requestid} [$@]") if($@);
+    eval { $mail->send };
+    if($@) {
+        LogError("MailError: eval=[$@]") ;
+        $mailer{result} = 0;
+        $tvars{mailer}{result} = 0;
+        $tvars{mailer}{error} = $@;
+    } else {
+        $mailer{result} = 1;
+        $tvars{mailer}{result} = 1;
+    }
 }
 
 sub _mtype {

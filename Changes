@@ -2,9 +2,10 @@ Changes for the Labyrinth Core
 
         - added INSTALL file.
         - rewrote README.
-        - added BlockURL functionality for remote service.
-        - allow logout redirect to be set by config variable.
-        - clean up TinyMCE encodings.
+        - added BlockURL functionality for remote service (IPAddr).
+        - allow logout redirect to be set by config variable (Session).
+        - clean up TinyMCE encodings (MLUtils).
+        - updated HTMLSend (Mailer).
 
 5.14	2013-02-10
         - added DeleteFile (Media).
