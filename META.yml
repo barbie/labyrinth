@@ -156,6 +156,7 @@ provides:
 no_index:
   directory:
     - t
+    - examples
 
 resources:
   license:    http://www.perlfoundation.org/artistic_license_2_0
