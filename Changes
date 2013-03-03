@@ -4,6 +4,7 @@ Changes for the Labyrinth Core
         - rewrote README.
         - added BlockURL functionality for remote service.
         - allow logout redirect to be set by config variable.
+        - clean up TinyMCE encodings.
 
 5.14	2013-02-10
         - added DeleteFile (Media).

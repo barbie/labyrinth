@@ -131,6 +131,13 @@ sub CleanTags {
     $text =~ s!&[lr]squo;!&quot;!mg;
     $text =~ s{&(?!\#\d+;|[a-z0-9]+;)}{&amp;}sig;
 
+    # decode TinyMCE encodings
+    $text =~ s!&lt;(.*?)&gt;!<$1>!sig;
+
+    # clean paragraphs
+    $text =~ s!</p>\s+<p>!</p><p>!sig;
+    $text =~ s!\s*<br /><br />\s*!</p><p>!sig;
+
     my %tags = _buildtags();
     my @found = ($text =~ m!</?(\w+)(?:\s+[^>]*)?>!gm);
     for my $tag (@found) {
