@@ -40,6 +40,7 @@ WriteMakefile(
         'HTML::TagCloud'                            => 0.34,
         'Image::Size'                               => 0,
         'IO::File'                                  => 0,
+        'JSON::XS'                                  => 0,
         'Log::LogLite'                              => 0,
         'MIME::Lite'                                => 0,
         'MIME::Lite::TT::HTML'                      => 0,

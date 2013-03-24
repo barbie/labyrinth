@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw(%cookie_config $VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.14';
+$VERSION = '5.15';
 
 =head1 NAME
 

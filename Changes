@@ -1,5 +1,6 @@
 Changes for the Labyrinth Core
 
+5.15    2013-03-24
         - added INSTALL file.
         - rewrote README.
         - added BlockURL functionality for remote service (IPAddr).
@@ -8,7 +9,7 @@ Changes for the Labyrinth Core
         - updated HTMLSend (Mailer).
         - Transform can now save to file (Writer, Writer/TT).
 
-5.14	2013-02-10
+5.14    2013-02-10
         - added DeleteFile (Media).
         - updated default image and thmubnail upload sizes (Media).
         - added config support for image and thmubnail upload sizes (Media).
@@ -20,14 +21,14 @@ Changes for the Labyrinth Core
         - fixed constraints and url/email patterns.
         - extended test suite.
 
-5.13	2012-09-02
+5.13    2012-09-02
         - added crawler detection.
         - change file dates changed to meet W3CDTF standards.
         - implemented Perl::Critic suggestions.
         - reworked Makefile.PL for clarity.
-    	- added example pages.cgi script.
+        - added example pages.cgi script.
 
-5.12	2012-01-24
+5.12    2012-01-24
         - extended CSS list of styles (MLUtils).
         - length pattern now includes px and em (MLUtils).
         - email changed to recipient_email to avoid clashes (Mailer).
@@ -35,18 +36,18 @@ Changes for the Labyrinth Core
         - made alignment lists more consistent (Support).
         - Alignment split into AlignName and AlignClass (Support).
 
-5.11	2012-01-03
+5.11    2012-01-03
         - Media now allows more control for resizing thumbnails.
         - DTUtils give more scope for configuring YearSelect.
 
-5.10	2011-12-31
+5.10    2011-12-31
         - fixed capturing require errors in DIUtils
         - fixed passing args to D::FV::Constraints::Upload
         - fixed file uploads in Media.
         - fixed wrapper for Query::CGI.
         - added File:Slurp as a prerequisite.
 
-5.09	2011-06-25 [unreleased]
+5.09    2011-06-25 [unreleased]
         - fix to Transform to correctly return content.
         - fix to RSS.pm to use new Transform.
         - fix to URL pattern match.
@@ -54,17 +55,17 @@ Changes for the Labyrinth Core
         - moved SetLogFile into Globals and allowed more settings.
         - added titles to links, with the ability to provide user mappings.
 
-5.08	2011-06-19
+5.08    2011-06-19
         - documentation updates.
         - added url mapping for MetaCloud links.
         - fixes for GetImageSize.
 
-5.07	2011-06-19
+5.07    2011-06-19
         - added GetImageSize & GetGravatar to Media.pm.
         - added a cleanup of erroneous XHTML patterns in MLUtils.pm.
         - store error message if opening mail pipe fails in Mailer.pm.
 
-5.06	2011-05-19
+5.06    2011-05-19
         - abstracted input CGI to Labyrinth::Query::CGI.
         - abstracted output CGI to Labyrinth::Writer::Render::CGI.
         - abstracted template parser to Labyrinth::Writer::Parser::TT.
@@ -73,35 +74,35 @@ Changes for the Labyrinth Core
         - documentation updates.
         - reworked CookieLib to use new Labyrinth::Query::CGI package.
 
-5.05	2011-04-11
+5.05    2011-04-11
         - fixes and code cleaning from CPAN Testers Blog site.
 
-5.04	2011-03-13
+5.04    2011-03-13
         - Abstracted GD and ImageMagick drivers into their own distributions.
 
-5.03	2011-01-05
+5.03    2011-01-05
         - removed unused reference to Text::Format.
 
-5.02	2011-01-03
+5.02    2011-01-03
         - added better handling of MIME Types from CPAN Testers sites.
 
-5.01	2011-01-01
+5.01    2011-01-01
         - moved MasterCheck from plugins to core
 
-5.00	2011-01-01
+5.00    2011-01-01
         - first official open source release.
         - sessions can now be deleted by isolated script not part of logins.
 
-4.19	2010-09-13
+4.19    2010-09-13
         - fixed RSS body content.
         - update Phrasebook.pm to use Data::Phrasebook.
 
-4.18	2010-08-20
+4.18    2010-08-20
         - merged Request.pm differences for DBI and .ini file configuration.
         - plugins split away from core.
         - documentation patches.
 
-4.17	2010-03-11
+4.17    2010-03-11
         - rewrote requests to use database rather than ini files.
         - rewrote plugin framework to load on demand.
         - removed file lookups.
@@ -115,7 +116,7 @@ Changes for the Labyrinth Core
         - defaults applied to 'who' when saving IPs.
         - added UserID lookup in Users.
 
-4.16	2009-03-06
+4.16    2009-03-06
         - fixed DTUtils.pm undefined error.
         - simplified Metadata searches and combined photo/page searches into
           a single table using nested selects
@@ -129,12 +130,12 @@ Changes for the Labyrinth Core
         - remove whitespace before </p> in MLUtils.pm
         - added demoroniser code to MLUtils.pm
 
-4.15	2008-05-31
+4.15    2008-05-31
         - upgraded to latest TinyMCE - v3.0.8
         - fixed session update functionality
         - fixed names of db access parameters
 
-4.14	2008-05-14
+4.14    2008-05-14
         - aded further attribute (MLUtil.pm)
         - MetaCloud now allows multiple lookups (Metadata.pm)
         - added guest user lookup (Session.pm)
@@ -154,7 +155,7 @@ Changes for the Labyrinth Core
         - rework of hits listings (Hits.pm)
         - rework of guestbook, adding IPAddr functionality (Guestbook.pm)
 
-4.13	2007-12-13
+4.13    2007-12-13
         - trim trailing whitespace from code
         - incorporate session/menu changes from smart site
         - map awkward quoting characters to sane ASCII versions
@@ -167,7 +168,7 @@ Changes for the Labyrinth Core
         - incorporate language code into session from OD360
         - include RealmCheck and RealmID to realm support
 
-4.12	2007-12-03
+4.12    2007-12-03
         - complete review of code to ensure that database result sets are
           being returned and used correctly.
         - removed further unnecessary template variables (eg 'norecs') when no
@@ -179,7 +180,7 @@ Changes for the Labyrinth Core
         - fixed additional links to be saved and update for O'Reilly
           (BookReviews.pm)
 
-4.11	2007-09-26
+4.11    2007-09-26
         - added TagCloud support to Metadata.pm, Articles.pm and Diary.pm
         - fix to MLUtils.pm to add further legal tags
         - Change Labyrinth::Images to Labyrinth::Media
@@ -187,7 +188,7 @@ Changes for the Labyrinth Core
           extraction
         - removed all references to 'norecs', TT logic can figure it out!
 
-4.10	2007-08-09
+4.10    2007-08-09
         - performance improvements within Globals and Variables
         - name change: Specific.pm => Support.pm
         - added extra debug info for DBUtils.pm
@@ -199,7 +200,7 @@ Changes for the Labyrinth Core
         - added more functionality to Hits.pm, changing the way hits are
           recorded and presented
 
-4.09	2007-06-07
+4.09    2007-06-07
         - added categories to links (Links.pm)
         - 'users' template container used for data from Users.pm
         - show/hide/ban/delete users functionality improved
@@ -212,13 +213,13 @@ Changes for the Labyrinth Core
         - fixed VenueSelect blank reference
         - fixed $where in Album::Page::Admin when undef
 
-4.08	2007-05-30
+4.08    2007-05-30
         - when logging in the next command sets 'home-'+realm as the next
           command. The default assumes a normal 'public' user. (Session.pm)
         - added Survey plugins
         - added server date/time template variables (Content.pm)
 
-4.07	2007-05-28
+4.07    2007-05-28
         - more date/time formats (DTUtils.pm)
         - more POD in core Images.pm
         - urlregex moved to Variables.pm and stored in $settings{urlregex}
@@ -236,7 +237,7 @@ Changes for the Labyrinth Core
         - improvement to menu option deleting
         - added more entries to %safe_tags (MLUtils.pm)
 
-4.06	2007-05-10
+4.06    2007-05-10
         - better handling of plugins by abstracting out into Plugin.pm
         - added url regex to Constraints.pm
         - added ipaddr code
@@ -245,10 +246,10 @@ Changes for the Labyrinth Core
         - improved Metadata.pm interfaces
         - removed last remaining forum references
 
-4.05	2007-03-08
+4.05    2007-03-08
         - lots of fixes!
 
-4.04	2007-02-21
+4.04    2007-02-21
         - created Variables.pm to stop cyclic dependency, simplifying Globals.pm
           in the process.
         - improved Writer.pm so valid XHTML is correctly parsed out.
@@ -261,7 +262,7 @@ Changes for the Labyrinth Core
         - undef body bugfix to images in paragraphs (Articles.pm)
         - initialise event types (Events.pm)
 
-4.03	2007-02-04
+4.03    2007-02-04
         - Testing with Selenium has highlighted some areas of the core code
           that needs a little more tightening, together with various areas of
           plugin code.
@@ -289,7 +290,7 @@ Changes for the Labyrinth Core
         - improved dropdown calls and deletion (Plugin::Groups.pm)
         - RSS code made to reflect the configuration file (Plugin::News.pm)
 
-4.02	2007-01-26
+4.02    2007-01-26
         - dates => ddmmyy, email => emails (Constraints.pm)
         - DB connection error fix - now displays a nice message to the user and
           doesn't reveal any sensitive info (DBUtils.pm)
@@ -305,7 +306,7 @@ Changes for the Labyrinth Core
         - added new date format string (DTUtils.pm)
         - added Standard plugin set to the manifest
 
-4.01	2007-01-12
+4.01    2007-01-12
         - additional documentation
         - better handling when a plugin fails (Labyrinth.pm)
         - added ? to list of acceptable characters for simplewords
@@ -314,7 +315,7 @@ Changes for the Labyrinth Core
           sections (Globals.pm)
         - fixed bugs in CleanTags (MLUtils.pm)
 
-4.00	2007-01-10
+4.00    2007-01-10
         - implemented proper plugin functionality for Scooter Do & Style Stop
           websites
         - general code cleaning and additional documentation
@@ -338,7 +339,7 @@ Changes for the Labyrinth Core
         - removed unused error codes (Writer.pm)
         - Evaluates Perl for BADPAGE (Writer.pm)
 
-3.00	2006-11-03
+3.00    2006-11-03
         - More general improvements to the system from writing DanDan's website
         - Added more caller info (Audit.pm)
         - fixed AUTOLOAD bug (DBUtils.pm)
@@ -355,8 +356,8 @@ Changes for the Labyrinth Core
         - fixed FieldCheck to cope with added items (zero or blank id fields)
           (Specific.pm)
 
-2.00	2006-10-10
+2.00    2006-10-10
         - complete overhaul of code from implementing the Slim Pickins site
 
-1.00	0000-00-00
+1.00    0000-00-00
         - first version of Labyrinth, rebuilt basic core elements
