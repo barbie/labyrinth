@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION @ISA %EXPORT_TAGS @EXPORT @EXPORT_OK);
-$VERSION = '5.14';
+$VERSION = '5.15';
 
 =head1 NAME
 
@@ -128,7 +128,8 @@ sub Logout {
     $tvars{user}{userid} = $tvars{'loginid'};
     $tvars{user}{access} = VerifyUser($tvars{'loginid'});
 
-    $tvars{redirect} = $settings{'logout-redirect'}   if($settings{'logout-redirect'});
+    $tvars{redirect} = $settings{'logout-redirect'}   
+        if($settings{'logout-redirect'} && $settings{'logout-redirect'} ne $cgiparams{act});
     return($session,$tvars{user}{name},$tvars{'loginid'},$tvars{realm});
 }
 
