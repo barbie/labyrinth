@@ -57,6 +57,11 @@ Object constructor.
 Parses a given template, via Template Toolkit. Returns a string of the 
 parsed template.
 
+=item parse_to_file( $template, $variables, $file, $binary )
+
+Parses a given template, via Template Toolkit. Writes the result to the named
+file, marking as binary if requested.
+
 =back
 
 =cut
