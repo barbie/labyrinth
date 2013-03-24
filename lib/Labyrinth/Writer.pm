@@ -248,7 +248,7 @@ sub Transform {
         return;
     }
 
-    my $output = $PARSER->parser($layout,$vars);hh
+    my $output = $PARSER->parser($layout,$vars);
     return $$output;
 }
 
