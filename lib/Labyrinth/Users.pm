@@ -39,7 +39,7 @@ use Labyrinth::DBUtils;
 use Labyrinth::MLUtils;
 use Labyrinth::Variables;
 
-use Crypt::RandPasswd;
+use Session::Token;
 
 # -------------------------------------
 # Variables
@@ -98,15 +98,8 @@ sub UserID {
 }
 
 sub FreshPassword {
-    my $word;
-    my $attempts;
-    do {
-        $word = Crypt::RandPasswd->chars(20,40);
-        $word =~ s/[^-;,.:+=~\w]+//g;
-        $attempts++;
-    } until (length $word > 10 || $attempts > 10);
-    return substr($word,0,10)   if(length($word) > 10);
-    return 'Ch4ng3Th15';
+    my $gen = Session::Token->new(length => 10);
+    return $gen->get();
 }
 
 sub PasswordCheck {

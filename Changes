@@ -9,6 +9,8 @@ Changes for the Labyrinth Core
         - fixed url validation (Variables).
         - improvements to post-processing content (MLUtils).
         - Enabled phrasebook caching to reduce disk I/O (Phrasebook).
+        - switched from Crypt::RandPasswd to Session::Token for password
+          generation for speed and efficiency (Users).
 
 5.15    2013-03-24
         - added INSTALL file.
