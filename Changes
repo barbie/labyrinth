@@ -5,6 +5,7 @@ Changes for the Labyrinth Core
           (Writer).
         - new 'parsetest' configuration setting to allow tests to determine
           differences between original and post-processed content (Writer).
+        - added DumpToFile for parsetest functionality (Audit).
 
 5.15    2013-03-24
         - added INSTALL file.

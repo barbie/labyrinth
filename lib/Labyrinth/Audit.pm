@@ -35,6 +35,8 @@ used within the framework to provide error, debugging and trace information.
 
 =head1 EXPORT
 
+  DumpToFile
+
   SetLogFile
   LogRecord
 
@@ -60,6 +62,7 @@ require Exporter;
 
 %EXPORT_TAGS = (
     'all' => [ qw(
+        DumpToFile
         SetLogFile LogRecord
         LogError LogWarning LogInfo LogDebug
         $LOG_LEVEL_DEBUG $LOG_LEVEL_INFO
@@ -105,6 +108,21 @@ my $username;
 Audit Log functions enable tracing of actions for a user at a given time.
 
 =over 4
+
+=item DumpToFile($file,@blocks)
+
+Writes blocks (separated by new lines) to the given file. Creates the file if
+it doesn't exist, and overwrites if it does.
+
+=cut
+
+sub DumpToFile {
+    my $file = shift;
+
+    my $fh = IO::File->new($file, 'w+') or return;
+    print $fh join("\n",@_) . "\n";
+    $fh->close;
+}
 
 =item SetLogFile(%hash)
 
