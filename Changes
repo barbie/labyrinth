@@ -8,6 +8,7 @@ Changes for the Labyrinth Core
         - added DumpToFile for parsetest functionality (Audit).
         - fixed url validation (Variables).
         - improvements to post-processing content (MLUtils).
+        - Enabled phrasebook caching to reduce disk I/O (Phrasebook).
 
 5.15    2013-03-24
         - added INSTALL file.
