@@ -1,5 +1,11 @@
 Changes for the Labyrinth Core
 
+        - post-processing XHTML content before writing out is now optional, 
+          default is no post-processing. Use 'parsehtml' config setting 
+          (Writer).
+        - new 'parsetest' configuration setting to allow tests to determine
+          differences between original and post-processed content (Writer).
+
 5.15    2013-03-24
         - added INSTALL file.
         - rewrote README.

@@ -200,13 +200,20 @@ sub Publish {
 
     # split HTML and process etc
     if($ext =~ /htm/) {
-        my ($top,$body,$tail) = ($$output =~ m!^(.*?<body[^>]*>)(.*?)(</body>.*)$!si);
-#       LogDebug( "html=[$html]" );
-#       LogDebug( "top=[$top]" );
-#       LogDebug( "tail=[$tail]" );
-#       LogDebug( "body=[$body]" );
-        my $html = $top . process_html($body,0,1) . $tail;
-        $output = \$html;
+        if(defined $settings{parsehtml} && $settings{parsehtml}) {
+            my ($top,$body,$tail) = ($$output =~ m!^(.*?<body[^>]*>)(.*?)(</body>.*)$!si);
+#           LogDebug( "parsehtml=[$settings{parsehtml}]" );
+#           LogDebug( "html=[$html]" );
+#           LogDebug( "top=[$top]" );
+#           LogDebug( "tail=[$tail]" );
+#           LogDebug( "body=[$body]" );
+            my $html = $top . process_html($body,0,1) . $tail;
+
+            if($settings{parsetest}) {
+                DumpToFile($settings{parsetest},"=== ORIGINAL ===",$$output,"=== PROCESSED ===",$html,"=== END ===");
+            }
+            $output = \$html;
+        }
     }
 
     $tvars{headers}{type} = $knowntypes{$ext} || do {
