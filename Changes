@@ -7,6 +7,7 @@ Changes for the Labyrinth Core
           differences between original and post-processed content (Writer).
         - added DumpToFile for parsetest functionality (Audit).
         - fixed url validation (Variables).
+        - improvements to post-processing content (MLUtils).
 
 5.15    2013-03-24
         - added INSTALL file.

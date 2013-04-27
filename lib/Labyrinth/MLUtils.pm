@@ -609,7 +609,7 @@ my $line_breaks = 1;
 #    in their encoded form.
 #
 
-use vars qw(%html_entities $html_safe_chars %escape_html_map);
+use vars qw(%html_entities $html_safe_chars %escape_html_map $escape_html_map);
 use vars qw(%safe_tags %safe_style %tag_is_empty %closetag_is_optional
             %closetag_is_dependent %force_closetag %transpose_tag 
             $convert_nl %auto_deinterleave $auto_deinterleave_pattern);
@@ -699,6 +699,7 @@ BEGIN
     # Build a map for representing characters in HTML.
     #
     $html_safe_chars = '()[]{}/?.,\\|;:@#~=+-_*^%$! ' . "\'\r\n\t";
+    $escape_html_map = qr{[\w\(\)\[\]\{\}\/\?\.\,\\\|;:\@#~=\+\-\*\^\%\$\!\s\']+};
     %escape_html_map =
         map {$_,$_} ( 'A'..'Z', 'a'..'z', '0'..'9',
         split(//, $html_safe_chars)
@@ -1354,8 +1355,7 @@ sub cleanup_html {
     return $_;
 }
 
-sub cleanup_tag
-{
+sub cleanup_tag {
     my ($tag, $attrs) = @_;
     unless (exists $safe_tags->{$tag}) {
         return '';
@@ -1443,12 +1443,13 @@ sub cleanup_cdata {
 
     return $_   if(scalar @stack and $stack[0]{NAME} eq 'script');
 
-    s[ (?: & ( [a-zA-Z0-9]{2,15}       |
+    s[ (?: & ( 
+        [a-zA-Z0-9]{2,15}       |
         [#][0-9]{2,6}           |
         [#][xX][a-fA-F0-9]{2,6} | ) \b ;?
-        ) | (.)
+        ) | ($escape_html_map) | (.)
     ][
-        defined $1 ? "&$1;" : $escape_html_map{$2}
+        defined $1 ? "&$1;" : defined $2 ? $2 : $3
     ]gesx;
 
     # substitute newlines in the input for html line breaks if required.
@@ -1507,7 +1508,7 @@ sub check_url_valid {
 #               (?: \? [\w\-.!~*'(|);/\@&=+\$,%#]* )?
 #             $
 #           >x ? 1 : 0;
-  $url =~ m< ^ $settings{urlregex} $ >x ? 1 : 0;
+  return $url =~ m< ^ $settings{urlregex} $ >x ? 1 : 0;
 }
 
 sub strip_nonprintable {
