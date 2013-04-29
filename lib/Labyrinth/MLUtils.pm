@@ -1464,7 +1464,8 @@ sub cleanup_cdata {
 sub escape_html {
     my $str = shift;
     defined $str or $str = '';
-    $str =~ s/([^\w\Q$html_safe_chars\E])/$escape_html_map{$1}/og;
+    $str =~ s/([^\w\Q$html_safe_chars\E])/$escape_html_map{$1}/g;
+    $str =~ s/&amp;(#x?\d+;)/&$1/g;  # avoid double encoding of hex/dec characters
     return $str;
 }
 
@@ -1476,11 +1477,12 @@ sub escape_html {
 sub unescape_html {
     my $str = shift;
     $str =~
-    s/ &( (\w+) | [#](\d+) ) \b (;?)
+    s/ &( (\w+) | [#](?:(\d+)|x(\d+)) ) \b (;?)
     /
     defined $2 && exists $html_entities{$2} ? $html_entities{$2} :
     defined $3 && $3 > 0 && $3 <= 255       ? chr $3             :
-    "&$1$4"
+    defined $4 && $4 > 0 && $4 <= 255       ? chr(hex(sprintf "%x", $4))       :
+    "&$1$5"
     /gex;
 
     return strip_nonprintable($str);

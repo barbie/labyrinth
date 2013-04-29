@@ -1,5 +1,7 @@
 Changes for the Labyrinth Core
 
+        - fixed &#x000; style entities (MLUtils).
+
 5.16    2013-04-28
         - post-processing XHTML content before writing out is now optional, 
           default is no post-processing. Use 'parsehtml' config setting 
