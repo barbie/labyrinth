@@ -64,6 +64,26 @@ sub AUTOLOAD {
 
 __END__
 
+=head1 FUNCTIONS
+
+=head2 Filters
+
+=over 4
+
+=item float2
+=item float3
+=item float5
+
+Basic filters for 2, 3 and 5 decimal places.
+
+=item filter_float2
+=item filter_float3
+=item filter_float5
+
+DFV named filters for 2, 3 and 5 decimal places.
+
+=back
+
 =head1 SEE ALSO
 
   Labyrinth
