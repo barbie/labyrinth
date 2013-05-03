@@ -48,6 +48,7 @@ WriteMakefile(
         'Module::Pluggable'                         => 0,
         'Regexp::Assemble'                          => 0,
         'Regexp::Common'                            => 0,
+        'Session::Token'                            => 0,
         'Template'                                  => 0,
         'Text::Wrap'                                => 0,
         'Time::Local'                               => 0,
