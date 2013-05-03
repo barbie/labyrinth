@@ -1,6 +1,8 @@
 Changes for the Labyrinth Core
 
         - fixed &#x000; style entities (MLUtils).
+        - added Filters.pm a DFV plugin for additional parameter validation.
+        - fixed missing pre-requisite, Session::Token.
 
 5.16    2013-04-28
         - post-processing XHTML content before writing out is now optional, 

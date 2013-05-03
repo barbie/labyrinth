@@ -15,6 +15,7 @@ lib/Labyrinth/DBUtils.pm
 lib/Labyrinth/DIUtils.pm
 lib/Labyrinth/DIUtils/Base.pm
 lib/Labyrinth/DTUtils.pm
+lib/Labyrinth/Filters.pm
 lib/Labyrinth/Globals.pm
 lib/Labyrinth/Groups.pm
 lib/Labyrinth/IPAddr.pm
