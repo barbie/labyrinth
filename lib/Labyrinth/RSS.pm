@@ -3,7 +3,7 @@ package Labyrinth::RSS;
 use warnings;
 use strict;
 
-my $VERSION = '5.16';
+my $VERSION = '5.17';
 
 =head1 NAME
 
