@@ -40,7 +40,7 @@ require Exporter;
                     GetImage SaveImageFile MirrorImageFile
                     CopyPhotoFile SavePhotoFile
                     GetMedia SaveMedia SaveFile DeleteFile UnZipFile
-                    GetImageSize GetGravatar
+                    GetImageSize ResizeDimensions GetGravatar
                 ) ]
 );
 
@@ -388,6 +388,36 @@ sub GetImageSize {
     #LogDebug("dimensions: x.($w,$h) / ($width,$height) / ($settings{webdir}/$link)");
 
     return ($width,$height);
+}
+
+sub ResizeDimensions {
+    my ($dimensions,$file,$maxwidth,$maxheight) = @_;
+    my $toobig = 0;
+    my ($x,$y);
+
+    if($tvars{data}->{dimensions}) {
+        ($x,$y) = split("x",$tvars{data}->{dimensions});
+    } else {
+        ($x,$y) = imgsize($file)  if(-f $file);
+    }
+
+    return                  unless($x && $y);
+    return ($x,$y,$toobig)  unless($maxwidth && $maxheight);
+    return ($x,$y,$toobig)  if($x <= $maxwidth && $y <= $maxheight);
+
+    $toobig = 1;
+    my $xr = $maxwidth  ? $maxwidth  / $x : 0;
+    my $yr = $maxheight ? $maxheight / $y : 0;
+
+    if($xr <= $yr) {
+        $x *= $xr;
+        $y *= $xr;
+    } else {
+        $x *= $yr;
+        $y *= $yr;
+    }
+
+    return (int($x),int($y),$toobig);
 }
 
 sub GetGravatar {
