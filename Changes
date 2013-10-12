@@ -1,5 +1,7 @@
 Changes for the Labyrinth Core
 
+        - removed Crypt::RandPasswd from prerequisites.
+
 5.17    2013-05-03
         - fixed &#x000; style entities (MLUtils).
         - added Filters.pm a DFV plugin for additional parameter validation.

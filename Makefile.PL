@@ -19,7 +19,6 @@ WriteMakefile(
         'CGI'                                       => 0,
         'CGI::Cookie'                               => 0,
         'Config::IniFiles'                          => 0,
-        'Crypt::RandPasswd'                         => 0,
         'Cwd'                                       => 0,
         'Data::Dumper'                              => 0,
         'Data::FormValidator'                       => 0,
