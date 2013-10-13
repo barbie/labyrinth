@@ -1,5 +1,6 @@
 Changes for the Labyrinth Core
 
+5.18    2013-10-13
         - removed Crypt::RandPasswd from prerequisites.
         - added ResizeDimensions for displaying images (Media).
 
