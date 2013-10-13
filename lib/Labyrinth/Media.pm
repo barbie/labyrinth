@@ -261,14 +261,21 @@ the following:
   imageid   - if overwriting already existing file
   stock     - file category (used to define the save directory)
 
-=item MirrorImageFile
+=item MirrorImageFile($source,$stock [,$xmax,$ymax] )
 
-Mirrors a file from a URL to the local file system.
+Mirrors a file from a URL to the local file system. If a max width and height
+are given, will resize the image.
 
-=item GetImageSize
+=item GetImageSize($link,$size,$width,$height,$maxwidth,$maxheight)
 
 For a given file, returns the true width and height that will be rendered
 within the browser, given the current and default settings.
+
+=item ResizeDimensions($dimensions,$file,$maxwidth,$maxheight)
+
+Given the current dimensions, file and intended max height and width, will 
+return the width and height values to use in a image tag to scale the 
+dimensions to the require box size.
 
 =item GetGravatar
 
@@ -307,8 +314,10 @@ sub MirrorImageFile {
     my $mechanize = WWW::Mechanize->new();
     $mechanize->mirror( $source, $target );
 
-    my $i = Labyrinth::DIUtils->new($target);
-    $i->reduce($xmax,$ymax);
+    if($xmax && $ymax) {
+        my $i = Labyrinth::DIUtils->new($target);
+        $i->reduce($xmax,$ymax);
+    }
 
     my ($size_x,$size_y) = imgsize($target);
 
