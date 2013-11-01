@@ -104,7 +104,7 @@ sub MetaSearch {
     return ()   unless(@$keys && $meta);
 
     my $where = $hash{'where'} ? "AND $hash{'where'}" : '';
-    my $limit = $hash{'limit'} ? "LIMIT=$hash{'limit'}" : '';
+    my $limit = $hash{'limit'} ? "LIMIT $hash{'limit'}" : '';
     my $order = $hash{'order'} ? "ORDER BY $hash{'order'}" : '';
 
     my %res;

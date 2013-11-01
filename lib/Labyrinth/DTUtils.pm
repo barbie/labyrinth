@@ -157,6 +157,7 @@ sub YearSelect {
     my $future_offset = defined $settings{year_future_offset} ? $settings{year_future_offset} : 4;
     my $past   = $past_offset ? $year - $past_offset : $settings{year_past};
     my $future = $year + $future_offset;
+    $past ||= $year;
 
     my @range = ($past .. $future);
     if(defined $range) {

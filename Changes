@@ -1,4 +1,8 @@
 Changes for the Labyrinth Core
+==============================
+
+        - set $past to current year if not set (DTUtils).
+        - SQL LIMIT doesn't use '=' (Metadata).
 
 5.18    2013-10-13
         - removed Crypt::RandPasswd from prerequisites.
