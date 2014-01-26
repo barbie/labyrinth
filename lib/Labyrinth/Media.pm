@@ -476,8 +476,8 @@ sub GetGravatar {
     my $nophoto = uri_escape($settings{nophoto});
 
     return $nophoto     unless($id);
-    my @rows = $dbi->GetQuery('hash','GetUserByID',$id);
-    return $nophoto     unless(@rows);
+    my $user = GetUser($id);
+    return $nophoto     unless($user);
 
     return
         'http://www.gravatar.com/avatar.php?'
