@@ -149,7 +149,7 @@ sub Publish {
     Config()    unless($PARSER && $RENDER);
 
     # redirects require minimal processing
-    if($tvars{redirect}) {
+    if($tvars{redirect} && $tvars{redirect} ne $tvars{request}) {
         $RENDER->redirect($tvars{redirect});
         $published = 1;
         return;
