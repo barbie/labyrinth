@@ -174,7 +174,7 @@ sub LoadSettings {
 
     my $cfg = Config::IniFiles->new( -file => $settings );
     unless(defined $cfg) {
-        LogError("Unable to load settings file [$settings]");
+        LogError("Unable to load settings file [$settings]: @Config::IniFiles::errors");
         SetError('ERROR',"Unable to load settings file");
         return;
     }

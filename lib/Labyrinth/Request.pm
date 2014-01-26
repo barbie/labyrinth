@@ -248,6 +248,8 @@ sub _read_config {
     my ($self,$section,$command,@keys) = @_;
     my @values;
 
+LogDebug("--read_config:section=$section,command=$command,request=$settings{requests}");
+
     if($settings{requests} eq 'dbi') {
         my @rows = $dbi->GetQuery('hash','GetRequest',$section,$command);
         if(@rows) {
@@ -259,7 +261,7 @@ sub _read_config {
         my $file = "$settings{requests}/$section.ini";
         Croak("Cannot read configuration file [$file]\n")   unless(-r $file);
         my $cfg = Config::IniFiles->new( -file => $file );
-        Croak("Cannot access configuration file [$file]\n") unless($cfg);
+        Croak("Cannot access configuration file [$file]: @Config::IniFiles::errors\n") unless($cfg);
 
         for my $key (@keys) {
             my $value  = $cfg->val( $command, $key );

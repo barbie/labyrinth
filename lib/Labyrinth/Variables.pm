@@ -257,7 +257,7 @@ sub LoadProfiles {
 
     my $cfg = Config::IniFiles->new( -file => $settings{profile} );
     unless(defined $cfg) {
-        LogError("Unable to load profile file [$settings{profile}]");
+        LogError("Unable to load profile file [$settings{profile}]: @Config::IniFiles::errors");
         $tvars{errcode} = 'ERROR';
         return;
     }
