@@ -387,6 +387,8 @@ sub SaveImageFile {
         $i->reduce($xmax,$ymax);
     };
 
+    LogDebug("error reducing '$settings{webdir}/$filename': $@")    if($@);
+
     my ($size_x,$size_y) = imgsize("$settings{webdir}/$filename");
 
     $imageid = SaveImage(
