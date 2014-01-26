@@ -51,7 +51,7 @@ use Labyrinth::Variables;
 # -------------------------------------
 # Variables
 
-my $DEFAULTTAGS = 'p,a,br,b,strong,center,hr,ol,ul,li,i,img,em,strike,h1,h2,h3,h4,h5,h6,table,thead,tr,th,tbody,td,sup,address';
+my $DEFAULTTAGS = 'p,a,br,b,strong,center,hr,ol,ul,li,i,img,u,em,strike,h1,h2,h3,h4,h5,h6,table,thead,tr,th,tbody,td,sup,address,pre';
 my ($HTMLTAGS,%HTMLTAGS);
 
 # -------------------------------------
