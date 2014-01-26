@@ -59,6 +59,6 @@ WriteMakefile(
         'XML::RSS'                                  => 0,
 
         # build/test prereqs
-        'Test::More'            => '0.70',
+        'Test::More'                                => '0.70',
     }
 );

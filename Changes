@@ -1,8 +1,21 @@
 Changes for the Labyrinth Core
 ==============================
 
+5.19    2013-01-26
         - set $past to current year if not set (DTUtils).
         - SQL LIMIT doesn't use '=' (Metadata).
+        - load DB earlier to allow validation of parameters from DB tables
+          (Labyrinth).
+        - There is an issue with later versions of Data::FormValidator that
+          trashes some of the CGI instances of binary image files. I suspect 
+          this is something to do with the data format of the image files, but
+          to curtail further (already lengthy) investigations, I have written
+          an alternative method to uploading image files. (Media, Globals).
+        - new date format (DTUtils).
+        - completed Folder and Access permissions (Session, Support).
+        - preload profiles and access settings (Variables).
+        - fail gracefully ir settings or rules fail to load (Globals).
+        - prevent looping redirects (Writer).
 
 5.18    2013-10-13
         - removed Crypt::RandPasswd from prerequisites.

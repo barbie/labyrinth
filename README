@@ -39,7 +39,6 @@ installed:
   CGI
   CGI::Cookie
   Config::IniFiles
-  Crypt::RandPasswd
   Cwd
   Data::Dumper
   Data::FormValidator
@@ -60,6 +59,7 @@ installed:
   HTML::TagCloud
   Image::Size
   IO::File
+  JSON::XS
   Log::LogLite
   MIME::Lite
   MIME::Lite::TT::HTML
@@ -67,6 +67,7 @@ installed:
   Module::Pluggable
   Regexp::Assemble
   Regexp::Common
+  Session::Token
   Template
   Text::Wrap
   Time::Local
@@ -116,7 +117,7 @@ AUTHOR
 
 COPYRIGHT & LICENSE
 
-  Copyright (C) 2002-2013 Barbie for Miss Barbell Productions
+  Copyright (C) 2002-2014 Barbie for Miss Barbell Productions
   All Rights Reserved.
 
   This module is free software; you can redistribute it and/or
