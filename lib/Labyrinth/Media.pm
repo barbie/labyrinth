@@ -35,13 +35,13 @@ require Exporter;
 
 %EXPORT_TAGS = (
     'all' => [ qw(
-                    CGIFile
-                    StockSelect StockName StockPath StockType PathMove
-                    GetImage SaveImageFile MirrorImageFile
-                    CopyPhotoFile SavePhotoFile
-                    GetMedia SaveMedia SaveFile DeleteFile UnZipFile
-                    GetImageSize ResizeDimensions GetGravatar
-                ) ]
+        CGIFile
+        StockSelect StockName StockPath StockType PathMove
+        GetImage SaveImageFile MirrorImageFile
+        CopyPhotoFile SavePhotoFile
+        GetMedia SaveMedia SaveFile DeleteFile UnZipFile
+        GetImageSize ResizeDimensions GetGravatar
+    ) ]
 );
 
 @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -51,6 +51,7 @@ require Exporter;
 # Library Modules
 
 use Archive::Extract;
+use Data::Dumper;
 use Digest::MD5 qw(md5_hex);
 use File::Basename;
 use File::Copy;
@@ -109,6 +110,8 @@ local filesystem.
 
 =cut
 
+my %image_store;
+
 sub CGIFile {
     my $param = shift;
     my $stock = shift || 1;
@@ -118,20 +121,49 @@ sub CGIFile {
     my $path = "$settings{webdir}/$stock{$stock}->{path}";
     mkpath($path);
 
-    my $f = $cgi->upload($param) || die "Cannot access filehandle\n";
-    my ($name,$suffix) = ($f =~ m!([^/\\]*)(\.\w+)$!);
-    my $filename;
-    my $tries = 0;
-    while(1) {
-        last    if($tries++ > 10);
-        $filename = "$path/" . _randname('imgXXXXXX') . lc($suffix);
-        next    if(-f $filename);
-        last;
+    # have we already saved the file
+    if($image_store{$param}) {
+        # move file if different stock type requested
+        if($image_store{$param}[3] != $stock) {
+            my $source = "$settings{webdir}/$image_store{$param}[1]";
+            my $target = "$path/$image_store{$param}[0].$image_store{$param}[2]";
+            copy($source,$target);
+            #unlink($source);
+
+            $target =~ s!^$settings{webdir}/!!;
+            $image_store{$param}[1] = $target;
+            $image_store{$param}[3] = $stock;
+        }
+        
+        #LogDebug("CGIFile: return previous $param image_store=".Dumper($image_store{$param}));
+        return @{$image_store{$param}};
     }
 
-    my $buffer = read_file($f, binmode => ':raw');
-    my $bytes = length($buffer);
-    write_file($filename, { binmode => ':raw' }, $buffer);
+    my $fn = $cgi->param($param);
+    LogDebug("CGIFile: $param fn=$fn");
+    return unless($fn);
+
+    my ($bytes,$filename,$dir,$name,$suffix);
+
+    eval {
+        my $f = $cgi->upload($param) || die "Cannot access filehandle\n";
+        ($name, $dir, $suffix) = fileparse($fn,qr/\.[^.]*/);
+        #LogDebug("CGIFile: fileparse dir=$dir, name=$name, suffix=$suffix");
+
+        my $tries = 0;
+        while(1) {
+            last    if($tries++ > 10);
+            $filename = "$path/" . _randname('imgXXXXXX') . lc($suffix);
+            next    if(-f $filename);
+            last;
+        }
+
+        my $buffer = read_file($f, binmode => ':raw');
+        $bytes = length($buffer);
+        write_file($filename, { binmode => ':raw' }, $buffer);
+    };
+
+    die $@ if $@;
 
     if($bytes == 0) {
         LogError("CGIFile: no bytes read for input file [$param]");
@@ -139,6 +171,8 @@ sub CGIFile {
     }
 
     $filename =~ s!^$settings{webdir}/!!;
+    $image_store{$param} = [$name,$filename,$suffix,$stock];
+    #LogDebug("CGIFile: returning $param image_store=".Dumper($image_store{$param}));
     return ($name,$filename,$suffix);
 }
 
@@ -273,8 +307,8 @@ within the browser, given the current and default settings.
 
 =item ResizeDimensions($dimensions,$file,$maxwidth,$maxheight)
 
-Given the current dimensions, file and intended max height and width, will 
-return the width and height values to use in a image tag to scale the 
+Given the current dimensions, file and intended max height and width, will
+return the width and height values to use in a image tag to scale the
 dimensions to the require box size.
 
 =item GetGravatar
@@ -321,12 +355,15 @@ sub MirrorImageFile {
 
     my ($size_x,$size_y) = imgsize($target);
 
-    my $imageid = SaveImage(    undef,
-                                $name,          # tag (maybe keywords)
-                                $file,          # filename
-                                $stockid,       # stock type
-                                undef,
-                                $size_x.'x'.$size_y);
+    my $imageid = SaveImage(
+        undef,
+        $name,          # tag (maybe keywords)
+        $file,          # filename
+        $stockid,       # stock type
+        undef,
+        $size_x . 'x' . $size_y
+    );
+
     return ($imageid,$file);
 }
 
@@ -352,12 +389,15 @@ sub SaveImageFile {
 
     my ($size_x,$size_y) = imgsize("$settings{webdir}/$filename");
 
-    $imageid = SaveImage(   $imageid,
-                            $name,          # tag (maybe keywords)
-                            $filename,      # filename
-                            $stock,         # stock type
-                            $hash{href},
-                            $size_x.'x'.$size_y);
+    $imageid = SaveImage(
+        $imageid,
+        $name,          # tag (maybe keywords)
+        $filename,      # filename
+        $stock,         # stock type
+        $hash{href},
+        $size_x . 'x' . $size_y
+    );
+
     return ($imageid,$filename);
 }
 
@@ -486,12 +526,15 @@ sub CopyPhotoFile {
 
     $target =~ s!$settings{webdir}/!!;
 
-    my $imageid = SaveImage(    undef,
-                                $name,          # tag (maybe keywords)
-                                $target,        # filename
-                                $stock,         # stock type
-                                $hash{href},
-                                $size_x.'x'.$size_y);
+    my $imageid = SaveImage(
+        undef,
+        $name,          # tag (maybe keywords)
+        $target,        # filename
+        $stock,         # stock type
+        $hash{href},
+        $size_x . 'x' . $size_y
+    );
+
     return ($imageid,$target);
 }
 
@@ -593,12 +636,15 @@ sub SaveMediaFile {
     my ($name,$filename) = CGIFile($param,$stock);
     return 1    unless($name);  # blank if anything goes wrong
 
-    $imageid = SaveImage(   $imageid,
-                            $name,          # tag (maybe keywords)
-                            $filename,      # filename
-                            $stock,         # stock type
-                            $hash{href},
-                            '');
+    $imageid = SaveImage(
+        $imageid,
+        $name,          # tag (maybe keywords)
+        $filename,      # filename
+        $stock,         # stock type
+        $hash{href},
+        ''
+    );
+
     return ($imageid,$filename);
 }
 

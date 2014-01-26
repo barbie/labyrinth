@@ -77,6 +77,7 @@ use Labyrinth::Constraints::Emails;
 use Labyrinth::DBUtils;
 use Labyrinth::DIUtils;
 use Labyrinth::Filters qw(float2 float3 float5);
+use Labyrinth::Media;
 use Labyrinth::Variables;
 use Labyrinth::Writer;
 
@@ -164,10 +165,19 @@ sub LoadSettings {
     # set defaults
     my ($cgipath,$webpath) = ($cgiroot,$docroot);
 
-    # open configuration file
-    die "Cannot read settings file [$settings]\n"   if(!$settings || !-f $settings || !-r $settings);
+    # load the configuration data
+    if(!-r $settings) {
+        LogError("Cannot read settings file [$settings]");
+        $tvars{errcode} = 'ERROR';
+        return;
+    }
+
     my $cfg = Config::IniFiles->new( -file => $settings );
-    die "Unable to load settings file [$settings]\n"    unless(defined $cfg);
+    unless(defined $cfg) {
+        LogError("Unable to load settings file [$settings]");
+        $tvars{errcode} = 'ERROR';
+        return;
+    }
 
     # load the configuration data
     for my $sect ($cfg->Sections()) {
@@ -232,7 +242,6 @@ sub LoadSettings {
         }
     }
 
-#use Data::Dumper;
 #LogDebug("settings=".Dumper(\%settings));
 
     # set image processing driver, if specified
@@ -246,9 +255,18 @@ sub LoadRules {
 
     # ensure we can access the rules file
     my $rules = shift || $settings{'parsefile'} || '';
-    die "Cannot read rules file [$rules]\n" if(!$rules || !-f $rules || !-r $rules);
+    if(!$rules || !-f $rules || !-r $rules) {
+        LogError("Cannot read rules file [$rules]");
+        $tvars{errcode} = 'ERROR';
+        return;
+    }
+
     my $fh = IO::File->new($rules, 'r');
-    die "Cannot open rules file [$rules]: $!\n" unless(defined $fh);
+    unless(defined $fh) {
+        LogError("Cannot open rules file [$rules]: $!");
+        $tvars{errcode} = 'ERROR';
+        return;
+    }
 
     %rules = (
         validator_packages => [qw(  Data::FormValidator::Constraints::Upload
@@ -401,18 +419,18 @@ sub DBConnect {
     my $dictionary  = $settings{dictionary};
 
     $dbi = Labyrinth::DBUtils->new({
-                driver          => $settings{driver},
-                database        => $settings{database},
-                dbfile          => $settings{dbfile},
-                dbhost          => $settings{dbhost},
-                dbport          => $settings{dbport},
-                dbuser          => $settings{dbuser},
-                dbpass          => $settings{dbpass},
-                autocommit      => $settings{autocommit},
-                logfile         => $logfile,
-                phrasebook      => $phrasebook,
-                dictionary      => $dictionary,
-            });
+        driver          => $settings{driver},
+        database        => $settings{database},
+        dbfile          => $settings{dbfile},
+        dbhost          => $settings{dbhost},
+        dbport          => $settings{dbport},
+        dbuser          => $settings{dbuser},
+        dbpass          => $settings{dbpass},
+        autocommit      => $settings{autocommit},
+        logfile         => $logfile,
+        phrasebook      => $phrasebook,
+        dictionary      => $dictionary,
+    });
     LogDebug("DBConnect DONE");
 
     $dbi;
@@ -488,11 +506,19 @@ sub ParseParams {
         }
 
     } else {
-        use Data::FormValidator;
         my %fdat = $cgi->Vars;
         LogDebug("fdat=".Dumper(\%fdat));
 
-        my %fields = map {$_ => 1} @{$rules{required}}, @{$rules{optional}};
+        # Due to a problem with DFV, we handle images separately
+        for my $param ( grep { /^IMAGEUPLOAD/ } keys %fdat ) {
+            if( $cgi->param($param) ) {
+                CGIFile($param);
+                $settings{cgiimages}{$param} = 1;
+            }
+            $cgi->delete($param)
+        }
+
+#        my %fields = map {$_ => 1} @{$rules{required}}, @{$rules{optional}};
 #        for (keys %fdat) {
 #            LogDebug("NO RULE: $_")
 #                unless( $fields{$_} ||
@@ -512,16 +538,23 @@ sub ParseParams {
         foreach my $key (keys %$values) {
             $tvars{$key} = $values->{$key}  if($key =~ /^err_/);
         }
+
+#       LogDebug("GOT RULE: env="     . Dumper(\%ENV));
+#       LogDebug("GOT RULE: rules="   . Dumper(\%rules));
     } else {
         LogDebug("NO Data::FormValidator RESULTS!");
         my( $valids, $missings, $invalids, $unknowns ) = Data::FormValidator->validate($cgi, \%rules);
-        LogDebug("NO RULE: valids=".Dumper($valids));
-        LogDebug("NO RULE: invalids=".Dumper($invalids));
-#       LogDebug("NO RULE: missings=".Dumper($missings));
-#       LogDebug("NO RULE: unknowns=".Dumper($unknowns));
+        LogDebug("NO RULE: valids="   . Dumper($valids));
+        LogDebug("NO RULE: invalids=" . Dumper($invalids));
+#       LogDebug("NO RULE: missings=" . Dumper($missings));
+#       LogDebug("NO RULE: unknowns=" . Dumper($unknowns));
+#       LogDebug("NO RULE: env="      . Dumper(\%ENV));
+#       LogDebug("NO RULE: rules="    . Dumper(\%rules));
         %cgiparams = %$valids;
         $cgiparams{'err_'.$_} = 'Invalid'   for(@$invalids);
     }
+
+    $cgiparams{$_} = 1 for(keys %{$settings{cgiimages}});
 
     LogDebug("cgiparams=".Dumper(\%cgiparams));
     LogInfo("ParseParams DONE");
