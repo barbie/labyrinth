@@ -24,7 +24,7 @@ require Exporter;
 @ISA = qw(Exporter);
 
 %EXPORT_TAGS = (
-    'all' => [ qw( UserName UserID FreshPassword PasswordCheck UserSelect ) ]
+    'all' => [ qw( GetUser UserName UserID FreshPassword PasswordCheck UserSelect ) ]
 );
 
 @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -44,7 +44,7 @@ use Session::Token;
 # -------------------------------------
 # Variables
 
-my (%usernames,%userids);  # quick lookup hashes
+my (%users,%userids);  # quick lookup hashes
 
 # -------------------------------------
 # The Subs
@@ -52,6 +52,11 @@ my (%usernames,%userids);  # quick lookup hashes
 =head1 PUBLIC INTERFACE METHODS
 
 =over 4
+
+=item GetUser($id)
+
+Given a user id, performs a database lookup, unless a previous lookup for the
+same id has already been requested.
 
 =item UserName($id)
 
@@ -73,16 +78,24 @@ Checks the given password against the required rules.
 
 =cut
 
+sub GetUser {
+    my $uid = shift;
+    return  unless($uid);
+
+    $users{$uid} ||= do {
+        my @rows = $dbi->GetQuery('hash','GetUserByID',$uid);
+        $rows[0]    if(@rows);
+    };
+
+    return $users{$uid};
+}
+
 sub UserName {
     my $uid = shift;
     return  unless($uid);
 
-    $usernames{$uid} ||= do {
-        my @rows = $dbi->GetQuery('hash','GetUserByID',$uid);
-        $rows[0]->{realname} || $rows[0]->{nickname};
-    };
-
-    return $usernames{$uid};
+    my $user = GetUser($uid);
+    return $user->{realname} || $user->{nickname};
 }
 
 sub UserID {
@@ -91,6 +104,8 @@ sub UserID {
 
     $userids{$name} ||= do {
         my @rows = $dbi->GetQuery('hash','GetUserByName',$name);
+        return  unless(@rows);
+        $users{$rows[0]->{userid}} ||= $rows[0];
         $rows[0]->{userid};
     };
 

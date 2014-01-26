@@ -4,6 +4,7 @@ Changes for the Labyrinth Core
         - added error capture when reducing image (Media).
         - added Config::IniFiles::errors on config file load errors (Request,
           Globals, Variables).
+        - added GetUser to help reduce db calls (User).
 
 5.19    2013-01-26
         - set $past to current year if not set (DTUtils).
