@@ -11,5 +11,5 @@ use Test::More tests => 3;
 	like($@,qr/Cannot read settings file/);
 
     eval { $labyrinth->run('bogus.file') };
-	like($@,qr/Cannot read settings file.*bogus.file/);
+	like($@,qr/Cannot read settings file/);
 }

@@ -16,6 +16,8 @@ Changes for the Labyrinth Core
         - preload profiles and access settings (Variables).
         - fail gracefully ir settings or rules fail to load (Globals).
         - prevent looping redirects (Writer).
+        - better file error handling, so browser can see a more descriptive
+          message (Labyrinth, Globals).
 
 5.18    2013-10-13
         - removed Crypt::RandPasswd from prerequisites.

@@ -166,16 +166,16 @@ sub LoadSettings {
     my ($cgipath,$webpath) = ($cgiroot,$docroot);
 
     # load the configuration data
-    if(!-r $settings) {
+    unless($settings && -r $settings) {
         LogError("Cannot read settings file [$settings]");
-        $tvars{errcode} = 'ERROR';
+        SetError('ERROR',"Cannot read settings file");
         return;
     }
 
     my $cfg = Config::IniFiles->new( -file => $settings );
     unless(defined $cfg) {
         LogError("Unable to load settings file [$settings]");
-        $tvars{errcode} = 'ERROR';
+        SetError('ERROR',"Unable to load settings file");
         return;
     }
 
@@ -257,14 +257,14 @@ sub LoadRules {
     my $rules = shift || $settings{'parsefile'} || '';
     if(!$rules || !-f $rules || !-r $rules) {
         LogError("Cannot read rules file [$rules]");
-        $tvars{errcode} = 'ERROR';
+        SetError('ERROR',"Cannot read rules file");
         return;
     }
 
     my $fh = IO::File->new($rules, 'r');
     unless(defined $fh) {
         LogError("Cannot open rules file [$rules]: $!");
-        $tvars{errcode} = 'ERROR';
+        SetError('ERROR',"Cannot open rules file");
         return;
     }
 

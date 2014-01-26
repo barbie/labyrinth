@@ -103,6 +103,8 @@ sub run {
         UnPublish();                    # Start a fresh slate
         LoadSettings($file);            # Load All Global Settings
 
+        die $tvars{errmess} if($tvars{errcode} eq 'ERROR');
+
         MailSet(mailsend => $settings{mailsend}, logdir => $settings{logdir});
 
         DBConnect();

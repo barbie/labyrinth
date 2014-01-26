@@ -163,7 +163,7 @@ sub Publish {
         return;
     }
 
-    my $path = $settings{'templates'};
+    my $path = $settings{'templates'} || '';
     my $vars = \%tvars;
 
     unless($vars->{'layout'} && -r "$path/$vars->{'layout'}") {
