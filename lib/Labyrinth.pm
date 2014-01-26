@@ -105,8 +105,8 @@ sub run {
 
         MailSet(mailsend => $settings{mailsend}, logdir => $settings{logdir});
 
-        ParseParams();
         DBConnect();
+        ParseParams();
 
         ## defaults in the event of errors
         $tvars{layout} = $LAYOUT;
