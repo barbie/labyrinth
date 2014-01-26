@@ -88,7 +88,7 @@ sub parser {
 
     my $parser = Template->new($self->{config});        # initialise parser
     eval { $parser->process($layout,$vars,\$output) };
-    die $parser->error()    if($@ || !$output);
+    die "TT PARSER ERROR: " . $parser->error()    if($@ || !$output);
 
     return \$output;
 }
@@ -118,7 +118,7 @@ sub parse_to_file {
         }
     };
 
-    die "eval=$@, error=" . $parser->error  if($@);
+    die "TT PARSER ERROR: eval=$@, error=" . $parser->error  if($@);
 }
 
 1;
