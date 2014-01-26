@@ -781,11 +781,11 @@ BEGIN
     );
     $auto_deinterleave_pattern = join '|', keys %auto_deinterleave;
     my %attr = (
-        'style' => \&cleanup_attr_style,
-        'name'  => \&cleanup_attr_text,
-        'id'    => \&cleanup_attr_text,
-        'class' => \&cleanup_attr_text,
-        'title' => \&cleanup_attr_text,
+        'style'         => \&cleanup_attr_style,
+        'name'          => \&cleanup_attr_text,
+        'id'            => \&cleanup_attr_text,
+        'class'         => \&cleanup_attr_text,
+        'title'         => \&cleanup_attr_text,
         'onmouseover'   => \&cleanup_attr_text,
         'onmouseout'    => \&cleanup_attr_text,
         'onclick'       => \&cleanup_attr_text,
@@ -1394,17 +1394,20 @@ sub cleanup_tag {
         }
     }
 
+    my $str;
     if (exists $tag_is_empty{$tag}) {
-        return "$html<$tag$safe_attrs />";
+        $str = "$html<$tag$safe_attrs />";
     } elsif (exists $closetag_is_optional{$tag}) {
-        return "$html<$tag$safe_attrs>";
+        $str = "$html<$tag$safe_attrs>";
 #   } elsif (exists $closetag_is_dependent{$tag} && $safe_attrs =~ /$closetag_is_dependent{$tag}=/) {
 #       return "$html<$tag$safe_attrs />";
     } else {
         my $full = "<$tag$safe_attrs>";
         unshift @stack, { NAME => $tag, FULL => $full };
-        return "$html$full";
+        $str = "$html$full";
     }
+#LogDebug("cleanup_tag: str=$str");
+    return $str;
 }
 
 sub cleanup_close {
