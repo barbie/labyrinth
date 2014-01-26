@@ -94,7 +94,7 @@ Block current request sender IP address.
 =cut
 
 sub BlockIP {
-    my $who     = shift || '';
+    my $who     = shift || 'UNKNOWN';
     my $ipaddr  = shift || return;
 
     if($settings{blockurl}) {
@@ -116,7 +116,7 @@ Allow current request sender IP address.
 =cut
 
 sub AllowIP {
-    my $who     = shift || '';
+    my $who     = shift || 'UNKNOWN';
     my $ipaddr  = shift || return;
 
     if($settings{blockurl}) {
