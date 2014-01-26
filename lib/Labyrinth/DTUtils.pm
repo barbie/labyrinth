@@ -99,6 +99,7 @@ my %formats = (
     18 => 'DD/MM/YYYY hh:mm:ss',
     19 => 'DDEXT MONTH YYYY',
     20 => 'DABV, DD MABV YYYY hh:mm:ss',
+    21 => 'YYYY-MM-DD hh:mm:ss',
 );
 
 # decrees whether the date format above should be UTC
@@ -285,8 +286,8 @@ sub unformatDate {
     my @basic  = qw(ss mm hh DD MM YYYY);
     my %forms  = map {$_ => 0 } @basic, 'dd';
 
-    my @fields = split(q![ ,/:]+!,$formats{$format});
-    my @values = split(q![ ,/:]+!,$time);
+    my @fields = split(q![ ,/:-]+!,$formats{$format});
+    my @values = split(q![ ,/:-]+!,$time);
     @forms{@fields} = @values;
     foreach (@basic) { $forms{$_} = int($forms{$_}) }
 
