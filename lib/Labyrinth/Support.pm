@@ -32,6 +32,9 @@ plugins.
   FieldCheck
   AuthorCheck
   MasterCheck
+
+  AccessName
+  AccessID
   AccessUser
   AccessGroup
   AccessSelect
@@ -43,7 +46,9 @@ plugins.
   RealmName
   RealmID
 
+  ProfileSelect
   FolderName
+  FolderID
   FolderSelect
   AreaSelect
 
@@ -60,10 +65,10 @@ require Exporter;
         AlignName AlignClass AlignSelect
         PublishState PublishSelect PublishAction
         FieldCheck AuthorCheck MasterCheck
-        AccessUser AccessGroup AccessSelect
+        AccessName AccessID AccessUser AccessGroup AccessSelect
         AccessAllFolders AccessAllAreas
         RealmCheck RealmSelect RealmName RealmID
-        FolderName FolderSelect AreaSelect
+        ProfileSelect FolderName FolderID FolderSelect AreaSelect
     ) ]
 );
 
@@ -299,6 +304,18 @@ Return list of areas current user has access to.
 
 =cut
 
+sub AccessName  {
+    my $value = shift;
+    LoadAccess();
+    return $settings{access}{ids}{$value};
+}
+
+sub AccessID  {
+    my $value = shift;
+    LoadAccess();
+    return $settings{access}{names}{$value};
+}
+
 sub AccessUser  {
     my $permission = shift;
     $permission = ADMIN unless(defined $permission);
@@ -337,6 +354,7 @@ sub AccessAllFolders {
     my @folders = map {$_->[0]} @rows;
     return join(',',@folders);
 }
+
 sub AccessAllAreas {
     my @rows = $dbi->GetQuery('array','AllAreas');
     my @areas = map {"'$_->[0]'"} @rows;
@@ -401,6 +419,22 @@ available folders.
 
 =cut
 
+sub ProfileSelect {
+    my $opt  = shift || 0;
+    my $name = shift || 'profile';
+    LoadProfiles();
+    my @rows = map { { profile => $_ } } sort grep {$_ ne $settings{profiles}{default} } keys %{$settings{profiles}{profiles}};
+    unshift @rows, { profile => $settings{profiles}{default} }  if($settings{profiles}{default});
+    unshift @rows, { profile => 'Select Profile' };
+    DropDownRows($opt,$name,'profile','profile',@rows);
+}
+
+sub FolderID {
+    my $opt  = shift || return;
+    my @rows = $dbi->GetQuery('hash','GetFolderByPath',$opt);
+    return @rows ? $rows[0]->{folderid} : undef;
+}
+
 sub FolderName {
     my $opt  = shift || return;
     my @rows = $dbi->GetQuery('hash','GetFolder',$opt);
@@ -409,9 +443,9 @@ sub FolderName {
 
 sub FolderSelect {
     my $opt  = shift || 0;
-    my $name = shift || 'accessid';
+    my $name = shift || 'folderid';
     my @rows = $dbi->GetQuery('hash','AllFolders');
-    DropDownRows($opt,'folderid','folderid','foldername',@rows);
+    DropDownRows($opt,$name,'folderid','foldername',@rows);
 }
 
 =item AreaSelect

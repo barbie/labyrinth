@@ -30,7 +30,7 @@ require Exporter;
 @ISA       = qw(Exporter);
 %EXPORT_TAGS = (
     'all' => [ qw(
-        ValidSession VerifyUser Authorised UserAccess
+        ValidSession VerifyUser Authorised UserAccess FolderAccess
         ResetLanguage UpdateSession
     ) ]
 );
@@ -54,7 +54,7 @@ use Labyrinth::Variables;
 # -------------------------------------
 # Variables
 
-my %USERS;
+my (%USERS,%FOLDERS);
 
 # -------------------------------------
 # The Functional Interface
@@ -265,12 +265,11 @@ my %folderaccess;
 
 sub VerifyUser {
     my $userid = shift || 0;
+    my $folder = shift || 'public';
     my $access = 0;
-LogDebug("VerifyUser($userid)");
+LogDebug("VerifyUser($userid,'$folder')");
 
     return $access  unless($userid);
-
-    my $folder = $tvars{user}{folder} || 1;
 
     # return if known
     return $folderaccess{$userid}{$folder}
@@ -281,7 +280,8 @@ LogDebug("VerifyUser($userid)");
     $access = $rows[0]->{accessid};
     $tvars{user}{$_} = $rows[0]->{$_}   for(qw(realname nickname email));
 
-    my $folders = ($tvars{user}{folder} ? GetFolderIDs( id => $tvars{user}{folder} ) : 1);
+    my @folders = ($folder ? GetFolderIDs( ref => $folder ) : (1));
+    my $folders = join(',',grep {$_} @folders);
     my $groups = GetGroupIDs($userid);
 
     # check folder permissions
@@ -319,43 +319,68 @@ sub CheckUser {
     return;
 }
 
+=item LoadFolders
+
+Convienence function to load all folders when required.
+
 =item GetFolderIDs
 
-Returns the list of folders the given user has access to.
+Returns the list of folders for the given leaf folder.
+
 =cut
+
+sub LoadFolders {
+    return  if(%FOLDERS);
+
+    my @rows = $dbi->GetQuery('hash','AllFolders');
+    for my $row (@rows) {
+        $FOLDERS{$row->{folderid}} = $row;
+    }
+}
 
 sub GetFolderIDs {
     my %hash = @_;
-    my $ref;
+    my ($id,%ids,@ids);
+
+    LoadFolders();
 
     if($hash{id}) {
-        my @rows = $dbi->GetQuery('hash','GetFolderRef',$hash{id});
-        return '0'   unless(@rows);
-        $ref = $rows[0]->{ref};
+        $id = $hash{id};
 
     } elsif($hash{ref}) {
-        $ref = $hash{ref};
-
-    } else {
-        return '0';
+        for my $folderid (keys %FOLDERS) {
+            if($FOLDERS{$folderid}->{path} eq $hash{ref}) {
+                $id = $folderid;
+                last;
+            }
+        }
     }
 
-    my @folders;
-    my $part = '';
-    my @parts = split(/\./,$ref);
-    foreach (@parts) {
-        $part .= '.'    if($part);
-        $part .= $_;
-        push @folders, $part;
+    return '0'  unless($id);
+
+    while($FOLDERS{$id} && $FOLDERS{$id}->{parent} > 0) {
+        $ids{$id} = 1;
+        $id = $FOLDERS{$hash{id}}->{parent};
     }
+    $ids{$id} = 1;
+    @ids = keys %ids;
 
-    my $folders = "'" . join("','",@folders) . "'";
-    my @rows = $dbi->GetQuery('array','GetFolderIDs',{folders=>$folders});
-    @folders = (0);
-    foreach (@rows) { push @folders, $rows[0]->[0]; }
+    return @ids if(wantarray);
+    return join(",",@ids);
+}
 
-    return @folders if(wantarray);
-    return join(",",@folders);
+sub FolderAccess {
+    my $folder = shift || 'public';
+    my $userid = shift || $tvars{loginid};
+
+LogDebug("FolderAccess('$folder',$userid)");
+
+    my @rows = $dbi->GetQuery('hash','GetFolderByPath',$folder);
+    return 0    unless(@rows);
+
+    my $access = VerifyUser($userid,$folder);
+    return 1    if($access >= $rows[0]->{accessid});
+    return 0;
 }
 
 =item GetGroupIDs
