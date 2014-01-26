@@ -229,6 +229,22 @@ sub SetCommand {
     $tvars{command} = shift;
 }
 
+=head2 Default Variable Loaders
+
+=over
+
+=item LoadProfiles
+
+Loads the permissions profiles, as stored in profiles config file.
+
+=item LoadAccess
+
+Loads the access permissions, as stored in the database.
+
+=back
+
+=cut
+
 sub LoadProfiles {
     return  if(defined $settings{profiles});
 

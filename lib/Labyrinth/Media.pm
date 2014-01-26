@@ -39,7 +39,7 @@ require Exporter;
         StockSelect StockName StockPath StockType PathMove
         GetImage SaveImageFile MirrorImageFile
         CopyPhotoFile SavePhotoFile
-        GetMedia SaveMedia SaveFile DeleteFile UnZipFile
+        GetMedia SaveMediaFile SaveFile DeleteFile UnZipFile
         GetImageSize ResizeDimensions GetGravatar
     ) ]
 );

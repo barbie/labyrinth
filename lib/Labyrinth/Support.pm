@@ -278,6 +278,14 @@ sub FieldCheck {
     return($errors);
 }
 
+=item AccessName
+
+Returns the access permission name, given the access id.
+
+=item AccessID
+
+Returns the access id, given the access permission name.
+
 =item AccessUser
 
 Returns whether the current user has access at the given level of permissions.
@@ -407,6 +415,14 @@ sub RealmID {
     my @rows = $dbi->GetQuery('hash','GetRealmByName',$name);
     return $rows[0]->{realmid};
 }
+
+=item ProfileSelect
+
+Returns a dropdown list for the current list of profiles.
+
+=item FolderID
+
+Returns the folder id, given the folder name.
 
 =item FolderName
 

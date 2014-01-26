@@ -327,6 +327,12 @@ Convienence function to load all folders when required.
 
 Returns the list of folders for the given leaf folder.
 
+=item FolderAccess
+
+Returns true or false as to whether the given user has access to the specified
+folder. If no folder is given the default 'public' folder is used. If no user
+is given the currently logged in user is used.
+
 =cut
 
 sub LoadFolders {
