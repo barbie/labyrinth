@@ -8,6 +8,7 @@ Changes for the Labyrinth Core
         - added GetUser to help reduce db calls (User).
         - extend default tags list (MLUtils).
         - allow evalperl to be set in config (Writer::Parser::TT).
+        - added Filters to meta files.
 
 5.19    2014-01-26
         - set $past to current year if not set (DTUtils).

@@ -119,6 +119,10 @@
             "file": "lib/Labyrinth/DTUtils.pm",
             "version": "5.20"
         },
+        "Labyrinth::Filters": {
+            "file": "lib/Labyrinth/Filters.pm",
+            "version": "5.20"
+        },
         "Labyrinth::Globals": {
             "file": "lib/Labyrinth/Globals.pm",
             "version": "5.20"
