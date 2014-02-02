@@ -1,14 +1,15 @@
 Changes for the Labyrinth Core
 ==============================
 
+5.20    2014-02-02
         - added error capture when reducing image (Media).
         - added Config::IniFiles::errors on config file load errors (Request,
           Globals, Variables).
         - added GetUser to help reduce db calls (User).
         - extend default tags list (MLUtils).
-        - allow evalperl to set in config (Writer::Parser::TT).
+        - allow evalperl to be set in config (Writer::Parser::TT).
 
-5.19    2013-01-26
+5.19    2014-01-26
         - set $past to current year if not set (DTUtils).
         - SQL LIMIT doesn't use '=' (Metadata).
         - load DB earlier to allow validation of parameters from DB tables
