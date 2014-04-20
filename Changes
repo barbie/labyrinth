@@ -1,6 +1,11 @@
 Changes for the Labyrinth Core
 ==============================
 
+        - CPAN Testers Reports from Chris WIlliams identified a very odd error
+          with the installed versions of File::Temp and File::Path. Specifying
+          versions of both in pre-requisites to ensure known working copies
+          are installed.
+
 5.20    2014-02-02
         - added error capture when reducing image (Media).
         - added Config::IniFiles::errors on config file load errors (Request,
