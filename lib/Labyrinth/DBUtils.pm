@@ -165,14 +165,14 @@ with undef.
 
 sub GetQuery {
     my ($dbv,$type,$key,@args) = @_;
-    my $hash;
+    my ($hash,$sql);
 
     # retrieve the sql from the phrasebook,
     # inserting placeholders (if required)
     $hash = shift @args  if(ref($args[0]) eq "HASH");
-    my $sql = $dbv->{pb}->get($key,$hash);
-    LogDebug("key=[$key], sql=[$sql], args[".join(",",map{$_ || ''} @args)."]");
-
+    eval { $sql = $dbv->{pb}->get($key,$hash); };
+    
+    LogDebug("key=[$key], sql=[$sql], args[".join(",",map{$_ || ''} @args)."], err=$@");
     return ()   unless($sql);
 
     # if the object doesnt contain a reference to a dbh object
@@ -232,14 +232,14 @@ with undef.
 
 sub Iterator {
     my ($dbv,$type,$key,@args) = @_;
-    my $hash;
+    my ($hash,$sql);
 
     # retrieve the sql from the phrasebook,
     # inserting placeholders (if required)
     $hash = shift @args  if(ref($args[0]) eq "HASH");
-    my $sql = $dbv->{pb}->get($key,$hash);
-    LogDebug("key=[$key], sql=[$sql], args[".join(",",map{$_ || ''} @args)."]");
+    eval { $sql = $dbv->{pb}->get($key,$hash); };
 
+    LogDebug("key=[$key], sql=[$sql], args[".join(",",map{$_ || ''} @args)."], err=$@");
     return  unless($sql);
 
     # if the object doesnt contain a reference to a dbh object
@@ -292,14 +292,16 @@ with undef.
 
 sub DoQuery {
     my ($dbv,$key,@args) = @_;
-    my $hash;
+    my ($hash,$sql);
 
     # retrieve the sql from the phrasebook,
     # inserting placeholders (if required)
     $hash = shift @args  if(ref($args[0]) eq "HASH");
-    my $sql = $dbv->{pb}->get($key,$hash);
+    eval { $sql = $dbv->{pb}->get($key,$hash); };
 
-    LogDebug("key=[$key], sql=[$sql], args[".join(",",map{$_ || ''} @args)."]");
+    LogDebug("key=[$key], sql=[$sql], args[".join(",",map{$_ || ''} @args)."], err=$@");
+    return  unless($sql);
+
     $dbv->_doQuery($sql,0,@args);
 }
 
@@ -321,14 +323,16 @@ with undef.
 
 sub IDQuery {
     my ($dbv,$key,@args) = @_;
-    my $hash;
+    my ($hash,$sql);
 
     # retrieve the sql from the phrasebook,
     # inserting placeholders (if required)
     $hash = shift @args  if(ref($args[0]) eq "HASH");
-    my $sql = $dbv->{pb}->get($key,$hash);
+    eval { $sql = $dbv->{pb}->get($key,$hash); };
 
-    LogDebug("key=[$key], sql=[$sql], args[".join(",",map{$_ || ''} @args)."]");
+    LogDebug("key=[$key], sql=[$sql], args[".join(",",map{$_ || ''} @args)."], err=$@");
+    return  unless($sql);
+
     return $dbv->_doQuery($sql,1,@args);
 }
 
@@ -341,6 +345,8 @@ sub IDQuery {
 
 sub DoSQL {
     my ($dbv,$sql,@args) = @_;
+    return  unless($sql);
+
     $dbv->_doQuery($sql,0,@args);
 }
 

@@ -8,7 +8,8 @@ Changes for the Labyrinth Core
         - if log file not writeable, ignore audit logging.
         - extend unformat functionality (DTUtils).
         - return (without BADACCESS) if no record found (Support).
-        - allow 'charset' to be set in return headers.
+        - allow 'charset' to be set in return headers (Writer).
+        - catch phrasebook errors when creating the SQL (DBUtils).
 
 5.20    2014-02-02
         - added error capture when reducing image (Media).
