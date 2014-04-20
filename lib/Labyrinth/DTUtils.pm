@@ -100,6 +100,14 @@ my %formats = (
     19 => 'DDEXT MONTH YYYY',
     20 => 'DABV, DD MABV YYYY hh:mm:ss',
     21 => 'YYYY-MM-DD hh:mm:ss',
+    22 => 'YYYYMMDDhhmm',
+);
+
+my %unformats = (
+    11 => '(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})',        # iCal date string
+    12 => '(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z',   # ISO 8601 date string
+    13 => '(\d{4})(\d{2})(\d{2})',                              # backwards date
+    22 => '(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})',
 );
 
 # decrees whether the date format above should be UTC
@@ -283,13 +291,20 @@ sub unformatDate {
 
     return time unless($format && $time);
 
+    my (@fields,@values);
     my @basic  = qw(ss mm hh DD MM YYYY);
     my %forms  = map {$_ => 0 } @basic, 'dd';
 
-    my @fields = split(q![ ,/:-]+!,$formats{$format});
-    my @values = split(q![ ,/:-]+!,$time);
+    if($unformats{$format}) {
+        @fields = reverse @basic;
+        @values = $time =~ /$unformats{$format}/;
+    } else {
+        @fields = split(q![ ,/:-]+!,$formats{$format});
+        @values = split(q![ ,/:-]+!,$time);
+    }
+
     @forms{@fields} = @values;
-    foreach (@basic) { $forms{$_} = int($forms{$_}) }
+    $forms{$_} = int($forms{$_})    for(@basic);
 
 #use Data::Dumper;
 #LogDebug("format=[$format], time=[$time]");

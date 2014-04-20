@@ -6,6 +6,7 @@ Changes for the Labyrinth Core
           versions of both in pre-requisites to ensure known working copies
           are installed.
         - if log file not writeable, ignore audit logging.
+        - extend unformat functionality (DTUtils).
 
 5.20    2014-02-02
         - added error capture when reducing image (Media).
