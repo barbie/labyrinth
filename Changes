@@ -5,6 +5,7 @@ Changes for the Labyrinth Core
           with the installed versions of File::Temp and File::Path. Specifying
           versions of both in pre-requisites to ensure known working copies
           are installed.
+        - if log file not writeable, ignore audit logging.
 
 5.20    2014-02-02
         - added error capture when reducing image (Media).

@@ -149,8 +149,8 @@ sub SetLogFile {
     return  unless($hash{FILE});
     return  unless($hash{USER});
 
-    if(!-e $hash{FILE}) { my $fh = IO::File->new("$hash{FILE}", 'w+'); $fh->close }
-    return  unless(-w $hash{FILE});
+    eval { if(!-e $hash{FILE}) { my $fh = IO::File->new("$hash{FILE}", 'w+'); $fh->close } };
+    return  if($@ || ! -w $hash{FILE});
 
     $username  = $hash{USER};
     $LOG_LEVEL = $hash{LEVEL}   if($hash{LEVEL});
