@@ -94,7 +94,7 @@ sub binary {
 sub publish {
     my ($self, $headers, $body) = @_;
 
-    my %cgihash = map { '-' . $_ => $headers->{$_} } grep {$headers->{$_}} qw(type status cookie attachment);
+    my %cgihash = map { '-' . $_ => $headers->{$_} } grep {$headers->{$_}} qw(type status cookie attachment charset);
     #LogDebug("CGI Hash=".Dumper(\%cgihash));
 
     print $cgi->header( %cgihash ) . $$body;
