@@ -3,7 +3,7 @@ package Labyrinth::Writer::Parser::TT;
 use warnings;
 use strict;
 
-my $VERSION = '5.20';
+my $VERSION = '5.21';
 
 =head1 NAME
 

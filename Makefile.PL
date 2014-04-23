@@ -33,7 +33,7 @@ WriteMakefile(
         'Encode::ZapCP1252'                         => 0,
         'File::Basename'                            => 0,
         'File::Copy'                                => 0,
-        'File::Path'                                => 2.09,
+        'File::Path'                                => 2.08,
         'File::Slurp'                               => 0,
         'File::Spec::Functions'                     => 0,
         'File::Temp'                                => 0.2304,
