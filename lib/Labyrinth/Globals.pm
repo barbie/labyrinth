@@ -31,7 +31,6 @@ and the functions are generic.
 All by default.
 
   use Labyrinth::Globals qw(:all);          # all methods
-  use Labyrinth::Globals qw(:default);      # barebones methods
 
 =cut
 
@@ -46,15 +45,11 @@ require Exporter;
         LoadAll LoadSettings LoadRules ParseParams
         DBConnect dbh
         ScriptPath ScriptFile
-    ) ],
-    'default' => [ qw(
-        dbh
-        ScriptPath ScriptFile
     ) ]
 );
 
 @EXPORT_OK  = ( @{$EXPORT_TAGS{'all'}} );
-@EXPORT     = ( @{$EXPORT_TAGS{'default'}} );
+@EXPORT     = ( @{$EXPORT_TAGS{'all'}} );
 
 # -------------------------------------
 # Library Modules

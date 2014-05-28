@@ -50,7 +50,7 @@ L<Labyrinth::Request> distribution.
 use Config::IniFiles;
 
 use Labyrinth::Audit;
-use Labyrinth::Globals  qw(:default);
+use Labyrinth::Globals;
 use Labyrinth::Variables;
 use Labyrinth::Writer;
 

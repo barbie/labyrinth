@@ -62,7 +62,7 @@ use URI::Escape qw(uri_escape);
 use WWW::Mechanize;
 
 use Labyrinth::Audit;
-use Labyrinth::Globals  qw(:default);
+use Labyrinth::Globals;
 use Labyrinth::DBUtils;
 use Labyrinth::DIUtils;
 use Labyrinth::Metadata;

@@ -18,7 +18,7 @@ Contains all the admin handling functionality for a simple plugin.
 # -------------------------------------
 # Library Modules
 
-use Labyrinth::Globals  qw(:default);
+use Labyrinth::Globals;
 use Labyrinth::DBUtils;
 use Labyrinth::Session;
 use Labyrinth::Support;

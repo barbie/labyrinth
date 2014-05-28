@@ -35,7 +35,7 @@ require Exporter;
 # Library Modules
 
 use Labyrinth::Audit;
-use Labyrinth::Globals  qw(:default);
+use Labyrinth::Globals;
 use Labyrinth::DBUtils;
 use Labyrinth::MLUtils;
 use Labyrinth::Session;
