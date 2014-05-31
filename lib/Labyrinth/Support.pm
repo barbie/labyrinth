@@ -30,6 +30,7 @@ plugins.
   PublishAction
 
   FieldCheck
+  ParamCheck
   AuthorCheck
   MasterCheck
 
@@ -64,7 +65,7 @@ require Exporter;
     'all' => [ qw(
         AlignName AlignClass AlignSelect
         PublishState PublishSelect PublishAction
-        FieldCheck AuthorCheck MasterCheck
+        FieldCheck ParamCheck AuthorCheck MasterCheck
         AccessName AccessID AccessUser AccessGroup AccessSelect
         AccessAllFolders AccessAllAreas
         RealmCheck RealmSelect RealmName RealmID
@@ -205,18 +206,15 @@ sub AuthorCheck {
     my ($key,$id,$permission) = @_;
     return 1    unless($cgiparams{$id});    # if the id key doesn't exist, this is likely to be a new entry
 
-    if(defined $cgiparams{$id}) {
-        return 1    unless($cgiparams{$id});
-        $permission = ADMIN unless(defined $permission);
+    $permission = ADMIN unless(defined $permission);
 
-        my @rows = $dbi->GetQuery('hash',$key,$cgiparams{$id});
-        return 0    unless(@rows);
+    my @rows = $dbi->GetQuery('hash',$key,$cgiparams{$id});
+    return 0    unless(@rows);
 
-        $tvars{data}{$_} = $rows[0]->{$_} for(keys %{$rows[0]});
+    $tvars{data}{$_} = $rows[0]->{$_} for(keys %{$rows[0]});
 
-        return 1    if(Authorised($permission));
-        return 1    if($rows[0]->{userid} && $rows[0]->{userid} == $tvars{'loginid'});
-    }
+    return 1    if(Authorised($permission));
+    return 1    if($rows[0]->{userid} && $rows[0]->{userid} == $tvars{'loginid'});
 
     $tvars{errcode} = 'BADACCESS';
     return 0;
@@ -242,6 +240,39 @@ listed in @mandatory are provided. Any errors found during parameter parsing
 both for missing mandatory fields and via Data::FormValidator are then flagged
 and the error code set.
 
+=item ParamCheck(\%fields)
+
+Cleans data inputs, then stores all the input data fields in $tvars{data}. All
+mandatory fields are validated to ensure each has a value. Any errors found 
+during parameter parsing both for missing mandatory fields and via 
+Data::FormValidator are then flagged and the error code set.
+
+The fields hash contains a list of fields, with the keys 'type' and 'html'. 
+'type' indicates whether the field is mandatory (1) or optional (0). 'html'
+indicates the level of cleaning required:
+
+    my %fields = (
+        linkid      => { type => 0, html => 0 },
+        catid       => { type => 0, html => 0 },
+        href        => { type => 1, html => 1 },
+        title       => { type => 1, html => 3 },
+        body        => { type => 0, html => 2 },
+    );
+
+    # type: 0 = optional, 1 = mandatory
+    # html: 0 = none, 1 = text, 2 = textarea, 3 = no links
+
+'0' should only be used if previous parameter validation via 
+Data::FormValidator has already ensured that only legal characters are used.
+
+'1' removes all HTML tags.
+
+'2' removes disallowed HTML tags and cleans up many tags and whitespace.
+
+'3' removes anything that looks like a link or script tag, with the aim of 
+preventing a XSS attack. 
+
+
 =cut
 
 sub FieldCheck {
@@ -266,6 +297,49 @@ sub FieldCheck {
             $errors++;
             $tvars{errcode} = 'ERROR';
         }
+    }
+
+    # check for invalid fields
+    for my $z (keys %cgiparams) {
+        next    unless($z =~ /err_(.*)/);
+        my $x = $1;
+        $tvars{data}->{$x . '_err'} = ErrorSymbol();
+        $errors++;
+        $tvars{errcode} = 'ERROR';
+    }
+
+    return($errors);
+}
+
+sub ParamCheck {
+    my ($fields) = @_;
+    my $errors = 0;
+
+    for my $key (keys %$fields) {
+
+        # clean up cgi parameters
+           if($fields->{$key}{html} == 1) { $cgiparams{$key} = CleanHTML($cgiparams{$key}) }
+        elsif($fields->{$key}{html} == 2) { $cgiparams{$key} = CleanTags($cgiparams{$key}) }
+        elsif($fields->{$key}{html} == 3) { $cgiparams{$key} = CleanLink($cgiparams{$key}) }
+
+        # store field
+    
+        # automatically turn arrays into strings, in case someone is trying
+        # to subvert the data input process. known arrays are correctly stored
+        # appropriately elsewhere.
+        $tvars{data}->{$_} = join("|",CGIArray($_));
+
+        # skip checks if optional field
+        next    unless($fields->{$key}{type});
+
+        # mandatory fields must contain values
+        next    if(defined $cgiparams{$_} && exists $cgiparams{$_} && $cgiparams{$_});
+
+        # if we get here, record missing field
+        LogDebug("FieldCheck: mandatory missing - [$_]");
+        $tvars{data}->{$_.'_err'} = ErrorSymbol();
+        $errors++;
+        $tvars{errcode} = 'ERROR';
     }
 
     # check for invalid fields
