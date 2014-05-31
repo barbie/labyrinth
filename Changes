@@ -7,6 +7,7 @@ Changes for the Labyrinth Core
         - added ParamCheck (Support). 
         - added more scripts to test suite.
         - fixed period drop down (DTUtils).
+        - added full version checks in META tests.
 
 5.21    2014-04-23
         - CPAN Testers Reports from Chris WIlliams identified a very odd error

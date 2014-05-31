@@ -23,6 +23,14 @@ is($meta->{version},$version,
 if($meta->{provides}) {
     for my $mod (keys %{$meta->{provides}}) {
         is($meta->{provides}{$mod}{version},$version,
-            "META.json entry [$mod] version matches");
+            "META.json entry [$mod] version matches distribution version");
+
+        eval "require $mod";
+        my $VERSION = '$' . $mod . '::VERSION';
+        my $v = eval "$VERSION";
+        is($meta->{provides}{$mod}{version},$v,
+            "META.json entry [$mod] version matches module version");
+
+        isnt($meta->{provides}{$mod}{version},0);
     }
 }
