@@ -44,6 +44,8 @@ t/21-labyrinth-audit.t
 t/22-labyrinth-constraints.t
 t/23-labyrinth-constraints-emails.t
 t/25-labyrinth-dbutils.t
+t/26-labyrinth-mlutils.t
+t/27-labyrinth-dtutils.t
 t/90podtest.t
 t/91podcover.t
 t/94metatest.t
