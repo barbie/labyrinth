@@ -183,8 +183,8 @@ sub YearSelect {
 sub PeriodSelect {
     my ($opt,$blank) = @_;
     my @list = @periods;
-    unshift @list, {id=>0,value=>'Select Period'}   if(defined $blank && $blank == 1);
-    DropDownRows($opt,'period','act','value',@list);
+    unshift @list, {act=>'',value=>'Select Period'}   if(defined $blank && $blank == 1);
+    DropDownRowsText($opt,'period','act','value',@list);
 }
 
 sub OptSelect {
