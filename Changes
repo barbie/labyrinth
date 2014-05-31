@@ -2,6 +2,7 @@ Changes for the Labyrinth Core
 ==============================
 
         - Exporter tag ':default in Globals no longer used.
+        - added clean up of <script> tags in CleanLink.
 
 5.21    2014-04-23
         - CPAN Testers Reports from Chris WIlliams identified a very odd error
