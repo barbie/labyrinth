@@ -3,7 +3,7 @@ package Labyrinth;
 use warnings;
 use strict;
 
-our $VERSION = '5.21';
+our $VERSION = '5.22';
 
 =head1 NAME
 
