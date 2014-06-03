@@ -11,18 +11,18 @@ The easiest way to install is via CPAN, CPANPLUS or cpanminus:
 CPAN:
 
     % perl -MCPAN -e shell                    [as root]
-    > install Labyrinth-Plugin-Articles-Profiles
+    > install Labyrinth
     > quit
 
 CPANPLUS:
 
     % cpanp
-    > i Labyrinth-Plugin-Articles-Profiles
+    > i Labyrinth
     > q
 
 cpanminus:
 
-    % cpanm Labyrinth-Plugin-Articles-Profiles
+    % cpanm Labyrinth
 
 See your local documentation ('perldoc CPAN', 'perldoc CPANPLUS' or 
 'perldoc cpanm') for further instructions on setting up and configuring your
