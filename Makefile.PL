@@ -31,6 +31,7 @@ WriteMakefile(
         'DBI'                                       => 0,
         'Digest::MD5'                               => 0,
         'Encode::ZapCP1252'                         => 0,
+        'Exporter'                                  => 0,
         'File::Basename'                            => 0,
         'File::Copy'                                => 0,
         'File::Path'                                => 2.08,

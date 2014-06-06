@@ -1,6 +1,8 @@
 Changes for the Labyrinth Core
 ==============================
 
+        - missed Exporter from prerequisites.
+
 5.22    2014-06-03
         - Exporter tag ':default in Globals no longer used.
         - added clean up of <script> tags in CleanLink (MLUtils).
