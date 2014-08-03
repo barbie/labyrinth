@@ -1,6 +1,8 @@
 Changes for the Labyrinth Core
 ==============================
 
+        - added InternalLogin (Session) to enable authenticated logins.
+
 5.23    2014-06-09
         - missed Exporter from prerequisites.
 

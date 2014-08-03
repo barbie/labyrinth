@@ -14,7 +14,7 @@ Labyrinth::Session - Session Management for Labyrinth.
 
   use Labyrinth::Session;
   Login($username,$password);
-  my $logged_in = 1 if(my $user =  ValidSession());
+  my $logged_in = 1 if(my $user = ValidSession());
 
 =head1 DESCRIPTION
 
@@ -67,6 +67,11 @@ my (%USERS,%FOLDERS);
 
 Handles login capabilities, including bad logins.
 
+=item InternalLogin
+
+Saves the internal session of a successful login. Also used for automatic
+authenticated logins.
+
 =item Logout
 
 Handles logout capabilities.
@@ -78,13 +83,19 @@ sub Login {
     return _forgotten()             if($cgiparams{cause} && $cgiparams{forgot});
 
     # values complete?
-    return SetError('ERROR',1)    unless($cgiparams{cause} && $cgiparams{effect});
+    return SetError('ERROR',1)      unless($cgiparams{cause} && $cgiparams{effect});
 
     # verify username/password
     my @rows = CheckUser($cgiparams{cause},$cgiparams{effect});
     return SetError('BADUSER',1)    unless(@rows);
 
-    $tvars{user} = $rows[0];
+    InternalLogin($rows[0]);
+}
+
+sub InternalLogin {
+    my $user = shift;
+
+    $tvars{user} = $user;
 
     # add entry to session table
     my $session;
@@ -93,7 +104,7 @@ sub Login {
         $tvars{'loginid'},
         $tvars{realm},
         $tvars{langcode}
-    ) = _save_session($rows[0]->{realname},$rows[0]->{userid},$rows[0]->{realm},$rows[0]->{langcode});
+    ) = _save_session($user->{realname},$user->{userid},$user->{realm},$user->{langcode});
 
     # set template variables
     $tvars{'loggedin'}   = 1;
@@ -102,7 +113,7 @@ sub Login {
     $tvars{user}{userid} = $tvars{'loginid'};
     $tvars{user}{access} = VerifyUser($tvars{'loginid'});
 
-    $tvars{realm} = $rows[0]->{realm} || 'public';
+    $tvars{realm} = $user->{realm} || 'public';
 
     if($tvars{realm} ne 'public') {
         SetCommand('home-' . $tvars{realm});
