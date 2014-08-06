@@ -233,6 +233,7 @@ sub formatDate {
 
     my ($second,$minute,$hour,$day,$mon,$year,$dotw) = localtime($time);
     $year += 1900;
+    $mon++;
 
     if($now && $zonetime{$format}) {
         my $timezone = $settings{timezone} || 'Europe/London';
