@@ -69,6 +69,7 @@ use Labyrinth::Metadata;
 use Labyrinth::MLUtils;
 use Labyrinth::Plugins;
 use Labyrinth::Support;
+use Labyrinth::Users;
 use Labyrinth::Variables;
 
 # -------------------------------------
