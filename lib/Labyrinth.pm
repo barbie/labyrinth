@@ -97,6 +97,8 @@ sub run {
     my $default_realm = 'public';
     $default_realm = $hash{realm} if(%hash && $hash{realm});
 
+    $tvars{errcode} = '';
+
     eval {
         Labyrinth::Variables::init();   # initial standard variable values
 

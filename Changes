@@ -2,6 +2,7 @@ Changes for the Labyrinth Core
 ==============================
 
         - added InternalLogin (Session) to enable authenticated logins.
+        - set error code to an empty value before each request (Labyrinth).
 
 5.23    2014-06-09
         - missed Exporter from prerequisites.
