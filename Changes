@@ -4,6 +4,7 @@ Changes for the Labyrinth Core
         - added InternalLogin (Session) to enable authenticated logins.
         - set error code to an empty value before each request (Labyrinth).
         - add 1 to month when using time() (DTUtils).
+        - decode HTML entities before sending mails (Mailer).
 
 5.23    2014-06-09
         - missed Exporter from prerequisites.

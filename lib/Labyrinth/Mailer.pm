@@ -37,6 +37,7 @@ require Exporter;
 # -------------------------------------
 # Library Modules
 
+use HTML::Entities;
 use IO::File;
 use Text::Wrap;
 use MIME::Lite;
@@ -102,6 +103,7 @@ sub MailSend {
 
     eval { $body = Transform($template,\%hash); };
     return LogError("MailSend: error=$@") if($@);
+    eval { $body = decode_entities($body) };
 #LogDebug("MailSend: body=$body");
 
     unless($hash{nowrap}) {
