@@ -2,6 +2,7 @@ Changes for the Labyrinth Core
 ==============================
 
         - fixed license fields in META.json to be lists.
+        - escape characters before sending URL request (IPAddr).
 
 5.24    2014-08-16
         - added InternalLogin (Session) to enable authenticated logins.

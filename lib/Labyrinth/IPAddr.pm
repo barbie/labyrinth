@@ -56,6 +56,7 @@ use Labyrinth::DBUtils;
 use Labyrinth::Variables;
 
 use JSON::XS;
+use URI::Escape;
 use WWW::Mechanize;
 
 # -------------------------------------
@@ -132,7 +133,8 @@ sub AllowIP {
 }
 
 sub _request {
-    my $url = join('/',@_);
+    my $url = shift;
+    $url .= '/' . join('/', map { uri_escape_utf8($_) } @_);
 
     my $mech = WWW::Mechanize->new();
     $mech->get($url);
