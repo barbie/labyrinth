@@ -38,7 +38,7 @@ WriteMakefile(
         'File::Slurp'                               => 0,
         'File::Spec::Functions'                     => 0,
         'File::Temp'                                => 0.2304,
-        'HTML::Parser'                              => 0,
+        'HTML::Entities'                            => 0,
         'HTML::TagCloud'                            => 0.34,
         'Image::Size'                               => 0,
         'IO::File'                                  => 0,
