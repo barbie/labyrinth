@@ -6,14 +6,14 @@
         "Barbie (BARBIE) <barbie@cpan.org>"
     ],
 
-    "license": "artistic_2",
+    "license": [ "artistic_2" ],
     "dynamic_config" : 0,
     "release_status" : "stable",
     "meta-spec": {
         "version": "2",
         "url": "http://search.cpan.org/dist/CPAN-Meta/lib/CPAN/Meta/Spec.pm"
     },
-    "generated_by": "Hand 1.0",
+    "generated_by": "The Hand of Barbie 1.0",
     "keywords" : [
         "web",
         "cgi",
@@ -215,7 +215,7 @@
     },
 
     "resources": {
-        "license": "http://www.perlfoundation.org/artistic_license_2_0",
+        "license": [ "http://www.perlfoundation.org/artistic_license_2_0" ],
         "bugtracker": { "web": "http://rt.cpan.org/Public/Dist/Display.html?Name=Labyrinth" },
         "repository": {
             "url": "git://github.com/barbie/labyrinth.git",
