@@ -3,7 +3,7 @@ package Labyrinth::Filters;
 use warnings;
 use strict;
 
-use vars qw($VERSION $AUTOLOAD @ISA @EXPORT_OK);
+use vars qw( $VERSION $AUTOLOAD );
 $VERSION = '5.24';
 
 =head1 NAME
@@ -39,6 +39,8 @@ sub _filter_float {
 
 #LogDebug("filter:value=$value, pattern=$pattern");
     my ($num) = $value =~ m< ^ ([\d.]+) $ >x;
+    return  unless(defined $num);
+
 #LogDebug("filter:num=$num, val=" . ( sprintf $pattern, $num ));
     return sprintf $pattern, $num;
 }
@@ -50,9 +52,7 @@ sub AUTOLOAD {
 
     no strict qw/refs/;
 
-    $name =~ m/^float(\d+)/;
-
-    my ($num) = ($1);
+    my ($num) = $name =~ m/^.*:(?:filter_)?float(\d+)/;
 
     return  unless(defined $num);
 

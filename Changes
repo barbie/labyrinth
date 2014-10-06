@@ -3,6 +3,7 @@ Changes for the Labyrinth Core
 
         - fixed license fields in META.json to be lists.
         - escape characters before sending URL request (IPAddr).
+        - enable both types of filters to be called via AUTOLOAD (Filters).
 
 5.24    2014-08-16
         - added InternalLogin (Session) to enable authenticated logins.
@@ -24,7 +25,7 @@ Changes for the Labyrinth Core
         - added full version checks in META tests.
 
 5.21    2014-04-23
-        - CPAN Testers Reports from Chris WIlliams identified a very odd error
+        - CPAN Testers Reports from Chris Williams identified a very odd error
           with the installed versions of File::Temp and File::Path. Specifying
           versions of both in pre-requisites to ensure known working copies
           are installed.
