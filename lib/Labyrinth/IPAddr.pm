@@ -108,6 +108,8 @@ sub BlockIP {
     } else {
         $dbi->DoQuery('AddIPAddress',$who,1,$ipaddr);
     }
+
+    return 1;
 }
 
 =item AllowIP
@@ -130,6 +132,8 @@ sub AllowIP {
     } else {
         $dbi->DoQuery('AddIPAddress',$who,2,$ipaddr);
     }
+
+    return 1;
 }
 
 sub _request {

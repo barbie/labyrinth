@@ -43,6 +43,11 @@ use Labyrinth::Support;
 use Labyrinth::Variables;
 
 # -------------------------------------
+# Variables
+
+my %InGroup;
+
+# -------------------------------------
 # The Subs
 
 =head1 FUNCTIONS
@@ -77,16 +82,14 @@ number of rows you require.
 =cut
 
 sub GetGroupID {
-    my $name = shift;
+    my $name = shift || return;
     my @rows = $dbi->GetQuery('array','GetGroupID',$name);
     return  unless(@rows);
     return $rows[0]->[0];
 }
 
-my %InGroup;
-
 sub UserInGroup {
-    my $groupid = shift;
+    my $groupid = shift || return;
     my $userid  = shift || $tvars{loginid};
     return 0    unless($groupid && $userid);
 
@@ -100,9 +103,10 @@ sub UserGroups {
     my (%groups,@grps);
     my @rows = $dbi->GetQuery('hash','AllGroupIndex');
     foreach (@rows) {
-                # a user link, but not our user
-        next    if($_->{type} == 0 && $_->{linkid} ne $userid);
-        if($_->{type} == 0) {
+        # a user link, but not our user
+        next    if($_->{type} == 1 && $_->{linkid} ne $userid);
+        
+        if($_->{type} == 1) {
             push @grps, $_->{groupid};
         } else {
             push @{$groups{$_->{linkid}}}, $_->{groupid};
