@@ -127,22 +127,25 @@ Prepares the standard variable values, so that they are only called once on setu
 =cut
 
 sub init {
-    my $prot     = qr{(?:http|https|ftp|afs|news|nntp|mid|cid|mailto|wais|prospero|telnet|gopher|git)://};
-    my $atom     = qr{[a-z\d]}i;
-    my $domain   = qr{(?:(?:(?:$atom(?:(?:$atom|-)*$atom)?)\.)*(?:[a-zA-Z](?:(?:$atom|-)*$atom)?))};
-    my $ip       = qr{(?:(?:\d+)(?:\.(?:\d+)){3})(?::(?:\d+))?};
-    my $enc      = qr{%[a-fA-F\d]{2}};
-    my $legal1   = qr{[a-zA-Z\d\$\-_.+!*\'(),~\#]};
-    my $legal2   = qr{[\/;:@&=]};
-    my $legal3   = qr{(?:(?:$legal1|$enc|$legal2)+)};
-    my $path     = qr{\/(?:$legal3)?};
-    my $query    = qr{(?:\?$legal3)+};
-    my $local    = qr{[-\w\'=.]+};
+    my $prot    = qr{(?:http|https|ftp|afs|news|nntp|mid|cid|mailto|wais|prospero|telnet|gopher|git|file)://};
+    my $atom    = qr{[a-z\d]}i;
+    my $host    = qr{(?:$atom(?:(?:$atom|-)*$atom)?)};
+    my $domain  = qr{(?:(?:(?:$host(?:\.$host)*))*(?:\.[a-zA-Z](?:$atom)*$atom)+)};
+    my $ip      = qr{(?:(?:\d+)(?:\.(?:\d+)){3})(?::(?:\d+))?};
+    my $enc     = qr{%[a-fA-F\d]{2}};
+    my $legal1  = qr{[a-zA-Z\d\$_.+!*\'(),~\#-]};
+    my $legal2  = qr{[\/;:@&=]};
+    my $legal3  = qr{(?:(?:$legal1|$enc)+(?:(?:$legal2)+(?:$legal1|$enc)+)*)};
+    my $path    = qr{\/(?:$legal3)+};
+    my $query   = qr{(?:\?$legal3)+};
+    my $local   = qr{[-\w\'=.]+};
 
-    my $urlregex = qr{(?: (?:$prot)?   (?:$domain|$ip|$path)  (?:(?:$path)?  (?:$query)?  )?)  (?:\#[\w\-.]+)?}x;
-    my $email    = qr{$local\@(?:$domain|$ip)};
+    my $url1    = qr{(?: ($prot)? ($domain|$ip|\/$|$path) ($path)* ($query)? ) (\#[-\w.]+)?}x;
+    my $url2    = qr{(?: (?:$prot)  (?:$domain|$ip|\/$|$path) (?:$path)* (?:$query)? ) (?:\#[-\w.]+)?}x;
+    my $email   = qr{$local\@(?:$domain|$ip)};
 
-    $settings{urlregex}   = $urlregex;
+    $settings{urlregex}   = $url1; #qr{\b$url1\b};
+    $settings{urlstrict}  = $url2; #qr{\b$url2\b};
     $settings{emailregex} = $email;
 
 
