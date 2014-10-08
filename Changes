@@ -7,6 +7,9 @@ Changes for the Labyrinth Core
         - added missing pre-requisite.
         - moved UserGroups from Plugin::Groups to Core (Groups).
         - provide consistent return values (Groups, IPAddr).
+        - reworked CSS creation to allow hashes and arrays of attributes. Now
+          use HTML::Entities to (un)escape characters (MLUtils)
+        - colours can be 3 characters as well as 6 (MLUtils)
 
 5.24    2014-08-16
         - added InternalLogin (Session) to enable authenticated logins.

@@ -42,8 +42,9 @@ require Exporter;
 # -------------------------------------
 # Library Modules
 
-use Regexp::Common  qw /profanity/;
 use Encode::ZapCP1252;
+use HTML::Entities;
+use Regexp::Common  qw /profanity/;
 
 use Labyrinth::Audit;
 use Labyrinth::Variables;
@@ -462,15 +463,17 @@ sub create_inline_styles {
     my $media = $hash->{media} ? ' media="' . $hash->{media} . '"' : '';
 
     my $text = qq|<style type="text/css"$media>\n|;
-    for(sort keys %$hash) {
-        next    if($_ eq 'media');
-        $text .= qq|$_ {|;
-        if(ref($hash->{$_}) eq 'SCALAR') {
-            $text .= qq| $hash->{$_}|;
-        } else {     
-            for my $attr (keys %{$hash->{$_}}) {
-                $text .= qq| $attr: $hash->{$_}->{$attr};|
+    for my $key (sort keys %$hash) {
+        next    if($key eq 'media');
+        $text .= qq|$key {|;
+        if(ref($hash->{$key}) eq 'HASH') {
+            for my $attr (keys %{$hash->{$key}}) {
+                $text .= qq| $attr: $hash->{$key}->{$attr};|
             }
+        } elsif(ref($hash->{$key}) eq 'ARRAY') {
+            $text .= ' ' . join(',', @{$hash->{$key}});
+        } else {     
+            $text .= qq| $hash->{$key}|;
         }
         $text .= qq| }\n|;
     }
@@ -1271,7 +1274,7 @@ sub cleanup_attr_method {
     /^(get|post)$/i ? lc $1 : 'post';
 }
 sub cleanup_attr_inputtype {
-    /^(text|password|checkbox|radio|submit|reset|file|hidden|image|button)$/ ? $1 : undef;
+    /^(text|password|checkbox|radio|submit|reset|file|hidden|image|button)$/i ? lc $1 : undef;
 }
 sub cleanup_attr_multilength {
     /^(\d+(?:\.\d+)?[*%]?)$/ ? $1 : undef;
@@ -1284,8 +1287,8 @@ sub cleanup_attr_length {
     /^(\d+(\%|px|em)?)$/ ? $1 : undef;
 }
 sub cleanup_attr_color {
-    /^(\w{2,20}|#[\da-fA-F]{6})$/ or die "color <<$_>> bad";
-    /^(\w{2,20}|#[\da-fA-F]{6})$/ ? $1 : undef;
+    /^(\w{2,20}|#[\da-fA-F]{3}|#[\da-fA-F]{6})$/ or die "color <<$_>> bad";
+    /^(\w{2,20}|#[\da-fA-F]{3}|#[\da-fA-F]{6})$/ ? $1 : undef;
 }
 sub cleanup_attr_uri {
     check_url_valid($_) ? $_ : undef;
@@ -1470,9 +1473,8 @@ sub cleanup_cdata {
 # entities
 
 sub escape_html {
-    my $str = shift;
-    defined $str or $str = '';
-    $str =~ s/([^\w\Q$html_safe_chars\E])/$escape_html_map{$1}/g;
+    my $str = shift or return '';
+    $str = encode_entities($str);
     $str =~ s/&amp;(#x?\d+;)/&$1/g;  # avoid double encoding of hex/dec characters
     return $str;
 }
@@ -1483,16 +1485,8 @@ sub escape_html {
 # unescape_html() leaves these entities in their encoded form.
 
 sub unescape_html {
-    my $str = shift;
-    $str =~
-    s/ &( (\w+) | [#](?:(\d+)|x(\d+)) ) \b (;?)
-    /
-    defined $2 && exists $html_entities{$2} ? $html_entities{$2} :
-    defined $3 && $3 > 0 && $3 <= 255       ? chr $3             :
-    defined $4 && $4 > 0 && $4 <= 255       ? chr(hex(sprintf "%x", $4))       :
-    "&$1$5"
-    /gex;
-
+    my $str = shift or return '';
+    $str = decode_entities($str);
     return strip_nonprintable($str);
 }
 
