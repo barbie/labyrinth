@@ -5,6 +5,7 @@ Changes for the Labyrinth Core
         - escape characters before sending URL request (IPAddr).
         - enable both types of filters to be called via AUTOLOAD (Filters).
         - added missing pre-requisite.
+        - moved UserGroups from Plugin::Groups to Core (Groups).
 
 5.24    2014-08-16
         - added InternalLogin (Session) to enable authenticated logins.

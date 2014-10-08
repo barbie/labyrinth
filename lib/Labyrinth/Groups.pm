@@ -25,7 +25,7 @@ require Exporter;
 @ISA = qw(Exporter);
 
 %EXPORT_TAGS = (
-    'all' => [ qw( GetGroupID UserInGroup GroupSelect GroupSelectMulti ) ]
+    'all' => [ qw( GetGroupID UserInGroup UserGroups GroupSelect GroupSelectMulti ) ]
 );
 
 @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -58,6 +58,10 @@ Returns the ID of the specific group.
 Checks whether the specified user (or current user) is in the specified group
 Returns 1 if true, otherwise 0 for false.
 
+=item UserGroups()
+
+For the current user login, return the list of groups they are associated with.
+
 =item GroupSelect([$opt])
 
 Provides the XHTML code for a single select dropdown box. Pass the id of a
@@ -89,6 +93,32 @@ sub UserInGroup {
     $InGroup{$userid} ||= do { UserGroups($userid) };
     return 1    if($InGroup{$userid} =~ /\b$groupid\b/);
     return 0;
+}
+
+sub UserGroups {
+    my $userid  = shift || $tvars{loginid};
+    my (%groups,@grps);
+    my @rows = $dbi->GetQuery('hash','AllGroupIndex');
+    foreach (@rows) {
+                # a user link, but not our user
+        next    if($_->{type} == 0 && $_->{linkid} ne $userid);
+        if($_->{type} == 0) {
+            push @grps, $_->{groupid};
+        } else {
+            push @{$groups{$_->{linkid}}}, $_->{groupid};
+        }
+    }
+    my @list = ();
+    while(@grps) {
+        my $g = shift @grps;
+        push @list, $g;
+        next    unless($groups{$g});
+        push @grps, @{$groups{$g}};
+        delete $groups{$g};
+    }
+    my %hash = map {$_ => 1} @list;
+    my $grps = join(",",keys %hash);
+    return $grps;
 }
 
 sub GroupSelect {
