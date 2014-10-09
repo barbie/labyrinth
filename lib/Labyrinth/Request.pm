@@ -61,6 +61,15 @@ my @configkeys = qw(layout actions content onsuccess onfailure onerror secure re
 my %resetkeys = (onsuccess => 1, onfailure => 1, onerror => 1);
 my %stored;
 
+my @autosubs = qw(
+    layout
+    content
+    onsuccess
+    onerror
+    onfailure
+);
+my %autosubs = map {$_ => 1} @autosubs;
+
 # -------------------------------------
 # The Subs
 
@@ -182,7 +191,7 @@ LogDebug("--reset_realm:actions=@actions");
 }
 
 sub reset_request {
-    my $self = shift;
+    my $self    = shift;
     my $request = shift;
     my %hash;
 
@@ -299,15 +308,6 @@ Command to execute if this command fails with an unrecoverable error.
 =back
 
 =cut
-
-my @autosubs = qw(
-    layout
-    content
-    onsuccess
-    onerror
-    onfailure
-);
-my %autosubs = map {$_ => 1} @autosubs;
 
 sub AUTOLOAD {
     no strict 'refs';

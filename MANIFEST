@@ -51,6 +51,7 @@ t/29-labyrinth-variable.t
 t/30-labyrinth-ipaddr.t
 t/31-labyrinth-groups.t
 t/32-labyrinth-metadata.t
+t/33-labyrinth-request.t
 t/90podtest.t
 t/91podcover.t
 t/94metatest.t
