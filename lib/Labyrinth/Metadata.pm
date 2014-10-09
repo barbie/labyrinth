@@ -142,16 +142,20 @@ sub MetaSearch {
 }
 
 sub MetaSave {
-    my $id   = shift || return ();
-    my $keys = shift || return ();
+    my $id   = shift || return;
+    my $keys = shift || return;
     my @meta = @_;
 
     LogDebug("MetaSave: $id,[@meta]");
 
+    my $count = 0;
     for my $key (@$keys) {
         $dbi->DoQuery("MetaDelete$key",$id);
         $dbi->DoQuery("MetaUpdate$key",$id,lc($_)) for(@meta);
+        $count += scalar(@meta);
     }
+
+    return $count;
 }
 
 sub MetaGet {
@@ -163,7 +167,7 @@ sub MetaGet {
         if(@rows) {
             push @meta, $_->[1] for(@rows);
             return @meta    if(wantarray);
-            return join(" ",@meta);
+            return join(" ",sort @meta);
         }
     }
 

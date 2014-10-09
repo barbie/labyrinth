@@ -59,18 +59,54 @@ SKIP: {
     $dbi = Labyrinth::DBUtils->new(\%options);
     isa_ok($dbi,'Labyrinth::DBUtils');
 
+    $tvars{cgipath} = 'http://test/cgi-bin';
+
     is(MetaSearch(),undef);
+    is(MetaSearch( 'keys' => [] ),undef);
+    is(MetaSearch( 'keys' => ['Image'] ),undef);
     is(MetaSearch( 'keys' => ['Image'], 'meta' => ['music'] ),2);
     is(MetaSearch( 'keys' => ['Image'], 'meta' => ['jodrell'] ),0);
     is(MetaSearch( 'keys' => ['Image'], 'meta' => ['jodrell'], full => 1 ),1);
 
+    my @search = MetaSearch( 'keys' => ['Image'], 'meta' => ['cheshire'], sort => 'desc' );
+    is($search[0]->{tag},'jodrell bank');
+    is($search[1]->{tag},'joy division');
+    @search = MetaSearch( 'keys' => ['Image'], 'meta' => ['cheshire'], sort => 'asc' );
+    is($search[0]->{tag},'joy division');
+    is($search[1]->{tag},'jodrell bank');
+
     is(MetaSave(),undef);
+    is(MetaSave(1),undef);
+    is(MetaGet(1,'Image'),'empty');
+    is(MetaSave(1,['Image']),0);
+    is(MetaGet(1,'Image'),undef);
+    is(MetaSave(1,['Image'],'this','that'),2);
+    is(MetaGet(1,'Image'),'that this');
 
     is(MetaGet(),undef);
+    is(MetaGet(1),undef);
+    is(MetaGet(undef,'Image'),undef);
+
+    my @list = MetaGet(1);
+    is_deeply(\@list,[]);
+
+    @list = MetaGet(1,'Image');
+    is_deeply(\@list,['that','this']);
 
     is(MetaCloud(),undef);
+    is(MetaCloud( key => 'Image' ),undef);
+    is(MetaCloud( key => 'Image', sectionid => 1 ),undef);
+    is(MetaCloud( key => 'Image', sectionid => 1, actcode => 'meta-search' ),'<div id="htmltagcloud">
+<span class="tagcloud5"><a href="http://test/cgi-bin/pages.cgi?act=meta-search&amp;data=cheshire">cheshire</a></span>
+<span class="tagcloud5"><a href="http://test/cgi-bin/pages.cgi?act=meta-search&amp;data=music">music</a></span>
+<span class="tagcloud0"><a href="http://test/cgi-bin/pages.cgi?act=meta-search&amp;data=science">science</a></span>
+<span class="tagcloud0"><a href="http://test/cgi-bin/pages.cgi?act=meta-search&amp;data=that">that</a></span>
+<span class="tagcloud0"><a href="http://test/cgi-bin/pages.cgi?act=meta-search&amp;data=this">this</a></span>
+</div>');
 
     is(MetaTags(),undef);
+    is(MetaTags( key => 'Image' ),undef);
+    is(MetaTags( key => 'Image', sectionid => 1 ),5);
 
     # clean up
     $td->{driver}->drop_database($td->name);
