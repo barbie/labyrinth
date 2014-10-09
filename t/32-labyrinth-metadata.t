@@ -5,8 +5,8 @@ use Data::Dumper;
 use Test::More;#  tests => 14;
 
 use Labyrinth::Audit;
-use Labyrinth::Groups;
 use Labyrinth::DBUtils;
+use Labyrinth::Metadata;
 use Labyrinth::Variables;
 
 eval "use Test::Database";
@@ -59,24 +59,18 @@ SKIP: {
     $dbi = Labyrinth::DBUtils->new(\%options);
     isa_ok($dbi,'Labyrinth::DBUtils');
 
-    is(GetGroupID(),undef);
-    is(GetGroupID('public'),1);
-    is(GetGroupID('admins'),5);
+    is(MetaSearch(),undef);
+    is(MetaSearch( 'keys' => ['Image'], 'meta' => ['music'] ),2);
+    is(MetaSearch( 'keys' => ['Image'], 'meta' => ['jodrell'] ),0);
+    is(MetaSearch( 'keys' => ['Image'], 'meta' => ['jodrell'], full => 1 ),1);
 
-    is(UserInGroup(),undef);
-    is(UserInGroup(1),0);
-    is(UserInGroup(1,1),1);
-    is(UserInGroup(7,2),0);
-    is(UserInGroup(4,1),1);
-    
-    $tvars{loginid} = 1;
-    is(UserInGroup(1),1);
+    is(MetaSave(),undef);
 
-    is(GroupSelect(),'<select id="groups" name="groups"><option value="0">Select A Group</option><option value="5">admins</option><option value="3">editors</option><option value="9">masters</option><option value="1">public</option><option value="4">sponsors</option><option value="2">users</option></select>');
-    is(GroupSelect(2),'<select id="groups" name="groups"><option value="0">Select A Group</option><option value="5">admins</option><option value="3">editors</option><option value="9">masters</option><option value="1">public</option><option value="4">sponsors</option><option value="2" selected="selected">users</option></select>');
+    is(MetaGet(),undef);
 
-    is(GroupSelectMulti(),'<select id="groups" name="groups" multiple="multiple" size="5"><option value="0">Select A Group</option><option value="5">admins</option><option value="3">editors</option><option value="9">masters</option><option value="1">public</option><option value="4">sponsors</option><option value="2">users</option></select>');
-    is(GroupSelectMulti(2,2),'<select id="groups" name="groups" multiple="multiple" size="2"><option value="0">Select A Group</option><option value="5">admins</option><option value="3">editors</option><option value="9">masters</option><option value="1">public</option><option value="4">sponsors</option><option value="2" selected="selected">users</option></select>');
+    is(MetaCloud(),undef);
+
+    is(MetaTags(),undef);
 
     # clean up
     $td->{driver}->drop_database($td->name);
@@ -87,40 +81,36 @@ sub create_sqlite_databases {
 
     my @create_example = (
         'PRAGMA auto_vacuum = 1',
-        q|DROP TABLE IF EXISTS groups|,
-        q|CREATE TABLE groups (
-          groupid   INTEGER,
-          groupname TEST,
-          master    INTEGER,
-          member    TEST,
-          PRIMARY KEY (groupid),
+        q|DROP TABLE IF EXISTS images|,
+        q|CREATE TABLE images (
+          imageid       INTEGER,
+          tag           TEXT,
+          link          TEXT,
+          type          INTEGER,
+          href          TEXT,
+          dimensions    TEXT,
+          PRIMARY KEY (imageid)
         )|,
 
-        q|INSERT INTO groups VALUES (1,'public',1,'Guest')|,
-        q|INSERT INTO groups VALUES (2,'users',1,'User')|,
-        q|INSERT INTO groups VALUES (3,'editors',1,'Editor')|,
-        q|INSERT INTO groups VALUES (4,'sponsors',1,'Sponsor')|,
-        q|INSERT INTO groups VALUES (5,'admins',1,'Admin')|,
-        q|INSERT INTO groups VALUES (9,'masters',1,'Master')|,
+        q|INSERT INTO images VALUES (1,'a blank space','images/blank.png',1,NULL,NULL)|,
+        q|INSERT INTO images VALUES (2,'nine inch nails','images/nineinchnails.png',1,NULL,NULL)|,
+        q|INSERT INTO images VALUES (3,'jodrell bank','images/jodrellbank.png',1,'http://umist.ac.uk',NULL)|,
+        q|INSERT INTO images VALUES (4,'joy division','images/joydivision.png',1,NULL,NULL)|,
 
-        q|DROP TABLE IF EXISTS ixusergroup|,
-        q|CREATE TABLE ixusergroup (
-          indexid   INTEGER,
-          type      INTEGER,
-          linkid    INTEGER,
-          groupid   INTEGER,
-          PRIMARY KEY (indexid),
+
+        q|DROP TABLE IF EXISTS imetadata|,
+        q|CREATE TABLE imetadata (
+          imageid       INTEGER,
+          tag           TEXT,
+          PRIMARY KEY (imageid,tag)
         )|,
 
-        q|INSERT INTO ixusergroup VALUES (1,1,1,1)|,
-        q|INSERT INTO ixusergroup VALUES (2,1,1,9)|,
-        q|INSERT INTO ixusergroup VALUES (3,1,2,2)|,
-        q|INSERT INTO ixusergroup VALUES (4,1,2,3)|,
-        q|INSERT INTO ixusergroup VALUES (5,1,2,4)|,
-        q|INSERT INTO ixusergroup VALUES (6,2,9,5)|,
-        q|INSERT INTO ixusergroup VALUES (7,2,9,4)|,
-        q|INSERT INTO ixusergroup VALUES (8,2,9,3)|,
-        q|INSERT INTO ixusergroup VALUES (9,2,9,2)|,
+        q|INSERT INTO imetadata VALUES (1,'empty')|,
+        q|INSERT INTO imetadata VALUES (2,'music')|,
+        q|INSERT INTO imetadata VALUES (3,'cheshire')|,
+        q|INSERT INTO imetadata VALUES (3,'science')|,
+        q|INSERT INTO imetadata VALUES (4,'cheshire')|,
+        q|INSERT INTO imetadata VALUES (4,'music')|,
     );
 
     dosql($db,\@create_example);
@@ -130,41 +120,37 @@ sub create_mysql_databases {
     my $db = shift;
 
     my @create_example = (
-        q|DROP TABLE IF EXISTS groups|,
-        q|CREATE TABLE groups (
-          groupid int(10) unsigned NOT NULL AUTO_INCREMENT,
-          groupname varchar(255) DEFAULT NULL,
-          master int(2) DEFAULT '0',
-          member varchar(255) DEFAULT NULL,
-          PRIMARY KEY (groupid)
-        ) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8|,
+        q|DROP TABLE IF EXISTS images|,
+        q|CREATE TABLE images (
+          imageid int(10) unsigned NOT NULL AUTO_INCREMENT,
+          tag varchar(255) DEFAULT NULL,
+          link varchar(255) DEFAULT NULL,
+          type int(4) DEFAULT NULL,
+          href varchar(255) DEFAULT NULL,
+          dimensions varchar(255) DEFAULT NULL,
+          PRIMARY KEY (imageid),
+          INDEX TYPIX (type)
+        ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8|,
 
-        q|INSERT INTO groups VALUES (1,'public',1,'Guest')|,
-        q|INSERT INTO groups VALUES (2,'users',1,'User')|,
-        q|INSERT INTO groups VALUES (3,'editors',1,'Editor')|,
-        q|INSERT INTO groups VALUES (4,'sponsors',1,'Sponsor')|,
-        q|INSERT INTO groups VALUES (5,'admins',1,'Admin')|,
-        q|INSERT INTO groups VALUES (9,'masters',1,'Master')|,
+        q|INSERT INTO images VALUES (1,'a blank space','images/blank.png',1,NULL,NULL)|,
+        q|INSERT INTO images VALUES (2,'nine inch nails','images/nineinchnails.png',1,NULL,NULL)|,
+        q|INSERT INTO images VALUES (3,'jodrell bank','images/jodrellbank.png',1,'http://umist.ac.uk',NULL)|,
+        q|INSERT INTO images VALUES (4,'joy division','images/joydivision.png',1,NULL,NULL)|,
 
-        q|DROP TABLE IF EXISTS ixusergroup|,
-        q|CREATE TABLE ixusergroup (
-          indexid int(10) unsigned NOT NULL AUTO_INCREMENT,
-          type int(1) unsigned NOT NULL DEFAULT '0',
-          linkid int(10) unsigned NOT NULL DEFAULT '0',
-          groupid int(10) unsigned NOT NULL DEFAULT '0',
-          PRIMARY KEY (indexid),
-          INDEX TYPIX (type),
-          INDEX LNKIX (linkid),
-          INDEX GRPIX (groupid)
-        ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8|,
 
-        q|INSERT INTO ixusergroup VALUES (1,1,1,1)|,
-        q|INSERT INTO ixusergroup VALUES (2,1,1,9)|,
-        q|INSERT INTO ixusergroup VALUES (3,1,2,2)|,
-        q|INSERT INTO ixusergroup VALUES (4,1,2,3)|,
-        q|INSERT INTO ixusergroup VALUES (5,1,2,4)|,
-        q|INSERT INTO ixusergroup VALUES (6,2,9,5)|,
-        q|INSERT INTO ixusergroup VALUES (7,2,5,4)|,
+        q|DROP TABLE IF EXISTS imetadata|,
+        q|CREATE TABLE imetadata (
+          imageid int(10) unsigned NOT NULL DEFAULT '0',
+          tag varchar(255) NOT NULL DEFAULT '',
+          PRIMARY KEY (imageid,tag)
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8|,
+
+        q|INSERT INTO imetadata VALUES (1,'empty')|,
+        q|INSERT INTO imetadata VALUES (2,'music')|,
+        q|INSERT INTO imetadata VALUES (3,'cheshire')|,
+        q|INSERT INTO imetadata VALUES (3,'science')|,
+        q|INSERT INTO imetadata VALUES (4,'cheshire')|,
+        q|INSERT INTO imetadata VALUES (4,'music')|,
     );
 
     dosql($db,\@create_example);
@@ -184,34 +170,3 @@ sub dosql {
 
     return 0;
 }
-
-DROP TABLE IF EXISTS images;
-CREATE TABLE images (
-  imageid int(10) unsigned NOT NULL AUTO_INCREMENT,
-  tag varchar(255) DEFAULT NULL,
-  link varchar(255) DEFAULT NULL,
-  type int(4) DEFAULT NULL,
-  href varchar(255) DEFAULT NULL,
-  dimensions varchar(255) DEFAULT NULL,
-  PRIMARY KEY (imageid),
-  INDEX TYPIX (type)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
-
-INSERT INTO images VALUES (1,NULL,'images/blank.png',1,NULL,NULL);
-INSERT INTO images VALUES (1,NULL,'images/blank.png',1,NULL,NULL);
-INSERT INTO images VALUES (1,NULL,'images/blank.png',1,NULL,NULL);
-INSERT INTO images VALUES (1,NULL,'images/blank.png',1,NULL,NULL);
-
-
-DROP TABLE IF EXISTS imetadata;
-CREATE TABLE imetadata (
-  imageid int(10) unsigned NOT NULL DEFAULT '0',
-  tag varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (imageid,tag)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
-INSERT INTO images VALUES (1,'this');
-INSERT INTO images VALUES (1,'this');
-INSERT INTO images VALUES (1,'this');
-INSERT INTO images VALUES (1,'this');
-INSERT INTO images VALUES (1,'this');

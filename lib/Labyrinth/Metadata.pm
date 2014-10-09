@@ -130,7 +130,7 @@ sub MetaSearch {
         @res = map {$res{$_}} keys %res;
     }
 
-    if($hash{'sort'} =~ /^desc/) {
+    if($hash{'sort'} && $hash{'sort'} =~ /^desc/) {
         @res = reverse @res;
     }
 
