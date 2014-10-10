@@ -48,12 +48,12 @@ SKIP: {
 
 #diag(Dumper(\%options));
 
-    SetLogFile( FILE   => 'audit.log',
-                USER   => 'labyrinth',
-                LEVEL  => 4,
-                CLEAR  => 1,
-                CALLER => 1
-        );
+#    SetLogFile( FILE   => 'audit.log',
+#                USER   => 'labyrinth',
+#                LEVEL  => 4,
+#                CLEAR  => 1,
+#                CALLER => 1
+#        );
 
     # create new instance from Test::Database object
     $dbi = Labyrinth::DBUtils->new(\%options);
