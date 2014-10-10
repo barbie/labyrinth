@@ -11,6 +11,8 @@ Changes for the Labyrinth Core
           use HTML::Entities to (un)escape characters (MLUtils).
         - colours can be 3 characters as well as 6 (MLUtils).
         - reworked url regex (Variables).
+        - more options for password validation (Users).
+        - added field name for user select (Users).
         - extended functional test suite.
 
 5.24    2014-08-16

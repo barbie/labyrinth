@@ -118,12 +118,12 @@ sub FreshPassword {
 }
 
 sub PasswordCheck {
-    my $password = shift;
+    my $password = shift || return 6;
     my $plen = length $password;
 
     return 4    if($password =~ /\s/);
-    return 1    if($plen < $settings{minpasslen});
-    return 2    if($plen > $settings{maxpasslen});
+    return 1    if($settings{minpasslen} && $plen < $settings{minpasslen});
+    return 2    if($settings{maxpasslen} && $plen > $settings{maxpasslen});
 
     # Check unique characters
     my @chars = split //,$password ;
@@ -163,6 +163,7 @@ sub UserSelect {
     my $opt   = shift;
     my $multi = shift || 5;
     my $blank = shift || 0;
+    my $field = shift || 'userid';
     my $title = shift || 'Name';
     my $all   = shift;
     my $search;
@@ -170,10 +171,16 @@ sub UserSelect {
     $search = 'WHERE search=1'   unless($all);
 
     my @rows = $dbi->GetQuery('hash','AllUsers',{search=>$search});
-    foreach (@rows) { $_->{name} = $_->{realname} . ( $_->{nickname} ? ' (' . $_->{nickname} . ')' : '') }
+    foreach (@rows) { 
+        my @names;
+        push @names, $_->{realname}             if($_->{realname});
+        push @names, '(' . $_->{nickname} . ')' if($_->{nickname});
+        $_->{name}   = join(' ',@names)   if(@names);
+        $_->{name} ||= 'No Name Given';
+    }
     unshift @rows, {userid=>0,name=>"Select $title"}    if($blank == 1);
-    return DropDownMultiRows($opt,'users','userid','name',$multi,@rows) if($multi > 1);
-    return DropDownRows($opt,'userid','userid','name',@rows);
+    return DropDownMultiRows($opt,$field,'userid','name',$multi,@rows) if($multi > 1);
+    return DropDownRows($opt,$field,'userid','name',@rows);
 }
 
 1;
