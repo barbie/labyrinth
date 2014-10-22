@@ -1,6 +1,7 @@
 Changes for the Labyrinth Core
 ==============================
 
+5.25    2014-10-17
         - fixed license fields in META.json to be lists.
         - escape characters before sending URL request (IPAddr).
         - enable both types of filters to be called via AUTOLOAD (Filters).
