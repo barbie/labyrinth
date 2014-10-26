@@ -25,8 +25,8 @@ plan 'no_plan';
 my $td;
 if($td = Test::Database->handle( 'mysql' )) {
     create_mysql_databases($td);
-} elsif($td = Test::Database->handle( 'SQLite' )) {
-    create_sqlite_databases($td);
+#} elsif($td = Test::Database->handle( 'SQLite' )) {
+#    create_sqlite_databases($td);
 }
 
 SKIP: {
