@@ -140,11 +140,12 @@ sub LoadSettings {
     my $PHRASEBOOK  = 'phrasebook.ini';
     my $PARSEFILE   = 'parserules.ini';
 
+#print STDERR "# ENV $_ => $ENV{$_}\n"   for('HTTP_HOST', 'REMOTE_ADDR', 'SERVER_PROTOCOL', 'SERVER_PORT');
     # Server/HTTP values
     my $host            = $ENV{'HTTP_HOST'}   || '';
     my $ipaddr          = $ENV{'REMOTE_ADDR'} || '';
     my ($protocol)      = $ENV{'SERVER_PROTOCOL'}
-                            ? ($ENV{'SERVER_PROTOCOL'} =~ m!^(.*)/!)
+                            ? ($ENV{'SERVER_PROTOCOL'} =~ m!^(\w+)\b!)
                             : $ENV{'SERVER_PORT'} && $ENV{'SERVER_PORT'} eq '443'
                                 ? ('https')
                                 : ('http');
