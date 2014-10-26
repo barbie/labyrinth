@@ -124,7 +124,7 @@ sub MetaSearch {
         if($hash{'order'} eq 'createdate') {
             @res = map {$res{$_}} sort {int($res{$a}->{createdate}) <=> int($res{$b}->{createdate})} keys %res;
         } else {
-            @res = map {$res{$_}} sort {$res{$a}->{$hash{'order'}} <=>$res{$b}->{$hash{'order'}}} keys %res;
+            @res = map {$res{$_}} sort {$res{$a}->{$hash{'order'}} cmp $res{$b}->{$hash{'order'}}} keys %res;
         }
     } else {
         @res = map {$res{$_}} keys %res;

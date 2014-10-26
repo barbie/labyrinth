@@ -2,6 +2,7 @@ Changes for the Labyrinth Core
 ==============================
 
 	- prevent strings being used as numeric options (MLUtils).
+	- fixed MetaData sort order in search tests (Metadata).
 
 5.25    2014-10-17
         - fixed license fields in META.json to be lists.

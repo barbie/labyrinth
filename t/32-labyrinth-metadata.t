@@ -69,11 +69,11 @@ SKIP: {
     is(MetaSearch( 'keys' => ['Image'], 'meta' => ['jodrell'], full => 1 ),1);
 
     my @search = MetaSearch( 'keys' => ['Image'], 'meta' => ['cheshire'], sort => 'desc' );
-    is($search[0]->{tag},'jodrell bank');
-    is($search[1]->{tag},'joy division');
-    @search = MetaSearch( 'keys' => ['Image'], 'meta' => ['cheshire'], sort => 'asc' );
     is($search[0]->{tag},'joy division');
     is($search[1]->{tag},'jodrell bank');
+    @search = MetaSearch( 'keys' => ['Image'], 'meta' => ['cheshire'], sort => 'asc', order => 'tag' );
+    is($search[0]->{tag},'jodrell bank');
+    is($search[1]->{tag},'joy division');
 
     is(MetaSave(),undef);
     is(MetaSave(1),undef);
