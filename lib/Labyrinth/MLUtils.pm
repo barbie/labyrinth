@@ -293,6 +293,7 @@ of values.
 
 sub DropDownList {
     my ($opt,$name,@items) = @_;
+	$opt = undef	if(defined $opt && $opt !~ /^\d+$/);	# opt must be a number
 
     return  qq|<select id="$name" name="$name">| .
             join("",(map { qq|<option value="$_"|.
@@ -313,6 +314,7 @@ sub DropDownListText {
 
 sub DropDownRows {
     my ($opt,$name,$index,$value,@items) = @_;
+	$opt = undef	if(defined $opt && $opt !~ /^\d+$/);	# opt must be a number
 
     return  qq|<select id="$name" name="$name">| .
             join("",(map { qq|<option value="$_->{$index}"|.
