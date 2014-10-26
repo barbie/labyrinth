@@ -1,6 +1,8 @@
 Changes for the Labyrinth Core
 ==============================
 
+	- disabled SQLite tests for users.
+
 5.26    2014-10-26
 	- prevent strings being used as numeric options (MLUtils).
 	- fixed MetaData sort order in search tests (Metadata).

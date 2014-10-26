@@ -25,8 +25,6 @@ plan 'no_plan';
 my $td;
 if($td = Test::Database->handle( 'mysql' )) {
     create_mysql_databases($td);
-} elsif($td = Test::Database->handle( 'SQLite' )) {
-    create_sqlite_databases($td);
 }
 
 SKIP: {
@@ -101,48 +99,6 @@ SKIP: {
 
     # clean up
     $td->{driver}->drop_database($td->name);
-}
-
-sub create_sqlite_databases {
-    my $db = shift;
-
-    my @create_example = (
-        'PRAGMA auto_vacuum = 1',
-        q|DROP TABLE IF EXISTS users|,
-        q|CREATE TABLE users (
-          userid    INTEGER,
-          accessid  INTEGER,
-          imageid   INTEGER,
-          nickname  TEXT,
-          realname  TEXT,
-          email     TEXT,
-          realm     TEXT,
-          password  TEXT,
-          url       TEXT,
-          aboutme   TEXT,
-          search    INTEGER,
-          PRIMARY KEY (userid)
-        )|,
-
-        q|INSERT INTO users VALUES (1,1,1,'Guest','Guest','GUEST','public',SHA1('GUEST'),NULL,NULL,0)|,
-        q|INSERT INTO users VALUES (2,5,1,'Master','Master','master@example.com','admin',SHA1('Master'),'','',0)|,
-        q|INSERT INTO users VALUES (3,1,1,'','Test User','testuser@example.com','public',SHA1('testUser'),'http://example.com','<p>test user</p>',1)|,
-
-        q|DROP TABLE IF EXISTS images|,
-        q|CREATE TABLE images (
-          imageid       INTEGER,
-          tag           TEXT,
-          link          TEXT,
-          type          INTEGER,
-          href          TEXT,
-          dimensions    TEXT,
-          PRIMARY KEY (imageid)
-        )|,
-
-        q|INSERT INTO images VALUES (1,'a blank space','images/blank.png',1,NULL,NULL)|,
-    );
-
-    dosql($db,\@create_example);
 }
 
 sub create_mysql_databases {
