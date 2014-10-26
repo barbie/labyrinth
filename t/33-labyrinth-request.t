@@ -117,7 +117,7 @@ sub create_sqlite_databases {
           onsuccess TEXT,
           onerror   TEXT,
           onfailure TEXT,
-          secure    enum('off','on','either','both') DEFAULT 'off',
+          secure    TEXT,
           rewrite   TEXT,
           PRIMARY KEY (section,command)
         )|,
@@ -191,4 +191,3 @@ sub dosql {
 
     return 0;
 }
-

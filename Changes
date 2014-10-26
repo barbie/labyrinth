@@ -2,6 +2,7 @@ Changes for the Labyrinth Core
 ==============================
 
 	- disabled SQLite tests for users.
+	- fixed SQL syntax for SQLite.
 
 5.26    2014-10-26
 	- prevent strings being used as numeric options (MLUtils).

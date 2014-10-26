@@ -93,7 +93,7 @@ sub create_sqlite_databases {
           groupname TEST,
           master    INTEGER,
           member    TEST,
-          PRIMARY KEY (groupid),
+          PRIMARY KEY (groupid)
         )|,
 
         q|INSERT INTO groups VALUES (1,'public',1,'Guest')|,
@@ -109,7 +109,7 @@ sub create_sqlite_databases {
           type      INTEGER,
           linkid    INTEGER,
           groupid   INTEGER,
-          PRIMARY KEY (indexid),
+          PRIMARY KEY (indexid)
         )|,
 
         q|INSERT INTO ixusergroup VALUES (1,1,1,1)|,
