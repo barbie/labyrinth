@@ -1,6 +1,8 @@
 Changes for the Labyrinth Core
 ==============================
 
+        - protocol now a setting variable (Variables).
+
 5.27    2014-10-26
         - disabled SQLite tests for users.
         - fixed SQL syntax for SQLite.
