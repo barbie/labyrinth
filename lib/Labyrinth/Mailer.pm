@@ -191,7 +191,7 @@ sub HTMLSend {
 
 
         for my $path ($html =~ m!href="([^"]+)"!g) {
-            next if($path =~ m!$settings{protcol}!;
+            next if($path =~ m!$settings{protregex}!);
             my $newpath = "$settings{docroot}/$settings{webpath}/$path";
             $newpath =~ s!//+!/!g;
             $path =~ s!href="$path"!href="$newpath"!g;

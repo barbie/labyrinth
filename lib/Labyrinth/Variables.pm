@@ -144,7 +144,7 @@ sub init {
     my $url2    = qr{(?: (?:$prot)  (?:$domain|$ip|\/$|$path) (?:$path)* (?:$query)? ) (?:\#[-\w.]+)?}x;
     my $email   = qr{$local\@(?:$domain|$ip)};
 
-    $settings{protcol}    = $prot;
+    $settings{protregex}  = $prot;
     $settings{urlregex}   = $url1; #qr{\b$url1\b};
     $settings{urlstrict}  = $url2; #qr{\b$url2\b};
     $settings{emailregex} = $email;
