@@ -2,6 +2,8 @@ Changes for the Labyrinth Core
 ==============================
 
         - protocol now a setting variable (Variables).
+        - multipart mails now include text and html parts, as well as 
+          attachments (Mailer).
 
 5.27    2014-10-26
         - disabled SQLite tests for users.
