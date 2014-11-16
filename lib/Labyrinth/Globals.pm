@@ -55,7 +55,6 @@ require Exporter;
 # Library Modules
 
 use Config::IniFiles;
-use Cwd;
 use Data::Dumper;
 use Data::FormValidator;
 use Data::FormValidator::Constraints::Upload;
