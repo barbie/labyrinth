@@ -1,6 +1,8 @@
 Changes for the Labyrinth Core
 ==============================
 
+        - now using Session::Token to create session ids, due to md5 clashes.
+
 5.28    2014-11-21
         - protocol regex now a setting variable (Variables).
         - multipart mails now include text and html parts, as well as 
