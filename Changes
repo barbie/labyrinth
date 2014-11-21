@@ -1,7 +1,8 @@
 Changes for the Labyrinth Core
 ==============================
 
-        - protocol now a setting variable (Variables).
+5.28    2014-11-21
+        - protocol regex now a setting variable (Variables).
         - multipart mails now include text and html parts, as well as 
           attachments (Mailer).
         - updated prerequisites.
