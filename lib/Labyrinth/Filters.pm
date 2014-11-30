@@ -16,6 +16,18 @@ Provides basic filter methods used within Labyrinth.
 
 =cut
 
+# -------------------------------------
+# Export Details
+
+require Exporter;
+@ISA       = qw(Exporter);
+%EXPORT_TAGS = (
+    'all' => [ qw( float2 float3 float5 ) ]
+);
+
+@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+@EXPORT    = ( @{ $EXPORT_TAGS{'all'} } );
+
 #----------------------------------------------------------------------------
 # Libraries
 
