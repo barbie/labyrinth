@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw( $VERSION $AUTOLOAD @ISA %EXPORT_TAGS @EXPORT_OK @EXPORT );
-$VERSION = '5.28';
+$VERSION = '5.29';
 
 =head1 NAME
 
