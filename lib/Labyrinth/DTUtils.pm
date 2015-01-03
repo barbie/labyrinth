@@ -235,6 +235,8 @@ sub formatDate {
     $year += 1900;
     $mon++;
 
+#LogDebug("formatDate format=$format, time=$time, [$second,$minute,$hour,$day,$mon,$year,$dotw]");
+
     if($now && $zonetime{$format}) {
         my $timezone = $settings{timezone} || 'Europe/London';
         my $dt = DateTime->new(
@@ -247,7 +249,7 @@ sub formatDate {
     }
 
     # create date mini strings
-    my $fmonth  = sprintf "%s",   $months[$mon++]->{value};
+    my $fmonth  = sprintf "%s",   $months[$mon-1]->{value};
     my $fsday   = sprintf "%d",   $day; # short form, ie 6
     my $fday    = sprintf "%02d", $day; # long form, ie 06
     my $fmon    = sprintf "%02d", $mon;
