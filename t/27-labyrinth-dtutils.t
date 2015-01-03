@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More  tests => 15;
+use Test::More  tests => 39;
 use Labyrinth::DTUtils;
 use Labyrinth::Variables;
 use Data::Dumper;
@@ -53,9 +53,45 @@ is(PeriodSelect(),   $select{period1},'PeriodSelect no options');
 is(PeriodSelect(5),  $select{period2},'PeriodSelect with options');
 is(PeriodSelect(5,1),$select{period3},'PeriodSelect with options and blank');
 
+like(formatDate(),qr/\d+/);
+like(formatDate(0),qr/\d+/);
+
+# 1442110800 translates to Sun 13 Sep 2015 03:20:00 BST / Sun, 13 Sep 2015 02:20:00 GMT
+my $TIME0 = 1442110800;
+
+$settings{timezone} = 'UTC';
+
+my %formats = (
+    1 => '2015',
+    2 => 'September 2015',
+    3 => '13/09/2015',
+    4 => 'Sun Sep 13 3:20:00 2015',
+    5 => 'Sunday, 13 September 2015',
+    6 => 'Sunday, 13th September 2015',
+    7 => 'Sunday, 13 September 2015 (3:20am)',
+    8 => 'Sunday, 13th September 2015 (3:20am)',
+    9 => '2015/09/13',
+    10 => '13th September 2015',
+    11 => '20150913T032000',        # iCal date string
+    12 => '2015-09-13T03:20:00Z',   # RSS date string
+    13 => '20150913',               # backwards date
+    14 => 'Sun, 13th September 2015',
+    15 => '13 Sep 2015',
+    16 => 'Sun, 13 Sep 2015 03:20:00 UT', # RFC-822 date string
+    17 => 'Sunday, 13 September 2015 03:20:00',
+    18 => '13/09/2015 03:20:00',
+    19 => '13th September 2015',
+    20 => 'Sun, 13 Sep 2015 03:20:00',
+    21 => '2015-09-13 03:20:00',
+    22 => '201509130320',
+);
+
+for my $format (keys %formats) {
+    is(formatDate($format,$TIME0),$formats{$format},".. format $format => $formats{$format}");
+}
+
 # TODO:
 # * OptSelect
-# * formatDate
 # * unformatDate
 # * isMonth
 # * _ext
