@@ -125,13 +125,59 @@ my %zonetime = (12 => 1, 16 => 1);
 
 =over 4
 
-=item DaySelect
+=item DaySelect($opt,$blank)
 
-=item MonthSelect
+Provides a Day dropdown selection box. 
 
-=item YearSelect
+The option $opt allows the given day (numerical 1 - 31) to be the selected 
+option in the dropdown. If blank is true, a 'Select Day' option is added as
+the first option to the dropdown.
 
-=item PeriodSelect
+=item MonthSelect($opt,$blank)
+
+Provides a Month dropdown selection box. 
+
+The option $opt allows the given month (numerical 1 - 12) to be the selected 
+option in the dropdown. If blank is true, a 'Select Month' option is added as
+the first option to the dropdown.
+
+=item YearSelect($opt,$range,$blank,$dates)
+
+Provides a Year dropdown selection box. 
+
+The option $opt allows the given month (numerical 1 - 12) to be the selected 
+option in the dropdown. If blank is true, a 'Select Month' option is added as
+the first option to the dropdown.
+
+If is specified, then the following criteria is used:
+
+  0 - default
+  1 - given dates, see $dates list
+  2 - oldest year to current year
+  3 - current year to future year
+
+For oldest year, this is determined by the configuration setting 
+'year_past_offset' or 'year_past'. For the future year, this is determined by
+the configuration setting 'year_future_offset'.
+
+If the range is set to 1, the list of dates given in the $dates array 
+reference will be used.
+
+=item PeriodSelect($opt,$blank)
+
+Provides a Period dropdown selection box. 
+
+The option $opt allows the given period to be the selected option in the 
+dropdown. If blank is true, a 'Select Period' option is added as the first 
+option to the dropdown.
+
+Current valid periods are:
+
+  opt           value
+  -------------------
+  evnt-month    Month
+  evnt-week     Week
+  evnt-day      Day
 
 =back
 
@@ -150,12 +196,6 @@ sub MonthSelect {
     unshift @list, {id=>0,value=>'Select Month'}    if(defined $blank && $blank == 1);
     DropDownRows($opt,'month','id','value',@list);
 }
-
-# range:
-# 0 - default
-# 1 - given dates
-# 2 - 1980 to now
-# 3 - now to now+4
 
 sub YearSelect {
     my ($opt,$range,$blank,$dates) = @_;

@@ -3,6 +3,8 @@ Changes for the Labyrinth Core
 
         - fixed and extended date test script.
         - switched to using DateTime (DTUtils).
+        - removed OptSelect as no longer used (DTUtils).
+        - documentation updates.
 
 5.29    2014-12-05
         - now using Session::Token to create session ids, due to md5 clashes.
