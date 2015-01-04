@@ -47,6 +47,7 @@ installed:
   Data::FormValidator::Filters::Demoroniser
   Data::Phrasebook
   Data::Phrasebook::Loader::Ini
+  DateTime
   DBD::mysql
   DBI
   Digest::MD5
@@ -117,7 +118,7 @@ AUTHOR
 
 COPYRIGHT & LICENSE
 
-  Copyright (C) 2002-2014 Barbie for Miss Barbell Productions
+  Copyright (C) 2002-2015 Barbie for Miss Barbell Productions
   All Rights Reserved.
 
   This distribution is free software; you can redistribute it and/or
