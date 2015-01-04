@@ -1,7 +1,7 @@
 Changes for the Labyrinth Core
 ==============================
 
-        - fixed date test script.
+        - fixed and extended date test script.
         - switched to using DateTime (DTUtils).
 
 5.29    2014-12-05
