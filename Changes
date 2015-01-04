@@ -2,7 +2,7 @@ Changes for the Labyrinth Core
 ==============================
 
         - fixed date test script.
-        - fixed month offset (DTUtils).
+        - switched to using DateTime (DTUtils).
 
 5.29    2014-12-05
         - now using Session::Token to create session ids, due to md5 clashes.

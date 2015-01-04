@@ -44,6 +44,7 @@ require Exporter;
 #Libraries
 #############################################################################
 
+use DateTime;
 use Time::Local;
 use Labyrinth::Audit;
 use Labyrinth::MLUtils;
@@ -228,41 +229,35 @@ sub formatDate {
     my ($format,$time) = @_;
     my $now = $time ? 0 : 1;
 
-    $time = time    unless($time);
-    return $time    unless($format);
-
-    my ($second,$minute,$hour,$day,$mon,$year,$dotw) = localtime($time);
-    $year += 1900;
-    $mon++;
-
-#LogDebug("formatDate format=$format, time=$time, [$second,$minute,$hour,$day,$mon,$year,$dotw]");
-
-    if($now && $zonetime{$format}) {
-        my $timezone = $settings{timezone} || 'Europe/London';
-        my $dt = DateTime->new(
-                    year => $year, month => $mon, day => $day,
-                    hour => $hour, minute => $minute, second => $second,
-                    time_zone => $timezone );
-        $dt->set_time_zone('UTC');
-        ($second,$minute,$hour,$day,$mon,$year) =
-            ($dt->second,$dt->minute,$dt->hour,$dt->day,$dt->mon,$dt->year);
+    my $dt;
+    my $timezone = $settings{timezone} || 'Europe/London';
+    if($time) {
+        $dt = DateTime->from_epoch( epoch => $time, time_zone => $timezone );
+    } else {
+        $dt = DateTime->now( time_zone => $timezone );
     }
 
+    return $dt->epoch   unless($format);
+
+#LogDebug("formatDate format=$format, time=".$dt->epoch);
+
     # create date mini strings
-    my $fmonth  = sprintf "%s",   $months[$mon-1]->{value};
-    my $fsday   = sprintf "%d",   $day; # short form, ie 6
-    my $fday    = sprintf "%02d", $day; # long form, ie 06
-    my $fmon    = sprintf "%02d", $mon;
-    my $fyear   = sprintf "%04d", $year;
-    my $fdotw   = sprintf "%s",   (defined $dotw ? $dotw[$dotw] : '');
-    my $fddext  = sprintf "%d%s", $day, _ext($day);
-    my $amonth  = substr($fmonth,0,3);
-    my $adotw   = substr($fdotw,0,3);
-    my $time12  = sprintf "%d:%02d%s", ($hour>12?$hour%12:$hour), $minute, ($hour>11?'pm':'am');
-    my $time24  = sprintf "%d:%02d:%02d", $hour, $minute, $second;
-    my $fhour   = sprintf "%02d", $hour;
-    my $fminute = sprintf "%02d", $minute;
-    my $fsecond = sprintf "%02d", $second;
+    my $fmonth  = $dt->month_name;
+    my $amonth  = $dt->month_abbr;
+    my $fdotw   = $dt->day_name;
+    my $adotw   = $dt->day_abbr;
+    my $fsday   = sprintf "%d",   $dt->day; # short form, ie 6
+    my $fday    = sprintf "%02d", $dt->day; # long form, ie 06
+    my $fmon    = sprintf "%02d", $dt->month;
+    my $fyear   = sprintf "%04d", $dt->year;
+    my $fddext  = sprintf "%d%s", $dt->day, _ext($dt->day);
+    my $time12  = sprintf "%d:%02d%s", $dt->hour_12, $dt->minute, lc $dt->am_or_pm;
+    my $time24  = sprintf "%d:%02d:%02d", $dt->hour, $dt->minute, $dt->second;
+    my $fhour   = sprintf "%02d", $dt->hour;
+    my $fminute = sprintf "%02d", $dt->minute;
+    my $fsecond = sprintf "%02d", $dt->second;
+    my $tz      = 'UTC';
+    eval { $tz = $dt->time_zone->short_name_for_datetime };
 
     my $fmt = $formats{$format};
 
@@ -284,7 +279,7 @@ sub formatDate {
     $fmt =~ s/dd/$fsday/;
     $fmt =~ s/TIME12/$time12/;
     $fmt =~ s/TIME24/$time24/;
-    $fmt =~ s/TZ/UT/;
+    $fmt =~ s/TZ/$tz/;
 
     return $fmt;
 }
@@ -302,12 +297,16 @@ sub unformatDate {
         @fields = reverse @basic;
         @values = $time =~ /$unformats{$format}/;
     } else {
-        @fields = split(q![ ,/:-]+!,$formats{$format});
-        @values = split(q![ ,/:-]+!,$time);
+        my $pattern = $formats{$format};
+        $pattern =~ s!TIME24!hh::mm:ss!;
+        $pattern =~ s!TIME12!hh::ampm!;
+
+        @fields = split(qr![ ,/:()-]+!,$pattern);
+        @values = split(qr![ ,/:()-]+!,$time);
     }
 
     @forms{@fields} = @values;
-    $forms{$_} = int($forms{$_})    for(@basic);
+    $forms{$_} = int($forms{$_}||0)    for(@basic);
 
 #use Data::Dumper;
 #LogDebug("format=[$format], time=[$time]");
@@ -318,14 +317,18 @@ sub unformatDate {
     ($forms{DD}) = $forms{DDEXT} =~ /(\d+)/     if($forms{DDEXT});
     $forms{MM} = isMonth($forms{MONTH})         if($forms{MONTH});
     $forms{MM} = isMonth($forms{MABV})          if($forms{MABV});
-    ($forms{hh},$forms{mm},$forms{ss})  = ($forms{TIME24} =~ /(\d+)/g)              if($forms{TIME24});
-    ($forms{hh},$forms{mm},$forms{APM}) = ($forms{TIME12} =~ /(\d+):(\d+)(am|pm)/)  if($forms{TIME12});
-    $forms{hh}++    if($forms{APM} && $forms{APM} eq 'pm');
-    $forms{MM}--    if($forms{MM}  && $forms{MM} > 0);
+    ($forms{mm},$forms{AMPM}) = ($forms{ampm} =~ /(\d+)(am|pm)/)  if($forms{ampm});
+    $forms{hh}+=12  if($forms{AMPM} && $forms{AMPM} eq 'pm');
 
-#LogDebug("after=".Dumper(\%forms));
-    @values = map {$forms{$_}} @basic;
-    return timelocal(@values);
+    @values = map {$forms{$_}||0} @basic;
+
+    my $timezone = $settings{timezone} || 'Europe/London';
+    my $dt = DateTime->new(
+                year => $values[5], month  => $values[4] || 1, day    => $values[3] || 1,
+                hour => $values[2], minute => $values[1],      second => $values[0],
+                time_zone => $timezone );
+
+    return $dt->epoch;
 }
 
 sub _ext {
