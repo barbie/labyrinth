@@ -133,8 +133,6 @@ my %zonetime = (12 => 1, 16 => 1);
 
 =item PeriodSelect
 
-=item OptSelect
-
 =back
 
 =cut
@@ -186,26 +184,6 @@ sub PeriodSelect {
     my @list = @periods;
     unshift @list, {act=>'',value=>'Select Period'}   if(defined $blank && $blank == 1);
     DropDownRowsText($opt,'period','act','value',@list);
-}
-
-sub OptSelect {
-    my ($name,$opt,$list,$sort,$blank,$title) = @_;
-    my $sorter = sub {0};
-
-    if(!$sort)          { $sorter = sub {0} }
-    elsif($sort == 1)   { $sorter = sub {$a <=> $b} }
-    elsif($sort == 2)   { $sorter = sub {$a cmp $b} }
-
-    my $html = "<select name='$name'>";
-    $html .= "<option value='0'>Select $title</option>" if($blank);
-    foreach my $item (sort $sorter keys %$list) {
-        $html .= "<option value='$item'";
-        $html .= ' selected="selected"' if($opt && $opt eq $item);
-        $html .= ">$list->{$item}</option>";
-    }
-    $html .= "</select>";
-
-    return $html;
 }
 
 ## ------------------------------------

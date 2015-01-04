@@ -161,7 +161,3 @@ for my $month (@months) {
 is(isMonth('blah'),0);
 is(isMonth(13),0);
 like(isMonth(),qr/\d+/);
-
-
-# TODO:
-# * OptSelect
