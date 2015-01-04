@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More  tests => 94;
+use Test::More  tests => 121;
 use Labyrinth::DTUtils;
 use Labyrinth::Variables;
 use Data::Dumper;
@@ -138,6 +138,30 @@ for my $day (keys %days) {
     is(Labyrinth::DTUtils::_ext($day),$days{$day});
 }
 
+my @months = (
+    { 'id' =>  1,   'value' => "January",   },
+    { 'id' =>  2,   'value' => "February",  },
+    { 'id' =>  3,   'value' => "March",     },
+    { 'id' =>  4,   'value' => "April",     },
+    { 'id' =>  5,   'value' => "May",       },
+    { 'id' =>  6,   'value' => "June",      },
+    { 'id' =>  7,   'value' => "July",      },
+    { 'id' =>  8,   'value' => "August",    },
+    { 'id' =>  9,   'value' => "September", },
+    { 'id' => 10,   'value' => "October",   },
+    { 'id' => 11,   'value' => "November",  },
+    { 'id' => 12,   'value' => "December"   },
+);
+
+for my $month (@months) {
+    is(isMonth($month->{id}),$month->{value});
+    is(isMonth($month->{value}),$month->{id});
+}
+
+is(isMonth('blah'),0);
+is(isMonth(13),0);
+like(isMonth(),qr/\d+/);
+
+
 # TODO:
 # * OptSelect
-# * isMonth
