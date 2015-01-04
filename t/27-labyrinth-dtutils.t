@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More  tests => 63;
+use Test::More  tests => 94;
 use Labyrinth::DTUtils;
 use Labyrinth::Variables;
 use Data::Dumper;
@@ -100,7 +100,44 @@ for my $format (keys %formats) {
     is(unformatDate($format,$formats{$format}[0]),$formats{$format}[1],".. unformat $format => $formats{$format}[0]");
 }
 
+my %days = (
+    1   => 'st',
+    2   => 'nd',
+    3   => 'rd',
+    4   => 'th',
+    5   => 'th',
+    6   => 'th',
+    7   => 'th',
+    8   => 'th',
+    9   => 'th',
+    10  => 'th',
+    11  => 'th',
+    12  => 'th',
+    13  => 'th',
+    14  => 'th',
+    15  => 'th',
+    16  => 'th',
+    17  => 'th',
+    18  => 'th',
+    19  => 'th',
+    20  => 'th',
+    21  => 'st',
+    22  => 'nd',
+    23  => 'rd',
+    24  => 'th',
+    25  => 'th',
+    26  => 'th',
+    27  => 'th',
+    28  => 'th',
+    29  => 'th',
+    30  => 'th',
+    31  => 'st',
+);
+
+for my $day (keys %days) {
+    is(Labyrinth::DTUtils::_ext($day),$days{$day});
+}
+
 # TODO:
 # * OptSelect
 # * isMonth
-# * _ext
