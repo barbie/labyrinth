@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use vars qw($VERSION);
-$VERSION = '5.30';
+$VERSION = '5.31';
 
 =head1 NAME
 
