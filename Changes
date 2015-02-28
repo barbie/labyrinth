@@ -1,6 +1,8 @@
 Changes for the Labyrinth Core
 ==============================
 
+        - added Labyrinth::Paths parsing, if available.
+
 5.30    2015-01-07
         - fixed and extended date test script.
         - switched to using DateTime (DTUtils).

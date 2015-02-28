@@ -105,6 +105,12 @@ sub run {
         UnPublish();                    # Start a fresh slate
         LoadSettings($file);            # Load All Global Settings
 
+        eval "use Labyrinth::Paths";
+        unless($@) {
+            my $paths = Labyrinth::Paths->new();
+            $paths->parse();
+        }
+
         die $tvars{errmess} if($tvars{errcode} && $tvars{errcode} eq 'ERROR');
 
         MailSet(mailsend => $settings{mailsend}, logdir => $settings{logdir});
