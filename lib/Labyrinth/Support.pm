@@ -308,7 +308,7 @@ sub FieldCheck {
         $tvars{errcode} = 'ERROR';
     }
 
-    return($errors);
+    return $errors;
 }
 
 sub ParamCheck {
@@ -327,17 +327,17 @@ sub ParamCheck {
         # automatically turn arrays into strings, in case someone is trying
         # to subvert the data input process. known arrays are correctly stored
         # appropriately elsewhere.
-        $tvars{data}->{$_} = join("|",CGIArray($_));
+        $tvars{data}->{$key} = join("|",CGIArray($key));
 
         # skip checks if optional field
         next    unless($fields->{$key}{type});
 
         # mandatory fields must contain values
-        next    if(defined $cgiparams{$_} && exists $cgiparams{$_} && $cgiparams{$_});
+        next    if(defined $cgiparams{$key} && exists $cgiparams{$key} && $cgiparams{$key});
 
         # if we get here, record missing field
-        LogDebug("FieldCheck: mandatory missing - [$_]");
-        $tvars{data}->{$_.'_err'} = ErrorSymbol();
+        LogDebug("FieldCheck: mandatory missing - [$key]");
+        $tvars{data}->{$key.'_err'} = ErrorSymbol();
         $errors++;
         $tvars{errcode} = 'ERROR';
     }
@@ -351,7 +351,7 @@ sub ParamCheck {
         $tvars{errcode} = 'ERROR';
     }
 
-    return($errors);
+    return $errors;
 }
 
 =item AccessName

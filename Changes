@@ -1,6 +1,8 @@
 Changes for the Labyrinth Core
 ==============================
 
+        - completed code changes for ParamCheck (Support).
+
 5.31    2015-02-27
         - added Labyrinth::Paths parsing, if available.
 
