@@ -274,7 +274,7 @@ sub formatDate {
     my $fhour   = sprintf "%02d", $dt->hour;
     my $fminute = sprintf "%02d", $dt->minute;
     my $fsecond = sprintf "%02d", $dt->second;
-    my $tz      = 'UTC';
+    my $tz      = 'GMT'; # RFC822 requires GMT not UTC
     eval { $tz = $dt->time_zone->short_name_for_datetime };
 
     my $fmt = $formats{$format};
